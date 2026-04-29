@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { defaultRoute, type AppRouteId } from './routes'
 
 function normalizeRoute(hash: string): AppRouteId {
-  const route = hash.replace(/^#\/?/, '')
+  const route = hash.replace(/^#\/?/, '').split('?')[0]
 
   return route === 'acta' ? 'acta' : defaultRoute
 }

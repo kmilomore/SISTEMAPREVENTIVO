@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { fetchActas } from '../lib/actasService'
 import { supabase } from '../lib/supabase'
+import type { ActaVisitaRow } from '../types/actas'
 
 const schoolsTableName = 'BASE DE DATOS ESCUELAS SLEP'
 
@@ -60,9 +62,18 @@ const detailSections: Array<{ title: string; fields: string[] }> = [
   },
 ]
 
+const actaTypeLabels: Record<string, string> = {
+  asesoria: 'Asesoría',
+  observacion: 'Observación',
+  reunion: 'Reunión',
+  solicitud: 'Solicitud',
+}
+
 export function DatabasePage() {
   const [status, setStatus] = useState<LoadState>('loading')
   const [schools, setSchools] = useState<SchoolRecord[]>([])
+  const [actas, setActas] = useState<ActaVisitaRow[]>([])
+  const [actasError, setActasError] = useState('')
   const [selectedSchool, setSelectedSchool] = useState<SchoolRecord | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -115,6 +126,33 @@ export function DatabasePage() {
   }, [])
 
   useEffect(() => {
+    let isMounted = true
+
+    async function loadActas() {
+      const { data, error } = await fetchActas()
+
+      if (!isMounted) {
+        return
+      }
+
+      if (error) {
+        setActasError(error)
+        setActas([])
+        return
+      }
+
+      setActas(data)
+      setActasError('')
+    }
+
+    void loadActas()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
     if (!selectedSchool) {
       return
     }
@@ -149,6 +187,14 @@ export function DatabasePage() {
       return searchableFields.some((value) => String(value ?? '').toLowerCase().includes(normalizedQuery))
     })
   }, [schools, searchTerm])
+
+  const selectedSchoolActas = useMemo(() => {
+    if (!selectedSchool) {
+      return []
+    }
+
+    return actas.filter((acta) => isActaRelatedToSchool(acta, selectedSchool))
+  }, [actas, selectedSchool])
 
   return (
     <>
@@ -242,12 +288,32 @@ export function DatabasePage() {
         )}
       </section>
 
-      {selectedSchool ? <SchoolDetailModal school={selectedSchool} onClose={() => setSelectedSchool(null)} /> : null}
+      {selectedSchool ? (
+        <SchoolDetailModal
+          school={selectedSchool}
+          relatedActas={selectedSchoolActas}
+          actasError={actasError}
+          onClose={() => setSelectedSchool(null)}
+        />
+      ) : null}
     </>
   )
 }
 
-function SchoolDetailModal({ school, onClose }: { school: SchoolRecord; onClose: () => void }) {
+function SchoolDetailModal({
+  school,
+  relatedActas,
+  actasError,
+  onClose,
+}: {
+  school: SchoolRecord
+  relatedActas: ActaVisitaRow[]
+  actasError: string
+  onClose: () => void
+}) {
+  const totalCompromisos = relatedActas.reduce((sum, acta) => sum + acta.acuerdos.length, 0)
+  const ultimaActa = relatedActas[0]
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 px-4 py-6 sm:items-center">
       <div className="absolute inset-0" onClick={onClose} />
@@ -276,6 +342,81 @@ function SchoolDetailModal({ school, onClose }: { school: SchoolRecord; onClose:
           </div>
 
           <div className="mt-4 space-y-3">
+            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Trazabilidad de actas</h5>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Resumen de visitas y compromisos asociados a este establecimiento.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-xl border border-[#c8dafd] bg-white px-3 py-2 text-xs font-semibold text-[#0057B8] transition hover:bg-[#f4f8ff]"
+                  onClick={() => {
+                    onClose()
+                    window.location.hash = '/acta'
+                  }}
+                >
+                  Ir al gestor de actas
+                </button>
+              </div>
+
+              <div className="mt-3 grid gap-2 md:grid-cols-3">
+                <SummaryMetricCard label="Visitas registradas" value={String(relatedActas.length)} />
+                <SummaryMetricCard label="Compromisos asociados" value={String(totalCompromisos)} />
+                <SummaryMetricCard
+                  label="Ultima visita"
+                  value={ultimaActa ? formatActaDate(ultimaActa.fecha_visita) : 'Sin visitas'}
+                />
+              </div>
+
+              {actasError ? (
+                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                  No fue posible cargar las actas relacionadas: {actasError}
+                </div>
+              ) : relatedActas.length === 0 ? (
+                <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                  Este establecimiento aun no tiene actas registradas.
+                </div>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  {relatedActas.map((acta) => (
+                    <article
+                      key={acta.id}
+                      className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 md:flex-row md:items-center md:justify-between"
+                    >
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-semibold text-slate-800">{acta.folio}</span>
+                          <span className="status-chip status-info text-xs">
+                            {actaTypeLabels[acta.tipo_acta] ?? acta.tipo_acta}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {formatActaDate(acta.fecha_visita)} · {acta.hora_inicio} - {acta.hora_termino}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-400">
+                          {acta.participantes.length} participante{acta.participantes.length === 1 ? '' : 's'} · {acta.acuerdos.length} compromiso{acta.acuerdos.length === 1 ? '' : 's'}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center rounded-xl bg-[#0033A0] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#002a84]"
+                        onClick={() => {
+                          onClose()
+                          window.location.hash = `/acta?actaId=${encodeURIComponent(acta.id)}`
+                        }}
+                      >
+                        Abrir acta
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+
             {detailSections.map((section) => {
               const rows = section.fields.filter((field) => hasValue(school[field]))
 
@@ -313,6 +454,15 @@ function SummaryPill({ label, value }: { label: string; value: string }) {
   )
 }
 
+function SummaryMetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <article className="rounded-xl border border-slate-200 bg-white px-3 py-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-slate-800">{value}</p>
+    </article>
+  )
+}
+
 function formatValue(value: SchoolValue) {
   if (value === null || value === '') {
     return 'Sin dato'
@@ -323,6 +473,36 @@ function formatValue(value: SchoolValue) {
 
 function hasValue(value: SchoolValue) {
   return value !== null && value !== ''
+}
+
+function normalizeComparableValue(value: SchoolValue | undefined) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+}
+
+function isActaRelatedToSchool(acta: ActaVisitaRow, school: SchoolRecord) {
+  const schoolId = normalizeComparableValue(school['N°'])
+  const schoolRbd = normalizeComparableValue(school['RBD'])
+  const schoolName = normalizeComparableValue(school['NOMBRE ESTABLECIMIENTO'])
+
+  return [
+    normalizeComparableValue(acta.establecimiento_id),
+    normalizeComparableValue(acta.establecimiento_rbd),
+    normalizeComparableValue(acta.establecimiento_nombre),
+  ].some((value) => value !== '' && [schoolId, schoolRbd, schoolName].includes(value))
+}
+
+function formatActaDate(dateStr?: string) {
+  if (!dateStr) {
+    return 'Sin fecha'
+  }
+
+  return new Date(`${dateStr}T12:00:00`).toLocaleDateString('es-CL', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
 }
 
 function SearchIcon() {

@@ -53,6 +53,22 @@ function formatFecha(dateStr?: string) {
   })
 }
 
+function getActaIdFromHash() {
+  const [, query = ''] = window.location.hash.split('?')
+  return new URLSearchParams(query).get('actaId')
+}
+
+function buildActaHash(actaId?: string | null) {
+  const params = new URLSearchParams()
+
+  if (actaId) {
+    params.set('actaId', actaId)
+  }
+
+  const query = params.toString()
+  return query ? `/acta?${query}` : '/acta'
+}
+
 type View = 'list' | 'tipo-selector' | 'form'
 
 // ─── Componente principal ─────────────────────────────────────────────────────
@@ -77,8 +93,64 @@ export function ActaPage() {
   }, [])
 
   useEffect(() => {
-    loadActas()
-  }, [loadActas])
+    let isMounted = true
+
+    async function loadInitialActas() {
+      const { data, error } = await fetchActas()
+
+      if (!isMounted) {
+        return
+      }
+
+      if (error) {
+        setLoadError(error)
+      } else {
+        setActas(data)
+      }
+
+      setLoading(false)
+    }
+
+    void loadInitialActas()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const syncDetailFromHash = () => {
+      const actaId = getActaIdFromHash()
+
+      if (!actaId) {
+        setDetailActa(null)
+        return
+      }
+
+      const matchedActa = actas.find((acta) => acta.id === actaId)
+      if (matchedActa) {
+        setDetailActa(matchedActa)
+      }
+    }
+
+    syncDetailFromHash()
+    window.addEventListener('hashchange', syncDetailFromHash)
+
+    return () => window.removeEventListener('hashchange', syncDetailFromHash)
+  }, [actas])
+
+  const openActaDetail = useCallback((acta: ActaVisitaRow) => {
+    setDetailActa(acta)
+    window.location.hash = buildActaHash(acta.id)
+  }, [])
+
+  const closeActaDetail = useCallback(() => {
+    setDetailActa(null)
+
+    if (getActaIdFromHash()) {
+      window.location.hash = buildActaHash()
+    }
+  }, [])
 
   function handleTipoSelect(tipo: TipoActa) {
     setTipoSeleccionado(tipo)
@@ -285,7 +357,7 @@ export function ActaPage() {
                       <button
                         type="button"
                         className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#0033A0] opacity-0 transition hover:bg-[#e8f0ff] group-hover:opacity-100"
-                        onClick={() => setDetailActa(acta)}
+                        onClick={() => openActaDetail(acta)}
                       >
                         Ver
                       </button>
@@ -301,10 +373,11 @@ export function ActaPage() {
       {detailActa && (
         <ActaDetailModal
           acta={detailActa}
-          onClose={() => setDetailActa(null)}
+          onClose={closeActaDetail}
           onUpdated={(updated) => {
             setActas((prev) => prev.map((a) => (a.id === updated.id ? updated : a)))
             setDetailActa(updated)
+            window.location.hash = buildActaHash(updated.id)
           }}
         />
       )}

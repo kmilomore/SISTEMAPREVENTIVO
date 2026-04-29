@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { EscuelaSLEP } from '../../types/actas'
 
@@ -15,7 +15,6 @@ export function EstablecimientoSelect({
 }: EstablecimientoSelectProps) {
   const [query, setQuery] = useState('')
   const [escuelas, setEscuelas] = useState<EscuelaSLEP[]>([])
-  const [filtered, setFiltered] = useState<EscuelaSLEP[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const ref = useRef<HTMLDivElement>(null)
@@ -34,23 +33,27 @@ export function EstablecimientoSelect({
     load()
   }, [])
 
-  useEffect(() => {
+  const filtered = useMemo(() => {
     if (!query.trim()) {
-      setFiltered(escuelas.slice(0, 60))
-    } else {
-      const q = query.toLowerCase()
-      setFiltered(
-        escuelas
-          .filter(
-            (e) =>
-              (e['NOMBRE ESTABLECIMIENTO'] as string)?.toLowerCase().includes(q) ||
-              (e['COMUNA'] as string)?.toLowerCase().includes(q) ||
-              (e['RBD'] as string)?.toLowerCase().includes(q),
-          )
-          .slice(0, 40),
-      )
+      return escuelas.slice(0, 60)
     }
+
+    const normalizedQuery = query.toLowerCase()
+
+    return escuelas
+      .filter(
+        (escuela) =>
+          (escuela['NOMBRE ESTABLECIMIENTO'] as string)?.toLowerCase().includes(normalizedQuery) ||
+          (escuela['COMUNA'] as string)?.toLowerCase().includes(normalizedQuery) ||
+          (escuela['RBD'] as string)?.toLowerCase().includes(normalizedQuery),
+      )
+      .slice(0, 40)
   }, [query, escuelas])
+
+  const selectedEscuela = useMemo(
+    () => escuelas.find((escuela) => String(escuela['N°']) === value) ?? null,
+    [escuelas, value],
+  )
 
   // Cerrar al hacer clic fuera
   useEffect(() => {
@@ -62,16 +65,6 @@ export function EstablecimientoSelect({
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
-
-  // Mostrar nombre del establecimiento seleccionado en el input
-  useEffect(() => {
-    if (!value) {
-      setQuery('')
-      return
-    }
-    const found = escuelas.find((e) => String(e['N°']) === value)
-    if (found) setQuery(String(found['NOMBRE ESTABLECIMIENTO']))
-  }, [value, escuelas])
 
   function handleSelect(escuela: EscuelaSLEP) {
     onChange(escuela)
@@ -91,6 +84,8 @@ export function EstablecimientoSelect({
       : 'border-slate-200 focus:border-[#0057B8] focus:ring-[#0057B8]/20'
   }`
 
+  const inputValue = open ? query : query || selectedEscuela ? query || String(selectedEscuela?.['NOMBRE ESTABLECIMIENTO'] ?? '') : ''
+
   return (
     <div ref={ref} className="relative">
       <div className="relative">
@@ -98,13 +93,16 @@ export function EstablecimientoSelect({
           type="text"
           className={inputClass}
           placeholder={loading ? 'Cargando establecimientos…' : 'Buscar por nombre, RBD o comuna…'}
-          value={query}
+          value={inputValue}
           onChange={(e) => {
             setQuery(e.target.value)
             setOpen(true)
             if (!e.target.value) onChange(null)
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setQuery((currentQuery) => currentQuery || String(selectedEscuela?.['NOMBRE ESTABLECIMIENTO'] ?? ''))
+            setOpen(true)
+          }}
           autoComplete="off"
         />
         {value && (

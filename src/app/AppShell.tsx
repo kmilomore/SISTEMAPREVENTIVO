@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { ActaPage } from '../pages/ActaPage'
 import { DatabasePage } from '../pages/DatabasePage'
@@ -20,10 +20,6 @@ const pageTag = {
 export function AppShell() {
   const { route, navigate } = useHashRoute()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [route])
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
@@ -79,7 +75,10 @@ export function AppShell() {
                     <button
                       key={appRoute.id}
                       type="button"
-                      onClick={() => navigate(appRoute.id)}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        navigate(appRoute.id)
+                      }}
                       className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${
                         isActive
                           ? 'bg-white text-[#0033A0] shadow'
