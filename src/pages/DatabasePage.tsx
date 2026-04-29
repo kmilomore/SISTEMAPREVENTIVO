@@ -312,6 +312,18 @@ function SchoolDetailModal({
   onClose: () => void
 }) {
   const totalCompromisos = relatedActas.reduce((sum, acta) => sum + acta.acuerdos.length, 0)
+  const compromisosPendientes = relatedActas.reduce(
+    (sum, acta) => sum + countAcuerdosByEstado(acta, 'Pendiente'),
+    0,
+  )
+  const compromisosEnProceso = relatedActas.reduce(
+    (sum, acta) => sum + countAcuerdosByEstado(acta, 'En proceso'),
+    0,
+  )
+  const compromisosCumplidos = relatedActas.reduce(
+    (sum, acta) => sum + countAcuerdosByEstado(acta, 'Cumplido'),
+    0,
+  )
   const ultimaActa = relatedActas[0]
 
   return (
@@ -369,6 +381,12 @@ function SchoolDetailModal({
                   label="Ultima visita"
                   value={ultimaActa ? formatActaDate(ultimaActa.fecha_visita) : 'Sin visitas'}
                 />
+              </div>
+
+              <div className="mt-2 grid gap-2 md:grid-cols-3">
+                <SummaryMetricCard label="Pendientes" value={String(compromisosPendientes)} tone="warning" />
+                <SummaryMetricCard label="En proceso" value={String(compromisosEnProceso)} tone="info" />
+                <SummaryMetricCard label="Cumplidos" value={String(compromisosCumplidos)} tone="success" />
               </div>
 
               {actasError ? (
@@ -454,11 +472,26 @@ function SummaryPill({ label, value }: { label: string; value: string }) {
   )
 }
 
-function SummaryMetricCard({ label, value }: { label: string; value: string }) {
+function SummaryMetricCard({
+  label,
+  value,
+  tone = 'default',
+}: {
+  label: string
+  value: string
+  tone?: 'default' | 'info' | 'warning' | 'success'
+}) {
+  const toneClassName = {
+    default: 'border-slate-200 bg-white text-slate-800',
+    info: 'border-[#c8dafd] bg-[#f4f8ff] text-[#0033A0]',
+    warning: 'border-amber-200 bg-amber-50 text-amber-800',
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  }[tone]
+
   return (
-    <article className="rounded-xl border border-slate-200 bg-white px-3 py-3">
+    <article className={`rounded-xl border px-3 py-3 ${toneClassName}`}>
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-slate-800">{value}</p>
+      <p className="mt-1 text-lg font-semibold">{value}</p>
     </article>
   )
 }
@@ -477,20 +510,44 @@ function hasValue(value: SchoolValue) {
 
 function normalizeComparableValue(value: SchoolValue | undefined) {
   return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim()
     .toLowerCase()
+}
+
+function normalizeComparableIdentifier(value: SchoolValue | undefined) {
+  return normalizeComparableValue(value).replace(/[^a-z0-9]/g, '')
 }
 
 function isActaRelatedToSchool(acta: ActaVisitaRow, school: SchoolRecord) {
   const schoolId = normalizeComparableValue(school['N°'])
   const schoolRbd = normalizeComparableValue(school['RBD'])
   const schoolName = normalizeComparableValue(school['NOMBRE ESTABLECIMIENTO'])
+  const schoolIdCompact = normalizeComparableIdentifier(school['N°'])
+  const schoolRbdCompact = normalizeComparableIdentifier(school['RBD'])
+  const schoolNameCompact = normalizeComparableIdentifier(school['NOMBRE ESTABLECIMIENTO'])
 
-  return [
+  const actaValues = [
     normalizeComparableValue(acta.establecimiento_id),
     normalizeComparableValue(acta.establecimiento_rbd),
     normalizeComparableValue(acta.establecimiento_nombre),
-  ].some((value) => value !== '' && [schoolId, schoolRbd, schoolName].includes(value))
+  ]
+
+  const actaCompactValues = [
+    normalizeComparableIdentifier(acta.establecimiento_id),
+    normalizeComparableIdentifier(acta.establecimiento_rbd),
+    normalizeComparableIdentifier(acta.establecimiento_nombre),
+  ]
+
+  return actaValues.some((value) => value !== '' && [schoolId, schoolRbd, schoolName].includes(value))
+    || actaCompactValues.some(
+      (value) => value !== '' && [schoolIdCompact, schoolRbdCompact, schoolNameCompact].includes(value),
+    )
+}
+
+function countAcuerdosByEstado(acta: ActaVisitaRow, estado: string) {
+  return acta.acuerdos.filter((acuerdo) => normalizeComparableValue(acuerdo.estado) === normalizeComparableValue(estado)).length
 }
 
 function formatActaDate(dateStr?: string) {
