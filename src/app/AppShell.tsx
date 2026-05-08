@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { ActaPage } from '../pages/ActaPage'
+import { CompromisosPage } from '../pages/CompromisosPage'
 import { DatabasePage } from '../pages/DatabasePage'
 import { MetricasPage } from '../pages/MetricasPage'
 import { appRoutes } from './routes'
@@ -12,12 +13,14 @@ const pageTitle = {
   database: 'Base de datos operacional',
   acta: 'Gestor de actas',
   metricas: 'Métricas e indicadores',
+  compromisos: 'Gestor de compromisos',
 } as const
 
 const pageTag = {
   database: 'Directorio',
   acta: 'Gestión documental',
   metricas: 'Control de gestión',
+  compromisos: 'Seguimiento',
 } as const
 
 export function AppShell() {
@@ -93,7 +96,7 @@ export function AppShell() {
                           isActive ? 'bg-[#e8f0ff] text-[#0033A0]' : 'bg-white/10 text-blue-100'
                         }`}
                       >
-                        {appRoute.id === 'database' ? <DatabaseIcon /> : appRoute.id === 'acta' ? <MinutesIcon /> : <MetricsIcon />}
+                        {appRoute.id === 'database' ? <DatabaseIcon /> : appRoute.id === 'acta' ? <MinutesIcon /> : appRoute.id === 'compromisos' ? <CommitmentsIcon /> : <MetricsIcon />}
                       </span>
                       <span className={`text-sm font-medium ${isActive ? 'text-[#0033A0]' : 'text-white'}`}>
                         {appRoute.label}
@@ -150,7 +153,15 @@ export function AppShell() {
               </div>
             </header>
 
-            {route === 'database' ? <DatabasePage /> : route === 'acta' ? <ActaPage /> : <MetricasPage />}
+            {route === 'database' ? (
+              <DatabasePage />
+            ) : route === 'acta' ? (
+              <ActaPage />
+            ) : route === 'compromisos' ? (
+              <CompromisosPage />
+            ) : (
+              <MetricasPage />
+            )}
           </div>
         </main>
       </div>
@@ -198,6 +209,15 @@ function MetricsIcon() {
     <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
       <path d="M3 3v18h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M7 16l4-5 4 3 4-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function CommitmentsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+      <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

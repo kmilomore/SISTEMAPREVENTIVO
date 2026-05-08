@@ -1,4 +1,4 @@
-export type AppRouteId = 'database' | 'acta' | 'metricas'
+export type AppRouteId = 'database' | 'acta' | 'metricas' | 'compromisos'
 
 export type AppRoute = {
   id: AppRouteId
@@ -21,6 +21,11 @@ export const appRoutes: AppRoute[] = [
     id: 'metricas',
     label: 'Métricas',
     description: 'Indicadores de cobertura, compromisos y visitas del territorio.',
+  },
+  {
+    id: 'compromisos',
+    label: 'Compromisos',
+    description: 'Seguimiento y gestión de compromisos impuestos por establecimiento.',
   },
 ]
 
