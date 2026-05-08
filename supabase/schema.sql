@@ -72,35 +72,35 @@ alter table public.meeting_minutes enable row level security;
 alter table public.observations enable row level security;
 alter table public.action_plans enable row level security;
 
-create policy if not exists "authenticated establishments access"
+create policy "authenticated establishments access"
   on public.establishments
   for all
   to authenticated
   using (true)
   with check (true);
 
-create policy if not exists "authenticated visits access"
+create policy "authenticated visits access"
   on public.visits
   for all
   to authenticated
   using (true)
   with check (true);
 
-create policy if not exists "authenticated meeting minutes access"
+create policy "authenticated meeting minutes access"
   on public.meeting_minutes
   for all
   to authenticated
   using (true)
   with check (true);
 
-create policy if not exists "authenticated observations access"
+create policy "authenticated observations access"
   on public.observations
   for all
   to authenticated
   using (true)
   with check (true);
 
-create policy if not exists "authenticated action plans access"
+create policy "authenticated action plans access"
   on public.action_plans
   for all
   to authenticated

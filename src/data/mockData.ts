@@ -7,7 +7,6 @@ import type {
   Observation,
   Visit,
 } from '../types/crm'
-import type { Compromiso } from '../types/compromisos'
 
 const establishments: Establishment[] = [
   {
@@ -212,100 +211,6 @@ const modules: ModuleCard[] = [
   },
 ]
 
-const compromisos: Compromiso[] = [
-  {
-    id: 'com-01',
-    acta_folio: 'ACT-2026-041',
-    establecimiento_id: 'est-01',
-    establecimiento_nombre: 'Escuela San Fernando Norte',
-    establecimiento_comuna: 'San Fernando',
-    descripcion: 'Instalar señalética foto luminiscente en pasillos y patio cubierto',
-    responsable: 'Director establecimiento',
-    plazo: '2026-05-15',
-    estado: 'En proceso',
-    comentarios: [
-      {
-        id: 'cc-001',
-        texto: 'Se adquirió el material, pendiente instalación en pasillos norte.',
-        autor: 'Ramon Rojas',
-        fecha: '2026-04-28',
-      },
-    ],
-    created_at: '2026-04-15',
-    updated_at: '2026-04-28',
-  },
-  {
-    id: 'com-02',
-    acta_folio: 'ACT-2026-041',
-    establecimiento_id: 'est-01',
-    establecimiento_nombre: 'Escuela San Fernando Norte',
-    establecimiento_comuna: 'San Fernando',
-    descripcion: 'Actualizar plan de emergencias y realizar simulacro semestral con registro',
-    responsable: 'Inspector general',
-    plazo: '2026-06-01',
-    estado: 'Pendiente',
-    comentarios: [],
-    created_at: '2026-04-15',
-    updated_at: '2026-04-15',
-  },
-  {
-    id: 'com-03',
-    acta_folio: 'ACT-2026-039',
-    establecimiento_id: 'est-02',
-    establecimiento_nombre: 'Liceo Técnico Placilla',
-    establecimiento_comuna: 'Placilla',
-    descripcion: 'Retiro inmediato de material combustible cercano al tablero eléctrico',
-    responsable: 'Encargado de mantención',
-    plazo: '2026-04-28',
-    estado: 'Vencido',
-    comentarios: [
-      {
-        id: 'cc-002',
-        texto: 'No ejecutado a la fecha de plazo. Se levanta nuevamente como urgente en próxima visita.',
-        autor: 'Daniela Soto',
-        fecha: '2026-04-30',
-      },
-    ],
-    created_at: '2026-04-10',
-    updated_at: '2026-04-30',
-  },
-  {
-    id: 'com-04',
-    acta_folio: 'ACT-2026-039',
-    establecimiento_id: 'est-02',
-    establecimiento_nombre: 'Liceo Técnico Placilla',
-    establecimiento_comuna: 'Placilla',
-    descripcion: 'Capacitar a todo el personal en uso correcto de extintores y evacuación',
-    responsable: 'Director liceo',
-    plazo: '2026-05-30',
-    estado: 'Pendiente',
-    comentarios: [],
-    created_at: '2026-04-10',
-    updated_at: '2026-04-10',
-  },
-  {
-    id: 'com-05',
-    acta_folio: 'ACT-2026-032',
-    establecimiento_id: 'est-03',
-    establecimiento_nombre: 'Escuela Rural Nancagua',
-    establecimiento_comuna: 'Nancagua',
-    descripcion: 'Actualizar stock crítico de botiquín y establecer control mensual documentado',
-    responsable: 'Encargada de convivencia',
-    plazo: '2026-04-19',
-    estado: 'Cumplido',
-    comentarios: [
-      {
-        id: 'cc-003',
-        texto: 'Se repuso todo el material faltante. Se dejó registro firmado en carpeta de salud.',
-        autor: 'Cecilia Molina',
-        fecha: '2026-04-17',
-      },
-    ],
-    created_at: '2026-03-28',
-    updated_at: '2026-04-17',
-  },
-]
-
 export const crmData = {
   establishments,
   visits,
@@ -314,5 +219,4 @@ export const crmData = {
   actionPlans,
   indicators,
   modules,
-  compromisos,
 }

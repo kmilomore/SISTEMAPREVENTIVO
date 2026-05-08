@@ -26,24 +26,28 @@ El portal busca resolver cuatro necesidades principales:
 
 ### Implementado hoy
 
-- Shell principal del portal con navegacion lateral.
+- Shell principal del portal con navegacion lateral (4 modulos activos).
 - Navegacion simple por hash para separar paginas por modulo.
 - Pagina de base de datos para guiar la carga inicial del dataset SQL.
 - Deteccion automatica del archivo SQL fuente publicado en `public/`.
 - Cliente Supabase listo para activarse con variables de entorno publicas.
-- Pagina base del modulo de actas con datos demo.
-- Modelo de datos mock para representar establecimientos, visitas, actas, observaciones y planes.
+- Modulo de actas funcional con persistencia en Supabase, generacion de PDF y subida de archivos de asistencia.
+- Modulo de metricas con KPIs calculados desde actas: cobertura de establecimientos visitados, compromisos por estado, cobertura por comuna.
+- Modulo de compromisos con tabla filtrable, cambio de estado y historial de seguimiento por comentarios.
+- Modelo de datos mock para todos los modulos con fallback automatico cuando Supabase no esta configurado.
 - Esquema SQL normalizado inicial para Supabase.
 - Esquema SQL crudo para cargar la tabla original `BASE DE DATOS ESCUELAS SLEP`.
+- Tipos TypeScript para entidades CRM (`src/types/crm.ts`) y compromisos (`src/types/compromisos.ts`).
 
 ### Aun no implementado
 
-- Persistencia real desde la UI hacia Supabase.
-- Formularios CRUD de actas, visitas, observaciones y planes.
+- Tabla `public.compromisos` en Supabase (el modulo opera en modo mock hasta que se cree).
+- Generacion automatica de compromisos desde acuerdos del acta al registrar un acta nueva.
+- Formularios CRUD de visitas y observaciones.
 - Normalizacion automatica desde la tabla cruda hacia tablas operacionales.
-- Paneles KPI en la interfaz.
-- Exportacion documental o PDF.
+- Exportacion documental de compromisos a CSV o PDF.
 - Gestion de usuarios, perfiles o permisos por rol.
+- Paginacion en tablas con grandes volumenes de datos.
 
 ## 4. Stack tecnologico
 
@@ -73,18 +77,22 @@ La aplicacion sigue una arquitectura simple y modular.
 
 ### Modulos actuales
 
-- `src/pages/DatabasePage.tsx`: modulo de carga inicial de datos.
-- `src/pages/ActaPage.tsx`: modulo base para gestionar actas.
+- `src/pages/DatabasePage.tsx`: modulo de carga inicial de datos y directorio SLEP.
+- `src/pages/ActaPage.tsx`: gestor completo de actas con PDF, asistencia y detalle.
+- `src/pages/MetricasPage.tsx`: panel de KPIs calculados desde actas y directorio SLEP.
+- `src/pages/CompromisosPage.tsx`: gestor de compromisos con filtros, cambio de estado e historial de comentarios.
 
 ### Datos y contratos
 
-- `src/types/crm.ts`: contratos TypeScript para entidades del CRM.
-- `src/data/mockData.ts`: datos demo usados por la UI mientras no exista persistencia real.
+- `src/types/crm.ts`: contratos TypeScript para entidades del CRM (Establishment, Visit, Observation, MeetingMinute, ActionPlan, Indicator).
+- `src/types/actas.ts`: tipos del modulo de actas (ActaVisita, AcuerdoActa, ParticipanteActa).
+- `src/types/compromisos.ts`: tipos del modulo de compromisos (Compromiso, ComentarioCompromiso, EstadoCompromiso).
+- `src/data/mockData.ts`: datos demo para todos los modulos; exporta `crmData` con compromisos incluidos.
 - `src/lib/supabase.ts`: inicializacion del cliente Supabase y deteccion de configuracion.
 
 ## 6. Navegacion actual
 
-La aplicacion hoy expone dos rutas funcionales:
+La aplicacion expone cuatro rutas funcionales. La navegacion es hash-based (sin router externo). Las rutas validas se derivan dinamicamente desde `appRoutes` en `src/app/routes.ts`, por lo que agregar una ruta nueva no requiere modificar el hook `useHashRoute`.
 
 ### 1. Base de Datos
 
@@ -92,10 +100,11 @@ Ruta: `#/database`
 
 Responsabilidad:
 
-- explicar la secuencia de carga de la base cruda en Supabase;
-- leer el archivo SQL publicado;
-- detectar nombre de tabla, cantidad de filas y columnas;
+- mostrar el directorio de establecimientos educacionales cargado en Supabase;
+- leer el archivo SQL publicado y detectar tabla, filas y columnas;
 - mostrar la secuencia recomendada de importacion.
+
+Contexto detallado: `CONTEXTO_DATABASEPAGE.md`
 
 ### 2. Acta
 
@@ -103,9 +112,37 @@ Ruta: `#/acta`
 
 Responsabilidad:
 
-- dejar creada la segunda pagina del sistema;
-- mostrar un listado demo de actas;
-- documentar el roadmap inmediato del modulo.
+- registrar actas de visita (asesoria, observacion, reunion, solicitud);
+- gestionar participantes, acuerdos y archivos de asistencia;
+- generar y descargar PDF del acta;
+- consultar el historial de actas con filtros y modal de detalle.
+
+Contexto detallado: `CONTEXTO_ACTAPAGE.md`
+
+### 3. Metricas
+
+Ruta: `#/metricas`
+
+Responsabilidad:
+
+- mostrar KPIs operativos: compromisos asignados, escuelas visitadas, cobertura global, compromisos pendientes;
+- visualizar la cobertura de visitas por comuna con barra de progreso;
+- listar compromisos pendientes y en proceso derivados de los acuerdos registrados en las actas.
+
+Contexto detallado: `CONTEXTO_METRICASPAGE.md`
+
+### 4. Compromisos
+
+Ruta: `#/compromisos`
+
+Responsabilidad:
+
+- listar todos los compromisos impuestos a los establecimientos con filtros por escuela, comuna y estado;
+- cambiar el estado de un compromiso (Pendiente / En proceso / Cumplido / Vencido);
+- registrar notas de seguimiento tipo historial con autor y fecha;
+- mostrar chips KPI con el resumen cuantitativo por estado.
+
+Contexto detallado: `CONTEXTO_COMPROMISOSPAGE.md`
 
 ## 7. Modulo de base de datos
 
@@ -229,6 +266,34 @@ Incluye:
 - fecha objetivo;
 - porcentaje de avance.
 
+#### Compromiso
+
+Representa un compromiso formal derivado de un acuerdo de acta, con ciclo de vida independiente.
+
+Archivo de tipos: `src/types/compromisos.ts`
+
+Incluye:
+
+- id del compromiso;
+- referencia al acta de origen (acta_id, acta_folio);
+- establecimiento asociado (id, nombre, comuna);
+- descripcion del compromiso;
+- responsable de cumplimiento;
+- plazo de cumplimiento;
+- estado: Pendiente / En proceso / Cumplido / Vencido;
+- historial de comentarios de seguimiento (ComentarioCompromiso[]).
+
+#### ComentarioCompromiso
+
+Representa una nota de seguimiento dentro de un compromiso.
+
+Incluye:
+
+- id generado en cliente;
+- texto del comentario;
+- autor (nombre libre o default 'Unidad de Prevencion');
+- fecha del comentario.
+
 ## 10. Supabase y persistencia
 
 La integracion con Supabase esta preparada pero aun no consumida desde la UI.
@@ -273,13 +338,14 @@ El frontend usa datos mock para acelerar el desarrollo visual y de arquitectura.
 
 Actualmente existen datos demo para:
 
-- 3 establecimientos;
+- 3 establecimientos (San Fernando, Placilla, Nancagua);
 - 3 visitas;
 - 3 observaciones;
 - 3 actas;
 - 3 planes de accion;
 - 3 indicadores;
-- 4 tarjetas de modulos futuros.
+- 4 tarjetas de modulos futuros;
+- 5 compromisos (distribuidos en los 3 establecimientos, cubriendo los 4 estados posibles).
 
 Esto permite evolucionar la UI sin bloquearse por backend.
 
@@ -319,58 +385,94 @@ Principios actuales:
 - posibilidad de agregar paginas futuras sin tocar la estructura principal;
 - mock data y tipos separados de la UI.
 
-Ejemplos de modulos futuros coherentes con la arquitectura actual:
+Modulos activos hoy:
 
-- Visitas
-- Observaciones
-- Planes de accion
-- Dashboard KPI
-- Documentos y exportaciones
-- Normalizacion de datos
+- Base de Datos (`#/database`)
+- Acta (`#/acta`)
+- Metricas (`#/metricas`)
+- Compromisos (`#/compromisos`)
+
+Modulos futuros coherentes con la arquitectura actual:
+
+- Visitas (tabla `public.visitas`, programacion y seguimiento de visitas en terreno)
+- Observaciones (hallazgos por visita, nivel de riesgo, responsable)
+- Planes de accion (medidas correctivas por observacion)
+- Exportaciones (CSV / Excel de cualquier listado)
+- Normalizacion de datos (pipeline desde tabla cruda hacia tablas operacionales)
 
 ## 14. Riesgos y brechas actuales
 
 Las principales brechas del portal hoy son:
 
-1. La UI aun no escribe ni lee datos reales desde Supabase.
-2. No existe aun un pipeline de normalizacion desde la tabla cruda.
-3. No hay autenticacion funcional en pantalla.
-4. No hay control de permisos por perfil.
-5. No hay testing automatizado de flujos de negocio.
-6. El modulo de actas aun es una base visual, no una operacion completa.
+1. La tabla `public.compromisos` no existe aun en Supabase; el modulo opera en modo mock.
+2. Los compromisos del modulo de compromisos y los acuerdos internos de las actas son entidades paralelas sin sincronizacion automatica.
+3. No existe aun un pipeline de normalizacion desde la tabla cruda de establecimientos.
+4. No hay autenticacion funcional en pantalla.
+5. No hay control de permisos por perfil.
+6. No hay testing automatizado de flujos de negocio.
+7. Sin paginacion en tablas; carga completa de registros en memoria.
 
 ## 15. Prioridades recomendadas
 
 Orden sugerido para evolucion del portal:
 
-1. Normalizar establecimientos desde la tabla cruda a `public.establishments`.
-2. Crear lectura real desde Supabase para reemplazar mock data.
-3. Construir CRUD del modulo de actas.
-4. Incorporar modulo de visitas y observaciones.
-5. Conectar observaciones con planes de accion.
-6. Agregar dashboard de indicadores.
-7. Incorporar autenticacion y roles.
+1. Crear tabla `public.compromisos` en Supabase con el esquema definido en `CONTEXTO_COMPROMISOSPAGE.md` (seccion 13.1).
+2. Generar compromisos automaticamente desde acuerdos al registrar un acta nueva (trigger Supabase o logica en `insertActa`).
+3. Normalizar establecimientos desde la tabla cruda a `public.establishments`.
+4. Incorporar autenticacion y ligar el autor de comentarios al usuario autenticado.
+5. Incorporar modulo de visitas y observaciones.
+6. Conectar observaciones con planes de accion.
+7. Agregar paginacion en listados de actas y compromisos.
 
 ## 16. Archivos clave del proyecto
 
-- `README.md`: resumen general del proyecto y puesta en marcha.
+### Shell y navegacion
+
 - `src/App.tsx`: entrada funcional de la app.
-- `src/app/AppShell.tsx`: contenedor principal del portal.
-- `src/app/routes.ts`: definicion de rutas disponibles.
-- `src/app/useHashRoute.ts`: navegacion hash-based.
-- `src/pages/DatabasePage.tsx`: pagina de carga inicial SQL.
-- `src/pages/ActaPage.tsx`: pagina base del modulo de actas.
-- `src/data/mockData.ts`: datos demo del CRM.
-- `src/types/crm.ts`: contratos de entidades de negocio.
+- `src/app/AppShell.tsx`: contenedor principal, menu lateral, render condicional de paginas.
+- `src/app/routes.ts`: definicion centralizada de rutas (`database`, `acta`, `metricas`, `compromisos`).
+- `src/app/useHashRoute.ts`: navegacion hash-based, deriva rutas validas desde `appRoutes`.
+
+### Paginas
+
+- `src/pages/DatabasePage.tsx`: directorio de establecimientos y carga inicial SQL.
+- `src/pages/ActaPage.tsx`: gestor de actas con PDF, asistencia y detalle.
+- `src/pages/MetricasPage.tsx`: panel de KPIs e indicadores operativos.
+- `src/pages/CompromisosPage.tsx`: gestor de compromisos con filtros, estados e historial.
+
+### Datos, tipos y servicios
+
+- `src/data/mockData.ts`: datos demo para todos los modulos (establecimientos, actas, compromisos, etc.).
+- `src/types/crm.ts`: contratos de entidades generales del CRM.
+- `src/types/actas.ts`: contratos del modulo de actas.
+- `src/types/compromisos.ts`: contratos del modulo de compromisos.
 - `src/lib/supabase.ts`: configuracion del cliente Supabase.
+- `src/lib/actasService.ts`: CRUD de actas en Supabase.
+- `src/lib/compromisosService.ts`: lectura y escritura de compromisos con fallback a mock.
+- `src/lib/pdfActaService.ts`: generacion de PDF de actas.
+- `src/lib/storageActasService.ts`: subida de archivos al bucket `actas-visita`.
+
+### Esquemas Supabase
+
 - `supabase/base_datos_escuelas_slep_schema.sql`: esquema de tabla cruda.
-- `supabase/schema.sql`: esquema normalizado inicial.
+- `supabase/schema.sql`: esquema normalizado inicial (establishments, visits, meeting_minutes, observations, action_plans).
 - `supabase/seed_base_datos_escuelas_slep.sql`: seed listo para SQL Editor de Supabase.
+
+### Documentacion de modulos
+
+- `CONTEXTO_GENERAL_PORTAL.md`: este archivo — vision y arquitectura general del portal.
+- `CONTEXTO_DATABASEPAGE.md`: detalle del modulo Base de Datos.
+- `CONTEXTO_ACTAPAGE.md`: detalle del modulo Actas.
+- `CONTEXTO_METRICASPAGE.md`: detalle del modulo Metricas.
+- `CONTEXTO_COMPROMISOSPAGE.md`: detalle del modulo Compromisos.
 
 ## 17. Conclusion
 
-El portal ya tiene una base tecnica ordenada para crecer como CRM operacional de prevencion de riesgos.
+El portal cuenta con cuatro modulos funcionales y una arquitectura consolidada para seguir creciendo como CRM operacional de prevencion de riesgos.
 
-Su estado actual no es el de un sistema cerrado, sino el de una plataforma inicial bien encaminada: ya existe la estructura, la navegacion, la integracion base con Supabase, el esquema de datos y el primer flujo tecnico de carga de establecimientos.
+- El modulo de **Actas** ya persiste en Supabase con PDF y archivos de asistencia.
+- El modulo de **Metricas** calcula KPIs en tiempo real desde los datos reales.
+- El modulo de **Compromisos** opera en modo demo hasta que se cree la tabla en Supabase, pero la UI esta completamente construida.
+- El **directorio de establecimientos** esta listo para cargarse desde el SQL fuente.
 
-El siguiente salto de valor consiste en transformar esta base en operacion real: persistencia efectiva, normalizacion de datos, formularios de gestion y seguimiento completo por modulo.
+El siguiente salto de valor esta en crear la tabla `public.compromisos` en Supabase, conectar la generacion automatica de compromisos desde actas, e incorporar autenticacion para ligar cada accion a un usuario real.

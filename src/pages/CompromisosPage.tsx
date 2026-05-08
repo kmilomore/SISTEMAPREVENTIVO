@@ -3,7 +3,7 @@ import type { Compromiso, ComentarioCompromiso, EstadoCompromiso } from '../type
 import {
   fetchCompromisos,
   updateCompromisoEstado,
-  updateCompromisoComentarios,
+  addComentario,
 } from '../lib/compromisosService'
 
 // ─── Iconos ────────────────────────────────────────────────────────────────────
@@ -60,22 +60,15 @@ function estadoBtnClass(estado: EstadoCompromiso, selected: boolean) {
   return map[estado]
 }
 
-function formatFecha(dateStr?: string) {
+function formatFecha(dateStr?: string | null) {
   if (!dateStr) return '—'
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-CL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+  const d = dateStr.includes('T') ? new Date(dateStr) : new Date(dateStr + 'T12:00:00')
+  return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-function isPlazoVencido(plazo?: string) {
+function isPlazoVencido(plazo?: string | null) {
   if (!plazo) return false
-  return new Date(plazo) < new Date()
-}
-
-function generateId() {
-  return `cc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+  return new Date(plazo + 'T23:59:59') < new Date()
 }
 
 // ─── Modal de compromiso ───────────────────────────────────────────────────────
@@ -93,40 +86,41 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
   const [nuevoAutor, setNuevoAutor] = useState('')
   const [saving, setSaving] = useState(false)
   const [addingComment, setAddingComment] = useState(false)
+  const [comentarioError, setComentarioError] = useState<string | null>(null)
 
   const estadoChanged = estado !== compromiso.estado
 
   async function handleGuardarEstado() {
     setSaving(true)
-    await updateCompromisoEstado(compromiso.id, estado)
-    const updated: Compromiso = {
-      ...compromiso,
-      estado,
-      comentarios,
-      updated_at: new Date().toISOString(),
+    const { error } = await updateCompromisoEstado(compromiso.id, estado)
+    if (!error) {
+      const updated: Compromiso = { ...compromiso, estado, comentarios, updated_at: new Date().toISOString() }
+      onUpdated(updated)
     }
-    onUpdated(updated)
     setSaving(false)
   }
 
   async function handleAgregarComentario() {
     if (!nuevoTexto.trim()) return
     setAddingComment(true)
+    setComentarioError(null)
 
-    const nuevo: ComentarioCompromiso = {
-      id: generateId(),
-      texto: nuevoTexto.trim(),
-      autor: nuevoAutor.trim() || 'Unidad de Prevención',
-      fecha: new Date().toISOString().slice(0, 10),
+    const { data, error } = await addComentario(
+      compromiso.id,
+      nuevoTexto.trim(),
+      nuevoAutor.trim() || 'Unidad de Prevención',
+    )
+
+    if (error || !data) {
+      setComentarioError(error ?? 'Error al guardar el comentario.')
+      setAddingComment(false)
+      return
     }
 
-    const nuevosComentarios = [...comentarios, nuevo]
-    await updateCompromisoComentarios(compromiso.id, nuevosComentarios)
-
+    const nuevosComentarios = [...comentarios, data]
     setComentarios(nuevosComentarios)
     setNuevoTexto('')
     setNuevoAutor('')
-
     onUpdated({ ...compromiso, estado, comentarios: nuevosComentarios, updated_at: new Date().toISOString() })
     setAddingComment(false)
   }
@@ -181,7 +175,7 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Plazo</p>
               <p
                 className={`mt-0.5 text-sm font-medium ${
-                  compromiso.plazo && isPlazoVencido(compromiso.plazo) && compromiso.estado !== 'Cumplido'
+                  isPlazoVencido(compromiso.plazo) && compromiso.estado !== 'Cumplido'
                     ? 'text-red-600'
                     : 'text-slate-700'
                 }`}
@@ -254,7 +248,7 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
                     <div className="min-w-0 flex-1 rounded-2xl bg-slate-50 px-4 py-3">
                       <div className="mb-1 flex flex-wrap items-baseline gap-2">
                         <span className="text-xs font-semibold text-slate-700">{c.autor}</span>
-                        <span className="text-[10px] text-slate-400">{formatFecha(c.fecha)}</span>
+                        <span className="text-[10px] text-slate-400">{formatFecha(c.created_at)}</span>
                       </div>
                       <p className="text-sm leading-relaxed text-slate-700">{c.texto}</p>
                     </div>
@@ -291,6 +285,9 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
                   {addingComment ? 'Guardando…' : 'Agregar'}
                 </button>
               </div>
+              {comentarioError && (
+                <p className="mt-2 text-xs text-red-600">{comentarioError}</p>
+              )}
             </div>
           </div>
         </div>
@@ -304,7 +301,7 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
 export function CompromisosPage() {
   const [compromisos, setCompromisos] = useState<Compromiso[]>([])
   const [loading, setLoading] = useState(true)
-  const [isMock, setIsMock] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [filtroEscuela, setFiltroEscuela] = useState('')
   const [filtroComuna, setFiltroComuna] = useState('')
   const [filtroEstado, setFiltroEstado] = useState<EstadoCompromiso | ''>('')
@@ -314,10 +311,10 @@ export function CompromisosPage() {
     let mounted = true
 
     async function load() {
-      const { data, isMock: mock } = await fetchCompromisos()
+      const { data, error } = await fetchCompromisos()
       if (!mounted) return
-      setCompromisos(data)
-      setIsMock(mock)
+      if (error) setFetchError(error)
+      else setCompromisos(data)
       setLoading(false)
     }
 
@@ -354,30 +351,42 @@ export function CompromisosPage() {
     vencido: compromisos.filter((c) => c.estado === 'Vencido').length,
   }), [compromisos])
 
+  if (fetchError) {
+    return (
+      <div className="space-y-6">
+        <HeaderCard />
+        <div className="panel-card-strong p-8 text-center">
+          <p className="text-sm font-semibold text-slate-700">Supabase no configurado</p>
+          <p className="mt-2 max-w-sm mx-auto text-xs text-slate-500">
+            Configura las variables de entorno <code className="font-mono">VITE_SUPABASE_URL</code> y{' '}
+            <code className="font-mono">VITE_SUPABASE_ANON_KEY</code> en{' '}
+            <code className="font-mono">.env.local</code> para activar este módulo.
+          </p>
+          <p className="mt-3 text-xs text-slate-400">
+            Ejecuta primero <code className="font-mono">supabase/compromisos_schema.sql</code> en el
+            SQL Editor de Supabase para crear las tablas necesarias.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="panel-card-strong p-6 sm:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">
-              Compromisos
-            </p>
-            <h3 className="mt-2 text-3xl font-light text-slate-800">Gestor de compromisos</h3>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-              Seguimiento y gestión de compromisos impuestos por establecimiento. Cambia el estado,
-              registra avances y mantén el historial de cada compromiso.
-            </p>
-          </div>
-          {isMock && !loading && (
-            <span className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700">
-              Modo demo
-            </span>
-          )}
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">
+            Compromisos
+          </p>
+          <h3 className="mt-2 text-3xl font-light text-slate-800">Gestor de compromisos</h3>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+            Seguimiento y gestión de compromisos impuestos por establecimiento. Cambia el estado,
+            registra avances y mantén el historial de cada compromiso.
+          </p>
         </div>
 
-        {/* KPI chips */}
-        {!loading && (
+        {!loading && compromisos.length > 0 && (
           <div className="mt-5 flex flex-wrap gap-3">
             <KpiChip label="Total" value={counts.total} color="slate" />
             <KpiChip label="Pendientes" value={counts.pendiente} color="amber" />
@@ -494,16 +503,21 @@ export function CompromisosPage() {
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-5 py-14 text-center text-slate-400">
-                    <p className="text-sm font-medium">Sin compromisos que coincidan</p>
-                    <p className="mt-1 text-xs">Ajusta los filtros para ver resultados.</p>
+                    <p className="text-sm font-medium">
+                      {compromisos.length === 0
+                        ? 'No hay compromisos registrados'
+                        : 'Sin compromisos que coincidan'}
+                    </p>
+                    <p className="mt-1 text-xs">
+                      {compromisos.length === 0
+                        ? 'Los compromisos se generan desde las actas registradas.'
+                        : 'Ajusta los filtros para ver resultados.'}
+                    </p>
                   </td>
                 </tr>
               ) : (
                 filtered.map((comp) => {
-                  const vencido =
-                    comp.plazo &&
-                    isPlazoVencido(comp.plazo) &&
-                    comp.estado !== 'Cumplido'
+                  const vencido = isPlazoVencido(comp.plazo) && comp.estado !== 'Cumplido'
 
                   return (
                     <tr
@@ -576,6 +590,15 @@ export function CompromisosPage() {
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
+function HeaderCard() {
+  return (
+    <div className="panel-card-strong p-6 sm:p-7">
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Compromisos</p>
+      <h3 className="mt-2 text-3xl font-light text-slate-800">Gestor de compromisos</h3>
+    </div>
+  )
+}
+
 type KpiColor = 'slate' | 'amber' | 'blue' | 'emerald' | 'red'
 
 function KpiChip({ label, value, color }: { label: string; value: number; color: KpiColor }) {
@@ -588,7 +611,7 @@ function KpiChip({ label, value, color }: { label: string; value: number; color:
   }
   return (
     <div className={`flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-xs font-medium ${cls[color]}`}>
-      <span className="font-bold text-base leading-none">{value}</span>
+      <span className="text-base font-bold leading-none">{value}</span>
       <span className="opacity-75">{label}</span>
     </div>
   )
