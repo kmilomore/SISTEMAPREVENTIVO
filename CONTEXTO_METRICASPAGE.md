@@ -278,6 +278,36 @@ route === 'database' ? <DatabasePage />
 
 ## 10. Hallazgos y limitaciones actuales
 
+### 10.0 Bug resuelto — `useHashRoute` no reconocía rutas nuevas
+
+**Archivo:** `src/app/useHashRoute.ts`  
+**Estado:** corregido.
+
+La función `normalizeRoute` tenía hardcodeadas solo dos rutas posibles:
+
+```ts
+// Antes — roto para cualquier ruta distinta de 'acta'
+return route === 'acta' ? 'acta' : defaultRoute
+```
+
+Al hacer clic en "Métricas", el hash se actualizaba a `#/metricas` correctamente, pero `normalizeRoute` lo ignoraba y devolvía `'database'`, por lo que la página nunca cambiaba.
+
+**Corrección aplicada:**
+
+```ts
+// Después — genérico: válido para cualquier ruta definida en appRoutes
+const validRouteIds = new Set(appRoutes.map((r) => r.id))
+
+function normalizeRoute(hash: string): AppRouteId {
+  const segment = hash.replace(/^#\/?/, '').split('?')[0]
+  return validRouteIds.has(segment as AppRouteId) ? (segment as AppRouteId) : defaultRoute
+}
+```
+
+La corrección deriva las rutas válidas desde `appRoutes`, así agregar una ruta nueva en `routes.ts` no requiere modificar el hook.
+
+---
+
 ### 10.1 Cobertura basada en actas, no en visitas formales
 
 El módulo infiere "escuela visitada" a partir de la presencia de al menos un acta con ese `establecimiento_id`. No existe aún una tabla formal de visitas separada. Esto implica que:
