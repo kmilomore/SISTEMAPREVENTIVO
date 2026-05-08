@@ -23,7 +23,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
-      <div className="mx-auto flex min-h-screen max-w-[1600px]">
+      <div className="flex min-h-screen w-full">
         <div
           className={`fixed inset-0 z-30 bg-slate-900/30 transition lg:hidden ${
             isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
@@ -111,8 +111,8 @@ export function AppShell() {
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
-          <div className="mx-auto flex max-w-7xl flex-col gap-6">
+        <main className="min-w-0 flex-1 px-4 py-4 sm:px-6 lg:px-8 lg:py-6 xl:px-10 2xl:px-12">
+          <div className="flex w-full min-w-0 flex-col gap-6">
             <header className="panel-card-strong sticky top-4 z-20 px-4 py-3 sm:px-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
