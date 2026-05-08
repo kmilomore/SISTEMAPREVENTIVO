@@ -57,3 +57,19 @@ export async function updateActaEstado(
   if (error) return { error: error.message }
   return { error: null }
 }
+
+export async function updateActaAsistencia(
+  id: string,
+  asistencia_path: string,
+  asistencia_url: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: 'Supabase no inicializado.' }
+
+  const { error } = await supabase
+    .from(TABLE)
+    .update({ asistencia_path, asistencia_url })
+    .eq('id', id)
+
+  if (error) return { error: error.message }
+  return { error: null }
+}

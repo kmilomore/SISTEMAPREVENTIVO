@@ -29,3 +29,25 @@ export async function uploadActaPdf(
 
   return { path: filePath, url: publicUrl, error: null }
 }
+
+export async function uploadAsistenciaFile(
+  id: string,
+  file: File,
+): Promise<{ path: string | null; url: string | null; error: string | null }> {
+  if (!supabase) return { path: null, url: null, error: 'Supabase no inicializado.' }
+
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf'
+  const filePath = `asistencias/${year}/${month}/${id}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(filePath, file, { contentType: file.type, upsert: true })
+
+  if (uploadError) return { path: null, url: null, error: uploadError.message }
+
+  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(filePath)
+  return { path: filePath, url: urlData?.publicUrl ?? null, error: null }
+}

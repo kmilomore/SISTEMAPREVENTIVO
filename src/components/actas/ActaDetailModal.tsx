@@ -1,8 +1,8 @@
 import type { ActaVisitaRow } from '../../types/actas'
 import { descargarActaPdf, generarActaPdf } from '../../lib/pdfActaService'
-import { uploadActaPdf } from '../../lib/storageActasService'
-import { updateActaPdf } from '../../lib/actasService'
-import { useState } from 'react'
+import { uploadActaPdf, uploadAsistenciaFile } from '../../lib/storageActasService'
+import { updateActaPdf, updateActaAsistencia } from '../../lib/actasService'
+import { useState, useRef } from 'react'
 
 interface ActaDetailModalProps {
   acta: ActaVisitaRow
@@ -51,6 +51,9 @@ function estadoChip(estado: string) {
 export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalProps) {
   const [pdfLoading, setPdfLoading] = useState(false)
   const [pdfError, setPdfError] = useState<string | null>(null)
+  const [asistenciaLoading, setAsistenciaLoading] = useState(false)
+  const [asistenciaError, setAsistenciaError] = useState<string | null>(null)
+  const asistenciaInputRef = useRef<HTMLInputElement>(null)
 
   async function handleGenerarPdf() {
     setPdfLoading(true)
@@ -75,6 +78,20 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
     } finally {
       setPdfLoading(false)
     }
+  }
+
+  async function handleUploadAsistencia(file: File) {
+    setAsistenciaLoading(true)
+    setAsistenciaError(null)
+    const { path, url, error } = await uploadAsistenciaFile(acta.id, file)
+    if (error || !path || !url) {
+      setAsistenciaError(error ?? 'No se pudo subir el archivo.')
+      setAsistenciaLoading(false)
+      return
+    }
+    await updateActaAsistencia(acta.id, path, url)
+    onUpdated({ ...acta, asistencia_path: path, asistencia_url: url })
+    setAsistenciaLoading(false)
   }
 
   const fechaFmt = acta.fecha_visita
@@ -194,7 +211,81 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
             </div>
           </section>
 
-          {/* 5. Acuerdos */}
+          {/* 5. Lista de asistencia */}
+          <section className="flex flex-col gap-3">
+            <SectionTitle title="Lista de asistencia" />
+            {acta.asistencia_url ? (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-slate-700">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  Archivo subido
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={acta.asistencia_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary gap-1.5 text-xs"
+                  >
+                    Ver archivo
+                  </a>
+                  <label className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-200 transition">
+                    Reemplazar
+                    <input
+                      ref={asistenciaInputRef}
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0]
+                        if (f) void handleUploadAsistencia(f)
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500 transition hover:border-[#0057B8] hover:bg-blue-50/40 hover:text-[#0057B8]">
+                  {asistenciaLoading ? (
+                    <>
+                      <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" opacity=".3" />
+                        <path d="M21 12a9 9 0 0 0-9-9" />
+                      </svg>
+                      Subiendo…
+                    </>
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      Subir lista de asistencia (PDF, imagen)
+                    </>
+                  )}
+                  <input
+                    ref={asistenciaInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    className="sr-only"
+                    disabled={asistenciaLoading}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0]
+                      if (f) void handleUploadAsistencia(f)
+                    }}
+                  />
+                </label>
+                {asistenciaError && <p className="mt-1 text-xs text-red-600">{asistenciaError}</p>}
+              </div>
+            )}
+          </section>
+
+          {/* 6. Acuerdos */}
           <section className="flex flex-col gap-3">
             <SectionTitle title={`Acuerdos / Compromisos (${acta.acuerdos.length})`} />
             {acta.acuerdos.length === 0 ? (

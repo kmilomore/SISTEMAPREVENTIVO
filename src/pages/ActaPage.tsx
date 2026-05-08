@@ -3,9 +3,9 @@ import type { TipoActa, ActaVisita, ActaVisitaRow } from '../types/actas'
 import { ActaTipoSelector } from '../components/actas/ActaTipoSelector'
 import { ActaForm } from '../components/actas/ActaForm'
 import { ActaDetailModal } from '../components/actas/ActaDetailModal'
-import { fetchActas, insertActa, updateActaPdf, updateActaEstado } from '../lib/actasService'
+import { fetchActas, insertActa, updateActaPdf, updateActaEstado, updateActaAsistencia } from '../lib/actasService'
 import { generarActaPdf } from '../lib/pdfActaService'
-import { uploadActaPdf } from '../lib/storageActasService'
+import { uploadActaPdf, uploadAsistenciaFile } from '../lib/storageActasService'
 
 // ─── Iconos ───────────────────────────────────────────────────────────────────
 
@@ -158,7 +158,8 @@ export function ActaPage() {
   }
 
   async function handleFormSubmit(
-    data: Omit<ActaVisita, 'id' | 'created_at' | 'updated_at' | 'pdf_path' | 'pdf_url'>,
+    data: Omit<ActaVisita, 'id' | 'created_at' | 'updated_at' | 'pdf_path' | 'pdf_url' | 'asistencia_path' | 'asistencia_url'>,
+    asistenciaFile: File | null,
   ) {
     setSubmitting(true)
     setSubmitMsg(null)
@@ -184,6 +185,13 @@ export function ActaPage() {
       }
     } catch (e) {
       pdfErrorMsg = e instanceof Error ? e.message : 'Error generando PDF.'
+    }
+
+    if (asistenciaFile) {
+      const { path, url, error: asistErr } = await uploadAsistenciaFile(id, asistenciaFile)
+      if (!asistErr && path && url) {
+        await updateActaAsistencia(id, path, url)
+      }
     }
 
     if (!pdfOk) {

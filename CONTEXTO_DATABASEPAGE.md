@@ -123,7 +123,9 @@ Montaje del componente
    SÍ
         │
         ▼
-supabase.from("BASE DE DATOS ESCUELAS SLEP").select("*")
+Carga paralela de:
+  - supabase.from("BASE DE DATOS ESCUELAS SLEP").select("*")
+  - fetchActas() desde public.actas_visita
         │
    error API → estado: error (muestra errorMessage)
    sin datos → estado: empty
@@ -141,6 +143,15 @@ SchoolDetailModal (overlay)
   tecla ESC → cierra
   clic fondo → cierra
   muestra 4 pills: N° · Tipo · Comuna · Zona
+        muestra bloque "Trazabilidad de actas":
+                - Visitas registradas
+                - Compromisos asociados
+                - Última visita
+                - Pendientes
+                - En proceso
+                - Cumplidos
+                - Listado de actas relacionadas
+                - Botón "Abrir acta"
   secciones desplegadas (solo campos con valor):
     - Identificacion
     - Ubicacion
@@ -177,9 +188,76 @@ La búsqueda es client-side sobre los datos ya cargados en memoria (`useMemo`).
 
 ---
 
-## 8. Funcionalidades pendientes (próximos pasos)
+## 8. Trazabilidad de actas por establecimiento
 
-### 8.1 Vista de mapa
+La ficha del establecimiento ahora consume también datos de `public.actas_visita` y resuelve relaciones en cliente entre la escuela seleccionada y sus actas registradas.
+
+### 8.1 Tabla relacionada
+
+| Tabla | Uso en DatabasePage |
+|---|---|
+| `public.actas_visita` | Obtener visitas registradas, compromisos y acceso directo al detalle de acta |
+
+### 8.2 Claves usadas para vincular escuela ↔ acta
+
+La relación no depende de un solo campo. Se compara contra tres identificadores disponibles en el acta:
+
+- `establecimiento_id`
+- `establecimiento_rbd`
+- `establecimiento_nombre`
+
+Y se contrastan con los campos de la escuela:
+
+- `N°`
+- `RBD`
+- `NOMBRE ESTABLECIMIENTO`
+
+### 8.3 Regla de matching actual
+
+Para evitar falsos negativos por diferencias de formato, el matching aplica normalización antes de comparar:
+
+- pasa a minúsculas
+- elimina tildes con `normalize('NFD')`
+- recorta espacios laterales
+- genera una versión compacta sin espacios ni signos para comparar variantes como `2463-5` vs `24635`
+
+Esto corrige el caso donde una acta existe en `actas_visita`, pero no aparecía en el modal de la escuela por diferencias de escritura entre `RBD`, nombre o identificador.
+
+### 8.4 Resumen mostrado en el modal
+
+Dentro del bloque "Trazabilidad de actas" el modal muestra:
+
+- cantidad de visitas registradas
+- cantidad total de compromisos asociados
+- fecha de última visita
+- compromisos `Pendientes`
+- compromisos `En proceso`
+- compromisos `Cumplidos`
+
+### 8.5 Listado de actas relacionadas
+
+Cada acta relacionada se renderiza con:
+
+- `folio`
+- tipo de acta
+- fecha de visita
+- horario
+- número de participantes
+- número de compromisos
+- botón `Abrir acta`
+
+El botón navega a `#/acta?actaId=<uuid>` para abrir el detalle correspondiente en el Gestor de actas.
+
+### 8.6 Comportamiento ante error o ausencia de actas
+
+- si falla la carga de `actas_visita`, se muestra un banner de advertencia en el bloque de trazabilidad
+- si la escuela no tiene actas relacionadas, se muestra el mensaje: `Este establecimiento aun no tiene actas registradas.`
+
+---
+
+## 9. Funcionalidades pendientes (próximos pasos)
+
+### 9.1 Vista de mapa
 
 Los datos ya tienen coordenadas `LATITUD` y `LONGITUD`. Se puede construir un mapa con `react-leaflet` o `maplibre-gl`.
 
@@ -199,11 +277,11 @@ Los datos ya tienen coordenadas `LATITUD` y `LONGITUD`. Se puede construir un ma
 
 **Columnas requeridas:** `LATITUD`, `LONGITUD`, `NOMBRE ESTABLECIMIENTO`, `TIPO`, `COMUNA`.
 
-### 8.2 Filtros por columna
+### 9.2 Filtros por columna
 
 Filtros adicionales sobre `TIPO`, `RURAL/URBANO`, `COMUNA` y `ASESOR UATP` para segmentar la vista operativamente.
 
-### 8.3 Vista de hallazgos por establecimiento
+### 9.3 Vista de hallazgos por establecimiento
 
 Desde la ficha de un establecimiento, navegar a sus observaciones/hallazgos de riesgo registrados.
 
@@ -220,7 +298,7 @@ Establecimiento (RBD)
                     └── Planes de acción (JOIN por hallazgo_id)
 ```
 
-### 8.4 Rutas de visita
+### 9.4 Rutas de visita
 
 Con los datos de `LATITUD`/`LONGITUD` y una tabla `visitas`, se puede construir una vista de rutas:
 - Agrupar establecimientos por `ASESOR UATP` (ya disponible en la tabla).
@@ -234,18 +312,18 @@ Con los datos de `LATITUD`/`LONGITUD` y una tabla `visitas`, se puede construir 
 - Javiera Vega
 - Patricia Leiva
 
-### 8.5 Exportación
+### 9.5 Exportación
 
 - Exportar la tabla filtrada a CSV o Excel.
 - Generar ficha PDF de un establecimiento desde el modal.
 
-### 8.6 Edición en línea
+### 9.6 Edición en línea
 
 Permitir editar campos operativos (`DIRECTOR/A`, `CORREO ELECTRÓNICO`, `TELEFONO CELULAR`, `OBSERVACIONES`) directamente desde el modal con un botón "Editar" → `supabase.from(...).update(...)`.
 
 ---
 
-## 9. Asesores UATP (campo operativo clave)
+## 10. Asesores UATP (campo operativo clave)
 
 El campo `ASESOR UATP` define quién de la Unidad de Apoyo Técnico Pedagógico es responsable de cada establecimiento. Es la base natural para segmentar visitas, hallazgos y rutas.
 

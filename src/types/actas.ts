@@ -34,6 +34,8 @@ export interface ActaVisita {
   acuerdos: AcuerdoActa[]
   pdf_path?: string
   pdf_url?: string
+  asistencia_path?: string
+  asistencia_url?: string
   estado?: EstadoActa
   created_by?: string
   created_by_nombre?: string

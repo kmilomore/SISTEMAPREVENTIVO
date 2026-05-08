@@ -27,7 +27,10 @@ interface FormErrors {
 
 interface ActaFormProps {
   tipo: TipoActa
-  onSubmit: (data: Omit<ActaVisita, 'id' | 'created_at' | 'updated_at' | 'pdf_path' | 'pdf_url'>) => Promise<void>
+  onSubmit: (
+    data: Omit<ActaVisita, 'id' | 'created_at' | 'updated_at' | 'pdf_path' | 'pdf_url' | 'asistencia_path' | 'asistencia_url'>,
+    asistenciaFile: File | null,
+  ) => Promise<void>
   onCancel: () => void
   submitting?: boolean
   submitLabel?: string
@@ -81,6 +84,7 @@ export function ActaForm({
     created_by_nombre: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
+  const [asistenciaFile, setAsistenciaFile] = useState<File | null>(null)
 
   function validate(): boolean {
     const e: FormErrors = {}
@@ -115,7 +119,7 @@ export function ActaForm({
       created_by_nombre: form.created_by_nombre || undefined,
     }
 
-    await onSubmit(data)
+    await onSubmit(data, asistenciaFile)
   }
 
   return (
@@ -253,6 +257,40 @@ export function ActaForm({
           value={form.acuerdos}
           onChange={(a) => setForm((f) => ({ ...f, acuerdos: a }))}
         />
+      </section>
+
+      {/* ── 5. Lista de asistencia ───────────────────────────────────────── */}
+      <section className="panel-card-strong flex flex-col gap-5 p-5">
+        <SectionTitle n="5" title="Lista de asistencia (opcional)" />
+        <div>
+          <label className={labelClass}>Archivo (PDF, imagen)</label>
+          <div className="mt-1 flex items-center gap-3">
+            <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500 transition hover:border-[#0057B8] hover:bg-blue-50/40 hover:text-[#0057B8]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              {asistenciaFile ? asistenciaFile.name : 'Seleccionar archivo'}
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                className="sr-only"
+                onChange={(e) => setAsistenciaFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            {asistenciaFile && (
+              <button
+                type="button"
+                className="text-xs text-slate-400 underline hover:text-red-600"
+                onClick={() => setAsistenciaFile(null)}
+              >
+                Quitar
+              </button>
+            )}
+          </div>
+          <p className="mt-1.5 text-xs text-slate-400">Se subirá junto con el acta. Formatos aceptados: PDF, JPG, PNG.</p>
+        </div>
       </section>
 
       {/* ── Acciones ─────────────────────────────────────────────────────── */}
