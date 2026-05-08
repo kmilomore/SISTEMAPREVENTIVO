@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { ActaPage } from '../pages/ActaPage'
 import { DatabasePage } from '../pages/DatabasePage'
+import { MetricasPage } from '../pages/MetricasPage'
 import { appRoutes } from './routes'
 import { useHashRoute } from './useHashRoute'
 
@@ -10,11 +11,13 @@ const brandLogo = '/SLEPCOLCHAGUA.webp'
 const pageTitle = {
   database: 'Base de datos operacional',
   acta: 'Gestor de actas',
+  metricas: 'Métricas e indicadores',
 } as const
 
 const pageTag = {
   database: 'Directorio',
-  acta: 'Gestion documental',
+  acta: 'Gestión documental',
+  metricas: 'Control de gestión',
 } as const
 
 export function AppShell() {
@@ -90,7 +93,7 @@ export function AppShell() {
                           isActive ? 'bg-[#e8f0ff] text-[#0033A0]' : 'bg-white/10 text-blue-100'
                         }`}
                       >
-                        {appRoute.id === 'database' ? <DatabaseIcon /> : <MinutesIcon />}
+                        {appRoute.id === 'database' ? <DatabaseIcon /> : appRoute.id === 'acta' ? <MinutesIcon /> : <MetricsIcon />}
                       </span>
                       <span className={`text-sm font-medium ${isActive ? 'text-[#0033A0]' : 'text-white'}`}>
                         {appRoute.label}
@@ -147,7 +150,7 @@ export function AppShell() {
               </div>
             </header>
 
-            {route === 'database' ? <DatabasePage /> : <ActaPage />}
+            {route === 'database' ? <DatabasePage /> : route === 'acta' ? <ActaPage /> : <MetricasPage />}
           </div>
         </main>
       </div>
@@ -186,6 +189,15 @@ function MinutesIcon() {
     <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
       <path d="M8 4h8l4 4v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.8" />
       <path d="M8 12h8M8 16h6M14 4v4h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MetricsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+      <path d="M3 3v18h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 16l4-5 4 3 4-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

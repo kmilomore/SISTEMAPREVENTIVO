@@ -1,0 +1,178 @@
+{
+  "C:\\proyectos\\PREVENCION\\eslint.config.js": {
+    "mtime": 1777048648.0441065,
+    "hash": "0355276bc79439afe3c53e3a2470ca1e"
+  },
+  "C:\\proyectos\\PREVENCION\\postcss.config.js": {
+    "mtime": 1777049397.4227602,
+    "hash": "5b84f4567208c7c747079c0477373231"
+  },
+  "C:\\proyectos\\PREVENCION\\tailwind.config.js": {
+    "mtime": 1777049397.4366307,
+    "hash": "e90508727a560a74de3053c0facb3087"
+  },
+  "C:\\proyectos\\PREVENCION\\vite.config.ts": {
+    "mtime": 1777048648.945477,
+    "hash": "88439104b3c207f17d33ef3160e3b080"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\BASE DE DATOS ESCUELAS SLEP_rows.sql": {
+    "mtime": 1777048681.8291075,
+    "hash": "64f3baeb738e23fc27640df8fd90bfda"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\App.tsx": {
+    "mtime": 1777049832.428121,
+    "hash": "92e721129c904f76d771533864fb9d11"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\env.d.ts": {
+    "mtime": 1777049397.4227602,
+    "hash": "d6bb9ed2005979cac7661b66f8499e23"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\main.tsx": {
+    "mtime": 1777056896.1658156,
+    "hash": "fdb09a52b4aa6e7fa4c14b085e17078c"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\app\\AppShell.tsx": {
+    "mtime": 1778248222.5917435,
+    "hash": "596841f5210448a4c667bfc3cddf511a"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\app\\routes.ts": {
+    "mtime": 1777057279.4907525,
+    "hash": "bc9874e50b93624ef6b06ebae26c84f8"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\app\\useHashRoute.ts": {
+    "mtime": 1777480310.4239075,
+    "hash": "a88c2f194805a68569104f6c155dcc16"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaDetailModal.tsx": {
+    "mtime": 1778243917.03092,
+    "hash": "b10e30b7d2630a239a8d28374490c71d"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaForm.tsx": {
+    "mtime": 1778243878.030555,
+    "hash": "4c8699cf401bb31a57f50d7ccc90b7c7"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaTipoSelector.tsx": {
+    "mtime": 1777058395.3087196,
+    "hash": "121cf060862aaaab5f94dfd4dfd4aaef"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\AcuerdosFieldArray.tsx": {
+    "mtime": 1777058459.6743138,
+    "hash": "7160c4e3cd6aa5bfb1827fef353b1dc7"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\AutoResizeTextarea.tsx": {
+    "mtime": 1777058372.7918632,
+    "hash": "4489c7c1268ef8a814f708d9e58aab2d"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\EstablecimientoSelect.tsx": {
+    "mtime": 1777480310.4393232,
+    "hash": "4e2f9491f77e714b7e2d76fc91fc22ae"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ParticipantesFieldArray.tsx": {
+    "mtime": 1777058437.9424045,
+    "hash": "79c62dd259fb65bdc22697ad2b799a56"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\data\\mockData.ts": {
+    "mtime": 1777049397.4227602,
+    "hash": "2151d57f1a24b69c1c023354fd8ee089"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\lib\\actasService.ts": {
+    "mtime": 1778243829.205,
+    "hash": "6b74133f53d77c3c1dc7447ec7a30150"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\lib\\pdfActaService.ts": {
+    "mtime": 1777059448.0234463,
+    "hash": "93505c82f6ca4d5cf1468ad9ec977584"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\lib\\storageActasService.ts": {
+    "mtime": 1778243818.602664,
+    "hash": "1cf51b09f578a586a6e282b193072d6f"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\lib\\supabase.ts": {
+    "mtime": 1777049397.4227602,
+    "hash": "170b1c6afb70786d3c3fd58311c92b7b"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\pages\\ActaPage.tsx": {
+    "mtime": 1778243955.0566516,
+    "hash": "e388e6af96beb01d60e7a061e7a16558"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\pages\\DatabasePage.tsx": {
+    "mtime": 1777481983.108804,
+    "hash": "ebc3f78299040d7c29506e806d8236f6"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\types\\actas.ts": {
+    "mtime": 1778243806.9101944,
+    "hash": "ec365fa17f210b5deb5c0ed2e4ff59a1"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\types\\crm.ts": {
+    "mtime": 1777049397.4227602,
+    "hash": "b4697b2e4a57f3e12ebefe597c04c97e"
+  },
+  "C:\\proyectos\\PREVENCION\\supabase\\actas_visita_migration.sql": {
+    "mtime": 1777058966.82592,
+    "hash": "900ef8e6425d372237c2220a91b635d2"
+  },
+  "C:\\proyectos\\PREVENCION\\supabase\\base_datos_escuelas_slep_schema.sql": {
+    "mtime": 1777049832.430136,
+    "hash": "360692ce7486cccbfe4642d382df8ae3"
+  },
+  "C:\\proyectos\\PREVENCION\\supabase\\schema.sql": {
+    "mtime": 1777049397.4306245,
+    "hash": "144535cd655bbbfe137e69186933a607"
+  },
+  "C:\\proyectos\\PREVENCION\\supabase\\seed_base_datos_escuelas_slep.sql": {
+    "mtime": 1777050686.628642,
+    "hash": "b2490df9533dab87fd44038e69af5b5a"
+  },
+  "C:\\proyectos\\PREVENCION\\CONTEXTO_ACTAPAGE.md": {
+    "mtime": 1778244007.5928,
+    "hash": "e60cc71d1007be5a31289465dba5b7bb"
+  },
+  "C:\\proyectos\\PREVENCION\\CONTEXTO_DATABASEPAGE.md": {
+    "mtime": 1777482132.749945,
+    "hash": "0f939edaf4d7a4c7d4760c4de11df56d"
+  },
+  "C:\\proyectos\\PREVENCION\\CONTEXTO_GENERAL_PORTAL.md": {
+    "mtime": 1777051818.6871235,
+    "hash": "3f2ea6743f4d888203d2fa38ba80b02d"
+  },
+  "C:\\proyectos\\PREVENCION\\index.html": {
+    "mtime": 1777057120.473595,
+    "hash": "73a2c65b95ab7650abbd57ce2c3d7a67"
+  },
+  "C:\\proyectos\\PREVENCION\\README.md": {
+    "mtime": 1777479088.5459244,
+    "hash": "a2fd0b85d67f9272a985c27e9b35f299"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\favicon.svg": {
+    "mtime": 1777048648.7057,
+    "hash": "7e840862161341271697daa99a40d76b"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\icons.svg": {
+    "mtime": 1777048648.837862,
+    "hash": "3b4fcfcf393eca4d264dca4a4663bc37"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\image1.webp": {
+    "mtime": 1773161996.0,
+    "hash": "9b6ad7dc91bfd2c781ccf7737b45801b"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\SLEPCOLCHAGUA.webp": {
+    "mtime": 1773919954.0,
+    "hash": "04361c7181a14daab0f4da5038ef34a8"
+  },
+  "C:\\proyectos\\PREVENCION\\public\\SLEPCOLCHAGUALETRAS.webp": {
+    "mtime": 1773919954.0,
+    "hash": "5f92c732fed29bdc1a6a1b665126aa3b"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\assets\\hero.png": {
+    "mtime": 1777048648.3365743,
+    "hash": "aead493361b27e7510691c5d7072dfc1"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\assets\\react.svg": {
+    "mtime": 1777048648.866333,
+    "hash": "f0402b67b6ce880f65666bb49e841696"
+  },
+  "C:\\proyectos\\PREVENCION\\src\\assets\\vite.svg": {
+    "mtime": 1777048648.9070983,
+    "hash": "9960a24288958394ac50e57ff638b036"
+  }
+}

@@ -1,0 +1,4703 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "acta_form_group",
+        "label": "Acta Form Components",
+        "nodes": [
+          "acta_form",
+          "acuerdos_field_array",
+          "participantes_field_array",
+          "auto_resize_textarea",
+          "establecimiento_select"
+        ],
+        "description": "Component group for creating and editing acta (visit records)"
+      },
+      {
+        "id": "acta_page_group",
+        "label": "Acta Page Module",
+        "nodes": [
+          "acta_page",
+          "acta_tipo_selector",
+          "acta_form",
+          "acta_detail_modal"
+        ],
+        "description": "Complete module for acta management page"
+      },
+      {
+        "id": "services_group",
+        "label": "Backend Services",
+        "nodes": [
+          "actas_service",
+          "pdf_acta_service",
+          "storage_actas_service",
+          "supabase_client"
+        ],
+        "description": "Services for database, PDF generation, and file storage"
+      },
+      {
+        "id": "config_group",
+        "label": "Build & Development Configuration",
+        "nodes": [
+          "vite_config",
+          "tailwind_config",
+          "postcss_config",
+          "eslint_config"
+        ],
+        "description": "Build tools and development environment configuration"
+      },
+      {
+        "id": "crm_data_layer",
+        "label": "CRM Data Layer",
+        "nodes": [
+          "supabaseClient",
+          "actas_visita_table",
+          "base_datos_escuelas_slep_table",
+          "establishments_table",
+          "visits_table",
+          "observations_table",
+          "meeting_minutes_table",
+          "action_plans_table"
+        ],
+        "description": "Backend persistence tier managing all CRM entities through Supabase"
+      },
+      {
+        "id": "type_system",
+        "label": "TypeScript Type System",
+        "nodes": [
+          "ActaVisita",
+          "ParticipanteActa",
+          "AcuerdoActa",
+          "EscuelaSLEP",
+          "Establishment",
+          "Visit",
+          "Observation",
+          "MeetingMinute",
+          "ActionPlan"
+        ],
+        "description": "Type definitions maintaining type safety across data models"
+      },
+      {
+        "id": "service_layer",
+        "label": "Service Layer",
+        "nodes": [
+          "actasService",
+          "storageActasService",
+          "pdfActaService",
+          "supabaseClient"
+        ],
+        "description": "Business logic and external service integration layer"
+      },
+      {
+        "id": "ui_layer",
+        "label": "UI Layer",
+        "nodes": [
+          "AppShell",
+          "ActaPage",
+          "DatabasePage"
+        ],
+        "description": "React components rendering user interface pages"
+      },
+      {
+        "id": "documentation",
+        "label": "Project Documentation",
+        "nodes": [
+          "README",
+          "CONTEXTO_GENERAL_PORTAL",
+          "CONTEXTO_ACTAPAGE",
+          "CONTEXTO_DATABASEPAGE"
+        ],
+        "description": "Contextual documentation describing project structure and functionality"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "eslint.config.js",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "id": "eslint_config_js"
+    },
+    {
+      "label": "postcss.config.js",
+      "file_type": "code",
+      "source_file": "postcss.config.js",
+      "source_location": "L1",
+      "id": "postcss_config_js"
+    },
+    {
+      "label": "tailwind.config.js",
+      "file_type": "code",
+      "source_file": "tailwind.config.js",
+      "source_location": "L1",
+      "id": "tailwind_config_js"
+    },
+    {
+      "label": "vite.config.ts",
+      "file_type": "code",
+      "source_file": "vite.config.ts",
+      "source_location": "L1",
+      "id": "vite_config_ts"
+    },
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L1",
+      "id": "src_app_tsx"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "src/App.tsx",
+      "source_location": "L3",
+      "id": "src_app_app"
+    },
+    {
+      "label": "env.d.ts",
+      "file_type": "code",
+      "source_file": "src/env.d.ts",
+      "source_location": "L1",
+      "id": "src_env_d_ts"
+    },
+    {
+      "label": "ImportMetaEnv",
+      "file_type": "code",
+      "source_file": "src/env.d.ts",
+      "source_location": "L1",
+      "id": "src_env_d_importmetaenv"
+    },
+    {
+      "label": "ImportMeta",
+      "file_type": "code",
+      "source_file": "src/env.d.ts",
+      "source_location": "L6",
+      "id": "src_env_d_importmeta"
+    },
+    {
+      "label": "main.tsx",
+      "file_type": "code",
+      "source_file": "src/main.tsx",
+      "source_location": "L1",
+      "id": "src_main_tsx"
+    },
+    {
+      "label": "AppShell.tsx",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L1",
+      "id": "src_app_appshell_tsx"
+    },
+    {
+      "label": "pageTitle",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L10",
+      "id": "app_appshell_pagetitle"
+    },
+    {
+      "label": "pageTag",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L15",
+      "id": "app_appshell_pagetag"
+    },
+    {
+      "label": "AppShell()",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L20",
+      "id": "app_appshell_appshell"
+    },
+    {
+      "label": "MenuIcon()",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L158",
+      "id": "app_appshell_menuicon"
+    },
+    {
+      "label": "CloseIcon()",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L166",
+      "id": "app_appshell_closeicon"
+    },
+    {
+      "label": "DatabaseIcon()",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L174",
+      "id": "app_appshell_databaseicon"
+    },
+    {
+      "label": "MinutesIcon()",
+      "file_type": "code",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L184",
+      "id": "app_appshell_minutesicon"
+    },
+    {
+      "label": "routes.ts",
+      "file_type": "code",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L1",
+      "id": "src_app_routes_ts"
+    },
+    {
+      "label": "AppRouteId",
+      "file_type": "code",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L1",
+      "id": "app_routes_approuteid"
+    },
+    {
+      "label": "AppRoute",
+      "file_type": "code",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L3",
+      "id": "app_routes_approute"
+    },
+    {
+      "label": "appRoutes",
+      "file_type": "code",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L9",
+      "id": "app_routes_approutes"
+    },
+    {
+      "label": "useHashRoute.ts",
+      "file_type": "code",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L1",
+      "id": "src_app_usehashroute_ts"
+    },
+    {
+      "label": "normalizeRoute()",
+      "file_type": "code",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L5",
+      "id": "app_usehashroute_normalizeroute"
+    },
+    {
+      "label": "useHashRoute()",
+      "file_type": "code",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L11",
+      "id": "app_usehashroute_usehashroute"
+    },
+    {
+      "label": "ActaDetailModal.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_actadetailmodal_tsx"
+    },
+    {
+      "label": "ActaDetailModalProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L7",
+      "id": "actas_actadetailmodal_actadetailmodalprops"
+    },
+    {
+      "label": "TIPO_LABELS",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L13",
+      "id": "actas_actadetailmodal_tipo_labels"
+    },
+    {
+      "label": "Field()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L23",
+      "id": "actas_actadetailmodal_field"
+    },
+    {
+      "label": "SectionTitle()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L32",
+      "id": "actas_actadetailmodal_sectiontitle"
+    },
+    {
+      "label": "estadoChip()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L42",
+      "id": "actas_actadetailmodal_estadochip"
+    },
+    {
+      "label": "ActaDetailModal()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L51",
+      "id": "actas_actadetailmodal_actadetailmodal"
+    },
+    {
+      "label": "ActaForm.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_actaform_tsx"
+    },
+    {
+      "label": "FormState",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L8",
+      "id": "actas_actaform_formstate"
+    },
+    {
+      "label": "FormErrors",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L20",
+      "id": "actas_actaform_formerrors"
+    },
+    {
+      "label": "ActaFormProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L28",
+      "id": "actas_actaform_actaformprops"
+    },
+    {
+      "label": "todayIso()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L39",
+      "id": "actas_actaform_todayiso"
+    },
+    {
+      "label": "TIPO_LABELS",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L44",
+      "id": "actas_actaform_tipo_labels"
+    },
+    {
+      "label": "SectionTitle()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L57",
+      "id": "actas_actaform_sectiontitle"
+    },
+    {
+      "label": "ActaForm()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L68",
+      "id": "actas_actaform_actaform"
+    },
+    {
+      "label": "ActaTipoSelector.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_actatiposelector_tsx"
+    },
+    {
+      "label": "TipoOption",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L3",
+      "id": "actas_actatiposelector_tipooption"
+    },
+    {
+      "label": "CheckSquareIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L11",
+      "id": "actas_actatiposelector_checksquareicon"
+    },
+    {
+      "label": "EyeIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L17",
+      "id": "actas_actatiposelector_eyeicon"
+    },
+    {
+      "label": "UsersIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L23",
+      "id": "actas_actatiposelector_usersicon"
+    },
+    {
+      "label": "ClipboardIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L31",
+      "id": "actas_actatiposelector_clipboardicon"
+    },
+    {
+      "label": "TIPOS",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L38",
+      "id": "actas_actatiposelector_tipos"
+    },
+    {
+      "label": "ActaTipoSelectorProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L69",
+      "id": "actas_actatiposelector_actatiposelectorprops"
+    },
+    {
+      "label": "ActaTipoSelector()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L74",
+      "id": "actas_actatiposelector_actatiposelector"
+    },
+    {
+      "label": "AcuerdosFieldArray.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_acuerdosfieldarray_tsx"
+    },
+    {
+      "label": "AcuerdosFieldArrayProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L3",
+      "id": "actas_acuerdosfieldarray_acuerdosfieldarrayprops"
+    },
+    {
+      "label": "PlusIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L8",
+      "id": "actas_acuerdosfieldarray_plusicon"
+    },
+    {
+      "label": "TrashIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L15",
+      "id": "actas_acuerdosfieldarray_trashicon"
+    },
+    {
+      "label": "ESTADOS",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L25",
+      "id": "actas_acuerdosfieldarray_estados"
+    },
+    {
+      "label": "emptyAcuerdo()",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L27",
+      "id": "actas_acuerdosfieldarray_emptyacuerdo"
+    },
+    {
+      "label": "AcuerdosFieldArray()",
+      "file_type": "code",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L31",
+      "id": "actas_acuerdosfieldarray_acuerdosfieldarray"
+    },
+    {
+      "label": "AutoResizeTextarea.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/AutoResizeTextarea.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_autoresizetextarea_tsx"
+    },
+    {
+      "label": "AutoResizeTextareaProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/AutoResizeTextarea.tsx",
+      "source_location": "L3",
+      "id": "actas_autoresizetextarea_autoresizetextareaprops"
+    },
+    {
+      "label": "AutoResizeTextarea()",
+      "file_type": "code",
+      "source_file": "src/components/actas/AutoResizeTextarea.tsx",
+      "source_location": "L8",
+      "id": "actas_autoresizetextarea_autoresizetextarea"
+    },
+    {
+      "label": "EstablecimientoSelect.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_establecimientoselect_tsx"
+    },
+    {
+      "label": "EstablecimientoSelectProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L5",
+      "id": "actas_establecimientoselect_establecimientoselectprops"
+    },
+    {
+      "label": "EstablecimientoSelect()",
+      "file_type": "code",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L11",
+      "id": "actas_establecimientoselect_establecimientoselect"
+    },
+    {
+      "label": "ParticipantesFieldArray.tsx",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L1",
+      "id": "src_components_actas_participantesfieldarray_tsx"
+    },
+    {
+      "label": "ParticipantesFieldArrayProps",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L3",
+      "id": "actas_participantesfieldarray_participantesfieldarrayprops"
+    },
+    {
+      "label": "PlusIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L8",
+      "id": "actas_participantesfieldarray_plusicon"
+    },
+    {
+      "label": "TrashIcon()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L15",
+      "id": "actas_participantesfieldarray_trashicon"
+    },
+    {
+      "label": "emptyParticipante()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L25",
+      "id": "actas_participantesfieldarray_emptyparticipante"
+    },
+    {
+      "label": "ParticipantesFieldArray()",
+      "file_type": "code",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L29",
+      "id": "actas_participantesfieldarray_participantesfieldarray"
+    },
+    {
+      "label": "mockData.ts",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "id": "src_data_mockdata_ts"
+    },
+    {
+      "label": "establishments",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L11",
+      "id": "data_mockdata_establishments"
+    },
+    {
+      "label": "visits",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L44",
+      "id": "data_mockdata_visits"
+    },
+    {
+      "label": "observations",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L74",
+      "id": "data_mockdata_observations"
+    },
+    {
+      "label": "meetingMinutes",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L107",
+      "id": "data_mockdata_meetingminutes"
+    },
+    {
+      "label": "actionPlans",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L137",
+      "id": "data_mockdata_actionplans"
+    },
+    {
+      "label": "indicators",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L164",
+      "id": "data_mockdata_indicators"
+    },
+    {
+      "label": "modules",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L191",
+      "id": "data_mockdata_modules"
+    },
+    {
+      "label": "crmData",
+      "file_type": "code",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L214",
+      "id": "data_mockdata_crmdata"
+    },
+    {
+      "label": "actasService.ts",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L1",
+      "id": "src_lib_actasservice_ts"
+    },
+    {
+      "label": "fetchActas()",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L6",
+      "id": "lib_actasservice_fetchactas"
+    },
+    {
+      "label": "insertActa()",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L19",
+      "id": "lib_actasservice_insertacta"
+    },
+    {
+      "label": "updateActaPdf()",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L34",
+      "id": "lib_actasservice_updateactapdf"
+    },
+    {
+      "label": "updateActaEstado()",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L50",
+      "id": "lib_actasservice_updateactaestado"
+    },
+    {
+      "label": "updateActaAsistencia()",
+      "file_type": "code",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L61",
+      "id": "lib_actasservice_updateactaasistencia"
+    },
+    {
+      "label": "pdfActaService.ts",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L1",
+      "id": "src_lib_pdfactaservice_ts"
+    },
+    {
+      "label": "loadImageAsBase64()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L10",
+      "id": "lib_pdfactaservice_loadimageasbase64"
+    },
+    {
+      "label": "addSectionTitle()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L28",
+      "id": "lib_pdfactaservice_addsectiontitle"
+    },
+    {
+      "label": "addField()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L40",
+      "id": "lib_pdfactaservice_addfield"
+    },
+    {
+      "label": "checkPageBreak()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L53",
+      "id": "lib_pdfactaservice_checkpagebreak"
+    },
+    {
+      "label": "generarActaPdf()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L61",
+      "id": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "label": "descargarActaPdf()",
+      "file_type": "code",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L282",
+      "id": "lib_pdfactaservice_descargaractapdf"
+    },
+    {
+      "label": "storageActasService.ts",
+      "file_type": "code",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L1",
+      "id": "src_lib_storageactasservice_ts"
+    },
+    {
+      "label": "uploadActaPdf()",
+      "file_type": "code",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L5",
+      "id": "lib_storageactasservice_uploadactapdf"
+    },
+    {
+      "label": "uploadAsistenciaFile()",
+      "file_type": "code",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L33",
+      "id": "lib_storageactasservice_uploadasistenciafile"
+    },
+    {
+      "label": "supabase.ts",
+      "file_type": "code",
+      "source_file": "src/lib/supabase.ts",
+      "source_location": "L1",
+      "id": "src_lib_supabase_ts"
+    },
+    {
+      "label": "isSupabaseConfigured",
+      "file_type": "code",
+      "source_file": "src/lib/supabase.ts",
+      "source_location": "L6",
+      "id": "lib_supabase_issupabaseconfigured"
+    },
+    {
+      "label": "ActaPage.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L1",
+      "id": "src_pages_actapage_tsx"
+    },
+    {
+      "label": "PlusIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L12",
+      "id": "pages_actapage_plusicon"
+    },
+    {
+      "label": "ArrowLeftIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L20",
+      "id": "pages_actapage_arrowlefticon"
+    },
+    {
+      "label": "TIPO_LABELS",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L31",
+      "id": "pages_actapage_tipo_labels"
+    },
+    {
+      "label": "estadoChipClass()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L38",
+      "id": "pages_actapage_estadochipclass"
+    },
+    {
+      "label": "formatFecha()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L47",
+      "id": "pages_actapage_formatfecha"
+    },
+    {
+      "label": "getActaIdFromHash()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L56",
+      "id": "pages_actapage_getactaidfromhash"
+    },
+    {
+      "label": "buildActaHash()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L61",
+      "id": "pages_actapage_buildactahash"
+    },
+    {
+      "label": "View",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L72",
+      "id": "pages_actapage_view"
+    },
+    {
+      "label": "ActaPage()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L76",
+      "id": "pages_actapage_actapage"
+    },
+    {
+      "label": "HeaderCard()",
+      "file_type": "code",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L398",
+      "id": "pages_actapage_headercard"
+    },
+    {
+      "label": "DatabasePage.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L1",
+      "id": "src_pages_databasepage_tsx"
+    },
+    {
+      "label": "SchoolValue",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L9",
+      "id": "pages_databasepage_schoolvalue"
+    },
+    {
+      "label": "SchoolRecord",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L10",
+      "id": "pages_databasepage_schoolrecord"
+    },
+    {
+      "label": "LoadState",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L12",
+      "id": "pages_databasepage_loadstate"
+    },
+    {
+      "label": "primaryColumns",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L14",
+      "id": "pages_databasepage_primarycolumns"
+    },
+    {
+      "label": "detailSections",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L24",
+      "id": "pages_databasepage_detailsections"
+    },
+    {
+      "label": "actaTypeLabels",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L65",
+      "id": "pages_databasepage_actatypelabels"
+    },
+    {
+      "label": "DatabasePage()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L72",
+      "id": "pages_databasepage_databasepage"
+    },
+    {
+      "label": "SchoolDetailModal()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L303",
+      "id": "pages_databasepage_schooldetailmodal"
+    },
+    {
+      "label": "SummaryPill()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L466",
+      "id": "pages_databasepage_summarypill"
+    },
+    {
+      "label": "SummaryMetricCard()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L475",
+      "id": "pages_databasepage_summarymetriccard"
+    },
+    {
+      "label": "formatValue()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L499",
+      "id": "pages_databasepage_formatvalue"
+    },
+    {
+      "label": "hasValue()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L507",
+      "id": "pages_databasepage_hasvalue"
+    },
+    {
+      "label": "normalizeComparableValue()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L511",
+      "id": "pages_databasepage_normalizecomparablevalue"
+    },
+    {
+      "label": "normalizeComparableIdentifier()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L519",
+      "id": "pages_databasepage_normalizecomparableidentifier"
+    },
+    {
+      "label": "isActaRelatedToSchool()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L523",
+      "id": "pages_databasepage_isactarelatedtoschool"
+    },
+    {
+      "label": "countAcuerdosByEstado()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L549",
+      "id": "pages_databasepage_countacuerdosbyestado"
+    },
+    {
+      "label": "formatActaDate()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L553",
+      "id": "pages_databasepage_formatactadate"
+    },
+    {
+      "label": "SearchIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L565",
+      "id": "pages_databasepage_searchicon"
+    },
+    {
+      "label": "CloseIcon()",
+      "file_type": "code",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L573",
+      "id": "pages_databasepage_closeicon"
+    },
+    {
+      "label": "actas.ts",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L1",
+      "id": "src_types_actas_ts"
+    },
+    {
+      "label": "TipoActa",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L1",
+      "id": "types_actas_tipoacta"
+    },
+    {
+      "label": "EstadoActa",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L3",
+      "id": "types_actas_estadoacta"
+    },
+    {
+      "label": "EstadoAcuerdo",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L5",
+      "id": "types_actas_estadoacuerdo"
+    },
+    {
+      "label": "ParticipanteActa",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L7",
+      "id": "types_actas_participanteacta"
+    },
+    {
+      "label": "AcuerdoActa",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L13",
+      "id": "types_actas_acuerdoacta"
+    },
+    {
+      "label": "ActaVisita",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L20",
+      "id": "types_actas_actavisita"
+    },
+    {
+      "label": "ActaVisitaRow",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L46",
+      "id": "types_actas_actavisitarow"
+    },
+    {
+      "label": "EscuelaSLEP",
+      "file_type": "code",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L53",
+      "id": "types_actas_escuelaslep"
+    },
+    {
+      "label": "crm.ts",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L1",
+      "id": "src_types_crm_ts"
+    },
+    {
+      "label": "VisitStatus",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L1",
+      "id": "types_crm_visitstatus"
+    },
+    {
+      "label": "ObservationRisk",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L2",
+      "id": "types_crm_observationrisk"
+    },
+    {
+      "label": "ObservationStatus",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L3",
+      "id": "types_crm_observationstatus"
+    },
+    {
+      "label": "MinuteStatus",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L4",
+      "id": "types_crm_minutestatus"
+    },
+    {
+      "label": "Establishment",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L6",
+      "id": "types_crm_establishment"
+    },
+    {
+      "label": "Visit",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L17",
+      "id": "types_crm_visit"
+    },
+    {
+      "label": "Observation",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L27",
+      "id": "types_crm_observation"
+    },
+    {
+      "label": "MeetingMinute",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L38",
+      "id": "types_crm_meetingminute"
+    },
+    {
+      "label": "ActionPlan",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L48",
+      "id": "types_crm_actionplan"
+    },
+    {
+      "label": "Indicator",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L57",
+      "id": "types_crm_indicator"
+    },
+    {
+      "label": "ModuleCard",
+      "file_type": "code",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L66",
+      "id": "types_crm_modulecard"
+    },
+    {
+      "label": "App.tsx",
+      "file_type": "code",
+      "id": "app_main"
+    },
+    {
+      "label": "AppShell",
+      "file_type": "code",
+      "id": "appshell"
+    },
+    {
+      "label": "Route Configuration",
+      "file_type": "code",
+      "id": "routes"
+    },
+    {
+      "label": "useHashRoute Hook",
+      "file_type": "code",
+      "id": "useHashRoute"
+    },
+    {
+      "label": "ActaPage",
+      "file_type": "code",
+      "id": "acta_page"
+    },
+    {
+      "label": "DatabasePage",
+      "file_type": "code",
+      "id": "database_page"
+    },
+    {
+      "label": "ActaForm Component",
+      "file_type": "code",
+      "id": "acta_form"
+    },
+    {
+      "label": "ActaDetailModal Component",
+      "file_type": "code",
+      "id": "acta_detail_modal"
+    },
+    {
+      "label": "ActaTipoSelector Component",
+      "file_type": "code",
+      "id": "acta_tipo_selector"
+    },
+    {
+      "label": "AcuerdosFieldArray Component",
+      "file_type": "code",
+      "id": "acuerdos_field_array"
+    },
+    {
+      "label": "ParticipantesFieldArray Component",
+      "file_type": "code",
+      "id": "participantes_field_array"
+    },
+    {
+      "label": "AutoResizeTextarea Component",
+      "file_type": "code",
+      "id": "auto_resize_textarea"
+    },
+    {
+      "label": "EstablecimientoSelect Component",
+      "file_type": "code",
+      "id": "establecimiento_select"
+    },
+    {
+      "label": "actasService",
+      "file_type": "code",
+      "id": "actas_service"
+    },
+    {
+      "label": "pdfActaService",
+      "file_type": "code",
+      "id": "pdf_acta_service"
+    },
+    {
+      "label": "storageActasService",
+      "file_type": "code",
+      "id": "storage_actas_service"
+    },
+    {
+      "label": "Supabase Client",
+      "file_type": "code",
+      "id": "supabase_client"
+    },
+    {
+      "label": "Acta Types",
+      "file_type": "code",
+      "id": "acta_types"
+    },
+    {
+      "label": "CRM Types",
+      "file_type": "code",
+      "id": "crm_types"
+    },
+    {
+      "label": "Mock Data",
+      "file_type": "code",
+      "id": "mock_data"
+    },
+    {
+      "label": "Environment Types",
+      "file_type": "code",
+      "id": "env_types"
+    },
+    {
+      "label": "Vite Configuration",
+      "file_type": "code",
+      "id": "vite_config"
+    },
+    {
+      "label": "Tailwind Configuration",
+      "file_type": "code",
+      "id": "tailwind_config"
+    },
+    {
+      "label": "ESLint Configuration",
+      "file_type": "code",
+      "id": "eslint_config"
+    },
+    {
+      "label": "PostCSS Configuration",
+      "file_type": "code",
+      "id": "postcss_config"
+    },
+    {
+      "label": "Database Schema",
+      "file_type": "document",
+      "id": "db_schema"
+    },
+    {
+      "label": "SLEP Schools Database",
+      "file_type": "document",
+      "id": "escuelas_slep_data"
+    },
+    {
+      "label": "actas_visita Table",
+      "file_type": "code",
+      "id": "actas_visita_table"
+    },
+    {
+      "label": "Base Datos Escuelas Table",
+      "file_type": "document",
+      "id": "base_datos_escuelas_table"
+    },
+    {
+      "label": "Acta Page",
+      "file_type": "code",
+      "id": "ActaPage"
+    },
+    {
+      "label": "Database Page",
+      "file_type": "code",
+      "id": "DatabasePage"
+    },
+    {
+      "label": "App Shell",
+      "file_type": "code",
+      "id": "AppShell"
+    },
+    {
+      "label": "Actas Service",
+      "file_type": "code",
+      "id": "actasService"
+    },
+    {
+      "label": "Storage Actas Service",
+      "file_type": "code",
+      "id": "storageActasService"
+    },
+    {
+      "label": "PDF Acta Service",
+      "file_type": "code",
+      "id": "pdfActaService"
+    },
+    {
+      "label": "Supabase Client",
+      "file_type": "code",
+      "id": "supabaseClient"
+    },
+    {
+      "label": "ActaVisita Type",
+      "file_type": "code",
+      "id": "ActaVisita"
+    },
+    {
+      "label": "Participante Acta Type",
+      "file_type": "code",
+      "id": "ParticipanteActa"
+    },
+    {
+      "label": "Acuerdo Acta Type",
+      "file_type": "code",
+      "id": "AcuerdoActa"
+    },
+    {
+      "label": "Escuela SLEP Type",
+      "file_type": "code",
+      "id": "EscuelaSLEP"
+    },
+    {
+      "label": "Establishment Type",
+      "file_type": "code",
+      "id": "Establishment"
+    },
+    {
+      "label": "Visit Type",
+      "file_type": "code",
+      "id": "Visit"
+    },
+    {
+      "label": "Observation Type",
+      "file_type": "code",
+      "id": "Observation"
+    },
+    {
+      "label": "Meeting Minute Type",
+      "file_type": "code",
+      "id": "MeetingMinute"
+    },
+    {
+      "label": "Action Plan Type",
+      "file_type": "code",
+      "id": "ActionPlan"
+    },
+    {
+      "label": "establishments Table",
+      "file_type": "code",
+      "id": "establishments_table"
+    },
+    {
+      "label": "visits Table",
+      "file_type": "code",
+      "id": "visits_table"
+    },
+    {
+      "label": "meeting_minutes Table",
+      "file_type": "code",
+      "id": "meeting_minutes_table"
+    },
+    {
+      "label": "observations Table",
+      "file_type": "code",
+      "id": "observations_table"
+    },
+    {
+      "label": "action_plans Table",
+      "file_type": "code",
+      "id": "action_plans_table"
+    },
+    {
+      "label": "BASE DE DATOS ESCUELAS SLEP Table",
+      "file_type": "code",
+      "id": "base_datos_escuelas_slep_table"
+    },
+    {
+      "label": "schema.sql Migration",
+      "file_type": "code",
+      "id": "schema_sql"
+    },
+    {
+      "label": "actas_visita_migration.sql",
+      "file_type": "code",
+      "id": "actas_visita_migration_sql"
+    },
+    {
+      "label": "base_datos_escuelas_slep_schema.sql",
+      "file_type": "code",
+      "id": "base_datos_escuelas_slep_schema_sql"
+    },
+    {
+      "label": "seed_base_datos_escuelas_slep.sql",
+      "file_type": "code",
+      "id": "seed_base_datos_escuelas_slep_sql"
+    },
+    {
+      "label": "BASE DE DATOS ESCUELAS SLEP_rows.sql",
+      "file_type": "code",
+      "id": "base_datos_escuelas_slep_rows_sql"
+    },
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "id": "README"
+    },
+    {
+      "label": "CONTEXTO_GENERAL_PORTAL.md",
+      "file_type": "document",
+      "id": "CONTEXTO_GENERAL_PORTAL"
+    },
+    {
+      "label": "CONTEXTO_ACTAPAGE.md",
+      "file_type": "document",
+      "id": "CONTEXTO_ACTAPAGE"
+    },
+    {
+      "label": "CONTEXTO_DATABASEPAGE.md",
+      "file_type": "document",
+      "id": "CONTEXTO_DATABASEPAGE"
+    },
+    {
+      "label": "favicon.svg",
+      "file_type": "image",
+      "id": "favicon_svg"
+    },
+    {
+      "label": "icons.svg",
+      "file_type": "image",
+      "id": "icons_svg"
+    },
+    {
+      "label": "hero.png",
+      "file_type": "image",
+      "id": "hero_png"
+    },
+    {
+      "label": "SLEPCOLCHAGUA.webp",
+      "file_type": "image",
+      "id": "SLEPCOLCHAGUA_webp"
+    },
+    {
+      "label": "SLEPCOLCHAGUALETRAS.webp",
+      "file_type": "image",
+      "id": "SLEPCOLCHAGUALETRAS_webp"
+    },
+    {
+      "label": "actas-visita Storage Bucket",
+      "file_type": "code",
+      "id": "actas_storage_bucket"
+    }
+  ],
+  "edges": [
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_app_tsx",
+      "_tgt": "src_app_appshell_tsx",
+      "source": "src_app_tsx",
+      "target": "src_app_appshell_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_app_tsx",
+      "_tgt": "app_appshell_appshell",
+      "source": "src_app_tsx",
+      "target": "app_appshell_appshell"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_tsx",
+      "_tgt": "src_app_app",
+      "source": "src_app_tsx",
+      "target": "src_app_app"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/main.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_main_tsx",
+      "_tgt": "src_app_tsx",
+      "source": "src_app_tsx",
+      "target": "src_main_tsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/env.d.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_env_d_ts",
+      "_tgt": "src_env_d_importmetaenv",
+      "source": "src_env_d_ts",
+      "target": "src_env_d_importmetaenv"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/env.d.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_env_d_ts",
+      "_tgt": "src_env_d_importmeta",
+      "source": "src_env_d_ts",
+      "target": "src_env_d_importmeta"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "src_pages_actapage_tsx",
+      "source": "src_app_appshell_tsx",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "pages_actapage_actapage",
+      "source": "src_app_appshell_tsx",
+      "target": "pages_actapage_actapage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "src_pages_databasepage_tsx",
+      "source": "src_app_appshell_tsx",
+      "target": "src_pages_databasepage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "pages_databasepage_databasepage",
+      "source": "src_app_appshell_tsx",
+      "target": "pages_databasepage_databasepage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "src_app_routes_ts",
+      "source": "src_app_appshell_tsx",
+      "target": "src_app_routes_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_routes_approutes",
+      "source": "src_app_appshell_tsx",
+      "target": "app_routes_approutes"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "src_app_usehashroute_ts",
+      "source": "src_app_appshell_tsx",
+      "target": "src_app_usehashroute_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_usehashroute_usehashroute",
+      "source": "src_app_appshell_tsx",
+      "target": "app_usehashroute_usehashroute"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_pagetitle",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_pagetitle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_pagetag",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_pagetag"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_appshell",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_appshell"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L158",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_menuicon",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_menuicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L166",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_closeicon",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_closeicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L174",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_databaseicon",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_databaseicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L184",
+      "weight": 1.0,
+      "_src": "src_app_appshell_tsx",
+      "_tgt": "app_appshell_minutesicon",
+      "source": "src_app_appshell_tsx",
+      "target": "app_appshell_minutesicon"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/app/AppShell.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_src": "app_appshell_appshell",
+      "_tgt": "app_usehashroute_usehashroute",
+      "source": "app_appshell_appshell",
+      "target": "app_usehashroute_usehashroute"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_app_routes_ts",
+      "_tgt": "app_routes_approuteid",
+      "source": "src_app_routes_ts",
+      "target": "app_routes_approuteid"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_routes_ts",
+      "_tgt": "app_routes_approute",
+      "source": "src_app_routes_ts",
+      "target": "app_routes_approute"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/routes.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "src_app_routes_ts",
+      "_tgt": "app_routes_approutes",
+      "source": "src_app_routes_ts",
+      "target": "app_routes_approutes"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_usehashroute_ts",
+      "_tgt": "src_app_routes_ts",
+      "source": "src_app_routes_ts",
+      "target": "src_app_usehashroute_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_app_usehashroute_ts",
+      "_tgt": "app_routes_approuteid",
+      "source": "app_routes_approuteid",
+      "target": "src_app_usehashroute_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_app_usehashroute_ts",
+      "_tgt": "app_usehashroute_normalizeroute",
+      "source": "src_app_usehashroute_ts",
+      "target": "app_usehashroute_normalizeroute"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/useHashRoute.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "src_app_usehashroute_ts",
+      "_tgt": "app_usehashroute_usehashroute",
+      "source": "src_app_usehashroute_ts",
+      "target": "app_usehashroute_usehashroute"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "types_actas_actavisitarow",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "types_actas_actavisitarow"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "src_lib_pdfactaservice_ts",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "src_lib_pdfactaservice_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_pdfactaservice_descargaractapdf",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_pdfactaservice_descargaractapdf"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_pdfactaservice_generaractapdf",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "src_lib_storageactasservice_ts",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "src_lib_storageactasservice_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_storageactasservice_uploadactapdf",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_storageactasservice_uploadactapdf"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_storageactasservice_uploadasistenciafile",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_storageactasservice_uploadasistenciafile"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "src_lib_actasservice_ts",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "src_lib_actasservice_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_actasservice_updateactapdf",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_actasservice_updateactapdf"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "lib_actasservice_updateactaasistencia",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "lib_actasservice_updateactaasistencia"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_actadetailmodalprops",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_actadetailmodalprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_tipo_labels",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_tipo_labels"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_field",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_field"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_sectiontitle",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_sectiontitle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_estadochip",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_estadochip"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L51",
+      "weight": 1.0,
+      "_src": "src_components_actas_actadetailmodal_tsx",
+      "_tgt": "actas_actadetailmodal_actadetailmodal",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "actas_actadetailmodal_actadetailmodal"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_components_actas_actadetailmodal_tsx",
+      "source": "src_components_actas_actadetailmodal_tsx",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaDetailModal.tsx",
+      "source_location": "L116",
+      "weight": 1.0,
+      "_src": "actas_actadetailmodal_actadetailmodal",
+      "_tgt": "actas_actadetailmodal_estadochip",
+      "source": "actas_actadetailmodal_estadochip",
+      "target": "actas_actadetailmodal_actadetailmodal"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "actas_actadetailmodal_actadetailmodal",
+      "source": "actas_actadetailmodal_actadetailmodal",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "types_actas_tipoacta",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "types_actas_tipoacta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "types_actas_actavisita",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "types_actas_actavisita"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "types_actas_participanteacta",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "types_actas_participanteacta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "types_actas_acuerdoacta",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "types_actas_acuerdoacta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "types_actas_escuelaslep",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "types_actas_escuelaslep"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "src_components_actas_establecimientoselect_tsx",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_components_actas_establecimientoselect_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_establecimientoselect_establecimientoselect",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_establecimientoselect_establecimientoselect"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "src_components_actas_participantesfieldarray_tsx",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_components_actas_participantesfieldarray_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_participantesfieldarray_participantesfieldarray",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_participantesfieldarray_participantesfieldarray"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "src_components_actas_acuerdosfieldarray_tsx",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_components_actas_acuerdosfieldarray_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_acuerdosfieldarray_acuerdosfieldarray",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_acuerdosfieldarray_acuerdosfieldarray"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "src_components_actas_autoresizetextarea_tsx",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_components_actas_autoresizetextarea_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_autoresizetextarea_autoresizetextarea",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_autoresizetextarea_autoresizetextarea"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_formstate",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_formstate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_formerrors",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_formerrors"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_actaformprops",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_actaformprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_todayiso",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_todayiso"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L44",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_tipo_labels",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_tipo_labels"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_sectiontitle",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_sectiontitle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_src": "src_components_actas_actaform_tsx",
+      "_tgt": "actas_actaform_actaform",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "actas_actaform_actaform"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_components_actas_actaform_tsx",
+      "source": "src_components_actas_actaform_tsx",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaForm.tsx",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_src": "actas_actaform_actaform",
+      "_tgt": "actas_actaform_todayiso",
+      "source": "actas_actaform_todayiso",
+      "target": "actas_actaform_actaform"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "actas_actaform_actaform",
+      "source": "actas_actaform_actaform",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "types_actas_tipoacta",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "types_actas_tipoacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_tipooption",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_tipooption"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_checksquareicon",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_checksquareicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_eyeicon",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_eyeicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_usersicon",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_usersicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_clipboardicon",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_clipboardicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_tipos",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_tipos"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_actatiposelectorprops",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_actatiposelectorprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ActaTipoSelector.tsx",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "src_components_actas_actatiposelector_tsx",
+      "_tgt": "actas_actatiposelector_actatiposelector",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "actas_actatiposelector_actatiposelector"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_components_actas_actatiposelector_tsx",
+      "source": "src_components_actas_actatiposelector_tsx",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "actas_actatiposelector_actatiposelector",
+      "source": "actas_actatiposelector_actatiposelector",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "types_actas_acuerdoacta",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "types_actas_acuerdoacta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "types_actas_estadoacuerdo",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "types_actas_estadoacuerdo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_acuerdosfieldarrayprops",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_acuerdosfieldarrayprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_plusicon",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_plusicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_trashicon",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_trashicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_estados",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_estados"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_emptyacuerdo",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_emptyacuerdo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AcuerdosFieldArray.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "src_components_actas_acuerdosfieldarray_tsx",
+      "_tgt": "actas_acuerdosfieldarray_acuerdosfieldarray",
+      "source": "src_components_actas_acuerdosfieldarray_tsx",
+      "target": "actas_acuerdosfieldarray_acuerdosfieldarray"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AutoResizeTextarea.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_autoresizetextarea_tsx",
+      "_tgt": "actas_autoresizetextarea_autoresizetextareaprops",
+      "source": "src_components_actas_autoresizetextarea_tsx",
+      "target": "actas_autoresizetextarea_autoresizetextareaprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/AutoResizeTextarea.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_components_actas_autoresizetextarea_tsx",
+      "_tgt": "actas_autoresizetextarea_autoresizetextarea",
+      "source": "src_components_actas_autoresizetextarea_tsx",
+      "target": "actas_autoresizetextarea_autoresizetextarea"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_components_actas_establecimientoselect_tsx",
+      "_tgt": "src_lib_supabase_ts",
+      "source": "src_components_actas_establecimientoselect_tsx",
+      "target": "src_lib_supabase_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_establecimientoselect_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_establecimientoselect_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_establecimientoselect_tsx",
+      "_tgt": "types_actas_escuelaslep",
+      "source": "src_components_actas_establecimientoselect_tsx",
+      "target": "types_actas_escuelaslep"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_components_actas_establecimientoselect_tsx",
+      "_tgt": "actas_establecimientoselect_establecimientoselectprops",
+      "source": "src_components_actas_establecimientoselect_tsx",
+      "target": "actas_establecimientoselect_establecimientoselectprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/EstablecimientoSelect.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "src_components_actas_establecimientoselect_tsx",
+      "_tgt": "actas_establecimientoselect_establecimientoselect",
+      "source": "src_components_actas_establecimientoselect_tsx",
+      "target": "actas_establecimientoselect_establecimientoselect"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "types_actas_participanteacta",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "types_actas_participanteacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "actas_participantesfieldarray_participantesfieldarrayprops",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "actas_participantesfieldarray_participantesfieldarrayprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "actas_participantesfieldarray_plusicon",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "actas_participantesfieldarray_plusicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "actas_participantesfieldarray_trashicon",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "actas_participantesfieldarray_trashicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "actas_participantesfieldarray_emptyparticipante",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "actas_participantesfieldarray_emptyparticipante"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/actas/ParticipantesFieldArray.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_src": "src_components_actas_participantesfieldarray_tsx",
+      "_tgt": "actas_participantesfieldarray_participantesfieldarray",
+      "source": "src_components_actas_participantesfieldarray_tsx",
+      "target": "actas_participantesfieldarray_participantesfieldarray"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "src_types_crm_ts",
+      "source": "src_data_mockdata_ts",
+      "target": "src_types_crm_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_actionplan",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_actionplan"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_establishment",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_establishment"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_indicator",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_indicator"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_meetingminute",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_meetingminute"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_modulecard",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_modulecard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_observation",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_observation"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "types_crm_visit",
+      "source": "src_data_mockdata_ts",
+      "target": "types_crm_visit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_establishments",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_establishments"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L44",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_visits",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_visits"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_observations",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_observations"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L107",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_meetingminutes",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_meetingminutes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L137",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_actionplans",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_actionplans"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L164",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_indicators",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_indicators"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L191",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_modules",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_modules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/data/mockData.ts",
+      "source_location": "L214",
+      "weight": 1.0,
+      "_src": "src_data_mockdata_ts",
+      "_tgt": "data_mockdata_crmdata",
+      "source": "src_data_mockdata_ts",
+      "target": "data_mockdata_crmdata"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "src_lib_supabase_ts",
+      "source": "src_lib_actasservice_ts",
+      "target": "src_lib_supabase_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_lib_actasservice_ts",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "types_actas_actavisita",
+      "source": "src_lib_actasservice_ts",
+      "target": "types_actas_actavisita"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "types_actas_actavisitarow",
+      "source": "src_lib_actasservice_ts",
+      "target": "types_actas_actavisitarow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "lib_actasservice_fetchactas",
+      "source": "src_lib_actasservice_ts",
+      "target": "lib_actasservice_fetchactas"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "lib_actasservice_insertacta",
+      "source": "src_lib_actasservice_ts",
+      "target": "lib_actasservice_insertacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "lib_actasservice_updateactapdf",
+      "source": "src_lib_actasservice_ts",
+      "target": "lib_actasservice_updateactapdf"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "lib_actasservice_updateactaestado",
+      "source": "src_lib_actasservice_ts",
+      "target": "lib_actasservice_updateactaestado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/actasService.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "src_lib_actasservice_ts",
+      "_tgt": "lib_actasservice_updateactaasistencia",
+      "source": "src_lib_actasservice_ts",
+      "target": "lib_actasservice_updateactaasistencia"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_lib_actasservice_ts",
+      "source": "src_lib_actasservice_ts",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "src_lib_actasservice_ts",
+      "source": "src_lib_actasservice_ts",
+      "target": "src_pages_databasepage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_actasservice_fetchactas",
+      "source": "lib_actasservice_fetchactas",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "lib_actasservice_fetchactas",
+      "source": "lib_actasservice_fetchactas",
+      "target": "src_pages_databasepage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_actasservice_insertacta",
+      "source": "lib_actasservice_insertacta",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_actasservice_updateactapdf",
+      "source": "lib_actasservice_updateactapdf",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_actasservice_updateactaestado",
+      "source": "lib_actasservice_updateactaestado",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_actasservice_updateactaasistencia",
+      "source": "lib_actasservice_updateactaasistencia",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "types_actas_actavisita",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "types_actas_actavisita"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_loadimageasbase64",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_loadimageasbase64"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_addsectiontitle",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_addsectiontitle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_addfield",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_addfield"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_checkpagebreak",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_checkpagebreak"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_generaractapdf",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L282",
+      "weight": 1.0,
+      "_src": "src_lib_pdfactaservice_ts",
+      "_tgt": "lib_pdfactaservice_descargaractapdf",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "lib_pdfactaservice_descargaractapdf"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_lib_pdfactaservice_ts",
+      "source": "src_lib_pdfactaservice_ts",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_src": "lib_pdfactaservice_generaractapdf",
+      "_tgt": "lib_pdfactaservice_loadimageasbase64",
+      "source": "lib_pdfactaservice_loadimageasbase64",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L109",
+      "weight": 1.0,
+      "_src": "lib_pdfactaservice_generaractapdf",
+      "_tgt": "lib_pdfactaservice_addsectiontitle",
+      "source": "lib_pdfactaservice_addsectiontitle",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L111",
+      "weight": 1.0,
+      "_src": "lib_pdfactaservice_generaractapdf",
+      "_tgt": "lib_pdfactaservice_addfield",
+      "source": "lib_pdfactaservice_addfield",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/pdfActaService.ts",
+      "source_location": "L121",
+      "weight": 1.0,
+      "_src": "lib_pdfactaservice_generaractapdf",
+      "_tgt": "lib_pdfactaservice_checkpagebreak",
+      "source": "lib_pdfactaservice_checkpagebreak",
+      "target": "lib_pdfactaservice_generaractapdf"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_pdfactaservice_generaractapdf",
+      "source": "lib_pdfactaservice_generaractapdf",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_lib_storageactasservice_ts",
+      "_tgt": "src_lib_supabase_ts",
+      "source": "src_lib_storageactasservice_ts",
+      "target": "src_lib_supabase_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_lib_storageactasservice_ts",
+      "_tgt": "lib_storageactasservice_uploadactapdf",
+      "source": "src_lib_storageactasservice_ts",
+      "target": "lib_storageactasservice_uploadactapdf"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/storageActasService.ts",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "src_lib_storageactasservice_ts",
+      "_tgt": "lib_storageactasservice_uploadasistenciafile",
+      "source": "src_lib_storageactasservice_ts",
+      "target": "lib_storageactasservice_uploadasistenciafile"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_lib_storageactasservice_ts",
+      "source": "src_lib_storageactasservice_ts",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_storageactasservice_uploadactapdf",
+      "source": "lib_storageactasservice_uploadactapdf",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "lib_storageactasservice_uploadasistenciafile",
+      "source": "lib_storageactasservice_uploadasistenciafile",
+      "target": "src_pages_actapage_tsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/supabase.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_lib_supabase_ts",
+      "_tgt": "lib_supabase_issupabaseconfigured",
+      "source": "src_lib_supabase_ts",
+      "target": "lib_supabase_issupabaseconfigured"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "src_lib_supabase_ts",
+      "source": "src_lib_supabase_ts",
+      "target": "src_pages_databasepage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_pages_actapage_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "types_actas_tipoacta",
+      "source": "src_pages_actapage_tsx",
+      "target": "types_actas_tipoacta"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "types_actas_actavisita",
+      "source": "src_pages_actapage_tsx",
+      "target": "types_actas_actavisita"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "types_actas_actavisitarow",
+      "source": "src_pages_actapage_tsx",
+      "target": "types_actas_actavisitarow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_plusicon",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_plusicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_arrowlefticon",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_arrowlefticon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_tipo_labels",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_tipo_labels"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_estadochipclass",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_estadochipclass"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_formatfecha",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_formatfecha"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_getactaidfromhash",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_getactaidfromhash"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_buildactahash",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_buildactahash"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_view",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_view"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L76",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_actapage",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_actapage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ActaPage.tsx",
+      "source_location": "L398",
+      "weight": 1.0,
+      "_src": "src_pages_actapage_tsx",
+      "_tgt": "pages_actapage_headercard",
+      "source": "src_pages_actapage_tsx",
+      "target": "pages_actapage_headercard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "src_types_actas_ts",
+      "source": "src_pages_databasepage_tsx",
+      "target": "src_types_actas_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "types_actas_actavisitarow",
+      "source": "src_pages_databasepage_tsx",
+      "target": "types_actas_actavisitarow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_schoolvalue",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_schoolvalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_schoolrecord",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_schoolrecord"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_loadstate",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_loadstate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_primarycolumns",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_primarycolumns"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_detailsections",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_detailsections"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_actatypelabels",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_actatypelabels"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_databasepage",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_databasepage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L303",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_schooldetailmodal",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_schooldetailmodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L466",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_summarypill",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_summarypill"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L475",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_summarymetriccard",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_summarymetriccard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L499",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_formatvalue",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_formatvalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L507",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_hasvalue",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_hasvalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L511",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_normalizecomparablevalue",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_normalizecomparablevalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L519",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_normalizecomparableidentifier",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_normalizecomparableidentifier"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L523",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_isactarelatedtoschool",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_isactarelatedtoschool"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L549",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_countacuerdosbyestado",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_countacuerdosbyestado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L553",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_formatactadate",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_formatactadate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L565",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_searchicon",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_searchicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L573",
+      "weight": 1.0,
+      "_src": "src_pages_databasepage_tsx",
+      "_tgt": "pages_databasepage_closeicon",
+      "source": "src_pages_databasepage_tsx",
+      "target": "pages_databasepage_closeicon"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L337",
+      "weight": 1.0,
+      "_src": "pages_databasepage_schooldetailmodal",
+      "_tgt": "pages_databasepage_formatvalue",
+      "source": "pages_databasepage_schooldetailmodal",
+      "target": "pages_databasepage_formatvalue"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L382",
+      "weight": 1.0,
+      "_src": "pages_databasepage_schooldetailmodal",
+      "_tgt": "pages_databasepage_formatactadate",
+      "source": "pages_databasepage_schooldetailmodal",
+      "target": "pages_databasepage_formatactadate"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L520",
+      "weight": 1.0,
+      "_src": "pages_databasepage_normalizecomparableidentifier",
+      "_tgt": "pages_databasepage_normalizecomparablevalue",
+      "source": "pages_databasepage_normalizecomparablevalue",
+      "target": "pages_databasepage_normalizecomparableidentifier"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L524",
+      "weight": 1.0,
+      "_src": "pages_databasepage_isactarelatedtoschool",
+      "_tgt": "pages_databasepage_normalizecomparablevalue",
+      "source": "pages_databasepage_normalizecomparablevalue",
+      "target": "pages_databasepage_isactarelatedtoschool"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/DatabasePage.tsx",
+      "source_location": "L527",
+      "weight": 1.0,
+      "_src": "pages_databasepage_isactarelatedtoschool",
+      "_tgt": "pages_databasepage_normalizecomparableidentifier",
+      "source": "pages_databasepage_normalizecomparableidentifier",
+      "target": "pages_databasepage_isactarelatedtoschool"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_tipoacta",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_tipoacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_estadoacta",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_estadoacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_estadoacuerdo",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_estadoacuerdo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_participanteacta",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_participanteacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_acuerdoacta",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_acuerdoacta"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_actavisita",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_actavisita"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_actavisitarow",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_actavisitarow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/actas.ts",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_src": "src_types_actas_ts",
+      "_tgt": "types_actas_escuelaslep",
+      "source": "src_types_actas_ts",
+      "target": "types_actas_escuelaslep"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_visitstatus",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_visitstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_observationrisk",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_observationrisk"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_observationstatus",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_observationstatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_minutestatus",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_minutestatus"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_establishment",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_establishment"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_visit",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_visit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_observation",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_observation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_meetingminute",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_meetingminute"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_actionplan",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_actionplan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_indicator",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_indicator"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/crm.ts",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_src": "src_types_crm_ts",
+      "_tgt": "types_crm_modulecard",
+      "source": "src_types_crm_ts",
+      "target": "types_crm_modulecard"
+    },
+    {
+      "relation": "renders",
+      "confidence": "EXTRACTED",
+      "_src": "app_main",
+      "_tgt": "appshell",
+      "source": "app_main",
+      "target": "appshell"
+    },
+    {
+      "relation": "lints",
+      "confidence": "INFERRED",
+      "_src": "eslint_config",
+      "_tgt": "app_main",
+      "source": "app_main",
+      "target": "eslint_config"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "appshell",
+      "_tgt": "routes",
+      "source": "appshell",
+      "target": "routes"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "appshell",
+      "_tgt": "useHashRoute",
+      "source": "appshell",
+      "target": "useHashRoute"
+    },
+    {
+      "relation": "renders",
+      "confidence": "EXTRACTED",
+      "_src": "appshell",
+      "_tgt": "acta_page",
+      "source": "appshell",
+      "target": "acta_page"
+    },
+    {
+      "relation": "renders",
+      "confidence": "EXTRACTED",
+      "_src": "appshell",
+      "_tgt": "database_page",
+      "source": "appshell",
+      "target": "database_page"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "useHashRoute",
+      "_tgt": "routes",
+      "source": "routes",
+      "target": "useHashRoute"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "_src": "acta_page",
+      "_tgt": "acta_tipo_selector",
+      "source": "acta_page",
+      "target": "acta_tipo_selector"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "_src": "acta_page",
+      "_tgt": "acta_form",
+      "source": "acta_page",
+      "target": "acta_form"
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "_src": "acta_page",
+      "_tgt": "acta_detail_modal",
+      "source": "acta_page",
+      "target": "acta_detail_modal"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "_src": "acta_page",
+      "_tgt": "actas_service",
+      "source": "acta_page",
+      "target": "actas_service"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "acta_form",
+      "_tgt": "establecimiento_select",
+      "source": "acta_form",
+      "target": "establecimiento_select"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "acta_form",
+      "_tgt": "participantes_field_array",
+      "source": "acta_form",
+      "target": "participantes_field_array"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "acta_form",
+      "_tgt": "acuerdos_field_array",
+      "source": "acta_form",
+      "target": "acuerdos_field_array"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "acta_form",
+      "_tgt": "auto_resize_textarea",
+      "source": "acta_form",
+      "target": "auto_resize_textarea"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "acta_form",
+      "_tgt": "acta_types",
+      "source": "acta_form",
+      "target": "acta_types"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "_src": "acta_detail_modal",
+      "_tgt": "pdf_acta_service",
+      "source": "acta_detail_modal",
+      "target": "pdf_acta_service"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "_src": "acta_detail_modal",
+      "_tgt": "storage_actas_service",
+      "source": "acta_detail_modal",
+      "target": "storage_actas_service"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "_src": "acta_detail_modal",
+      "_tgt": "actas_service",
+      "source": "acta_detail_modal",
+      "target": "actas_service"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "acta_detail_modal",
+      "_tgt": "acta_types",
+      "source": "acta_detail_modal",
+      "target": "acta_types"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "acta_tipo_selector",
+      "_tgt": "acta_types",
+      "source": "acta_tipo_selector",
+      "target": "acta_types"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "acuerdos_field_array",
+      "_tgt": "acta_types",
+      "source": "acuerdos_field_array",
+      "target": "acta_types"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "participantes_field_array",
+      "_tgt": "acta_types",
+      "source": "participantes_field_array",
+      "target": "acta_types"
+    },
+    {
+      "relation": "queries",
+      "confidence": "EXTRACTED",
+      "_src": "establecimiento_select",
+      "_tgt": "supabase_client",
+      "source": "establecimiento_select",
+      "target": "supabase_client"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "establecimiento_select",
+      "_tgt": "acta_types",
+      "source": "establecimiento_select",
+      "target": "acta_types"
+    },
+    {
+      "relation": "queries",
+      "confidence": "EXTRACTED",
+      "_src": "establecimiento_select",
+      "_tgt": "base_datos_escuelas_table",
+      "source": "establecimiento_select",
+      "target": "base_datos_escuelas_table"
+    },
+    {
+      "relation": "queries",
+      "confidence": "EXTRACTED",
+      "_src": "actas_service",
+      "_tgt": "supabase_client",
+      "source": "actas_service",
+      "target": "supabase_client"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "_src": "actas_service",
+      "_tgt": "acta_types",
+      "source": "actas_service",
+      "target": "acta_types"
+    },
+    {
+      "relation": "queries",
+      "confidence": "INFERRED",
+      "_src": "actas_service",
+      "_tgt": "actas_visita_table",
+      "source": "actas_service",
+      "target": "actas_visita_table"
+    },
+    {
+      "relation": "generates_from",
+      "confidence": "EXTRACTED",
+      "_src": "pdf_acta_service",
+      "_tgt": "acta_types",
+      "source": "pdf_acta_service",
+      "target": "acta_types"
+    },
+    {
+      "relation": "uploads_to",
+      "confidence": "EXTRACTED",
+      "_src": "storage_actas_service",
+      "_tgt": "supabase_client",
+      "source": "storage_actas_service",
+      "target": "supabase_client"
+    },
+    {
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "_src": "supabase_client",
+      "_tgt": "env_types",
+      "source": "supabase_client",
+      "target": "env_types"
+    },
+    {
+      "relation": "extends",
+      "confidence": "INFERRED",
+      "_src": "acta_types",
+      "_tgt": "crm_types",
+      "source": "acta_types",
+      "target": "crm_types"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "_src": "mock_data",
+      "_tgt": "crm_types",
+      "source": "crm_types",
+      "target": "mock_data"
+    },
+    {
+      "relation": "applies",
+      "confidence": "INFERRED",
+      "_src": "vite_config",
+      "_tgt": "tailwind_config",
+      "source": "vite_config",
+      "target": "tailwind_config"
+    },
+    {
+      "relation": "applies",
+      "confidence": "INFERRED",
+      "_src": "vite_config",
+      "_tgt": "postcss_config",
+      "source": "vite_config",
+      "target": "postcss_config"
+    },
+    {
+      "relation": "defines",
+      "confidence": "INFERRED",
+      "_src": "db_schema",
+      "_tgt": "actas_visita_table",
+      "source": "db_schema",
+      "target": "actas_visita_table"
+    },
+    {
+      "relation": "defines",
+      "confidence": "INFERRED",
+      "_src": "db_schema",
+      "_tgt": "base_datos_escuelas_table",
+      "source": "db_schema",
+      "target": "base_datos_escuelas_table"
+    },
+    {
+      "relation": "seeds",
+      "confidence": "INFERRED",
+      "_src": "escuelas_slep_data",
+      "_tgt": "base_datos_escuelas_table",
+      "source": "escuelas_slep_data",
+      "target": "base_datos_escuelas_table"
+    },
+    {
+      "relation": "queries and manages records",
+      "confidence": "EXTRACTED",
+      "_src": "actasService",
+      "_tgt": "actas_visita_table",
+      "source": "actas_visita_table",
+      "target": "actasService"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "EXTRACTED",
+      "_src": "supabaseClient",
+      "_tgt": "actas_visita_table",
+      "source": "actas_visita_table",
+      "target": "supabaseClient"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "ActaVisita",
+      "_tgt": "actas_visita_table",
+      "source": "actas_visita_table",
+      "target": "ActaVisita"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "actas_visita_migration_sql",
+      "_tgt": "actas_visita_table",
+      "source": "actas_visita_table",
+      "target": "actas_visita_migration_sql"
+    },
+    {
+      "relation": "documents data source",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_ACTAPAGE",
+      "_tgt": "actas_visita_table",
+      "source": "actas_visita_table",
+      "target": "CONTEXTO_ACTAPAGE"
+    },
+    {
+      "relation": "renders page",
+      "confidence": "EXTRACTED",
+      "_src": "AppShell",
+      "_tgt": "ActaPage",
+      "source": "ActaPage",
+      "target": "AppShell"
+    },
+    {
+      "relation": "imports and uses service",
+      "confidence": "EXTRACTED",
+      "_src": "ActaPage",
+      "_tgt": "actasService",
+      "source": "ActaPage",
+      "target": "actasService"
+    },
+    {
+      "relation": "imports and uses service",
+      "confidence": "EXTRACTED",
+      "_src": "ActaPage",
+      "_tgt": "storageActasService",
+      "source": "ActaPage",
+      "target": "storageActasService"
+    },
+    {
+      "relation": "imports and uses service",
+      "confidence": "EXTRACTED",
+      "_src": "ActaPage",
+      "_tgt": "pdfActaService",
+      "source": "ActaPage",
+      "target": "pdfActaService"
+    },
+    {
+      "relation": "uses type for data structure",
+      "confidence": "EXTRACTED",
+      "_src": "ActaPage",
+      "_tgt": "ActaVisita",
+      "source": "ActaPage",
+      "target": "ActaVisita"
+    },
+    {
+      "relation": "documents architecture and",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_GENERAL_PORTAL",
+      "_tgt": "ActaPage",
+      "source": "ActaPage",
+      "target": "CONTEXTO_GENERAL_PORTAL"
+    },
+    {
+      "relation": "documents page functionality",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_ACTAPAGE",
+      "_tgt": "ActaPage",
+      "source": "ActaPage",
+      "target": "CONTEXTO_ACTAPAGE"
+    },
+    {
+      "relation": "branding asset displayed in UI",
+      "confidence": "INFERRED",
+      "_src": "SLEPCOLCHAGUA_webp",
+      "_tgt": "ActaPage",
+      "source": "ActaPage",
+      "target": "SLEPCOLCHAGUA_webp"
+    },
+    {
+      "relation": "renders page",
+      "confidence": "EXTRACTED",
+      "_src": "AppShell",
+      "_tgt": "DatabasePage",
+      "source": "DatabasePage",
+      "target": "AppShell"
+    },
+    {
+      "relation": "initializes with client",
+      "confidence": "EXTRACTED",
+      "_src": "DatabasePage",
+      "_tgt": "supabaseClient",
+      "source": "DatabasePage",
+      "target": "supabaseClient"
+    },
+    {
+      "relation": "uses type for schools data",
+      "confidence": "EXTRACTED",
+      "_src": "DatabasePage",
+      "_tgt": "EscuelaSLEP",
+      "source": "DatabasePage",
+      "target": "EscuelaSLEP"
+    },
+    {
+      "relation": "queries table",
+      "confidence": "EXTRACTED",
+      "_src": "DatabasePage",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "DatabasePage",
+      "target": "base_datos_escuelas_slep_table"
+    },
+    {
+      "relation": "documents architecture and",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_GENERAL_PORTAL",
+      "_tgt": "DatabasePage",
+      "source": "DatabasePage",
+      "target": "CONTEXTO_GENERAL_PORTAL"
+    },
+    {
+      "relation": "documents page functionality",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_DATABASEPAGE",
+      "_tgt": "DatabasePage",
+      "source": "DatabasePage",
+      "target": "CONTEXTO_DATABASEPAGE"
+    },
+    {
+      "relation": "documents project structure",
+      "confidence": "INFERRED",
+      "_src": "README",
+      "_tgt": "AppShell",
+      "source": "AppShell",
+      "target": "README"
+    },
+    {
+      "relation": "visual branding asset",
+      "confidence": "INFERRED",
+      "_src": "favicon_svg",
+      "_tgt": "AppShell",
+      "source": "AppShell",
+      "target": "favicon_svg"
+    },
+    {
+      "relation": "branding asset for header",
+      "confidence": "INFERRED",
+      "_src": "SLEPCOLCHAGUALETRAS_webp",
+      "_tgt": "AppShell",
+      "source": "AppShell",
+      "target": "SLEPCOLCHAGUALETRAS_webp"
+    },
+    {
+      "relation": "uses to query database",
+      "confidence": "INFERRED",
+      "_src": "actasService",
+      "_tgt": "supabaseClient",
+      "source": "actasService",
+      "target": "supabaseClient"
+    },
+    {
+      "relation": "uploads and manages files",
+      "confidence": "EXTRACTED",
+      "_src": "storageActasService",
+      "_tgt": "actas_storage_bucket",
+      "source": "storageActasService",
+      "target": "actas_storage_bucket"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "EXTRACTED",
+      "_src": "supabaseClient",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "supabaseClient",
+      "target": "base_datos_escuelas_slep_table"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "INFERRED",
+      "_src": "supabaseClient",
+      "_tgt": "establishments_table",
+      "source": "supabaseClient",
+      "target": "establishments_table"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "INFERRED",
+      "_src": "supabaseClient",
+      "_tgt": "visits_table",
+      "source": "supabaseClient",
+      "target": "visits_table"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "INFERRED",
+      "_src": "supabaseClient",
+      "_tgt": "observations_table",
+      "source": "supabaseClient",
+      "target": "observations_table"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "INFERRED",
+      "_src": "supabaseClient",
+      "_tgt": "meeting_minutes_table",
+      "source": "supabaseClient",
+      "target": "meeting_minutes_table"
+    },
+    {
+      "relation": "connects to table",
+      "confidence": "INFERRED",
+      "_src": "supabaseClient",
+      "_tgt": "action_plans_table",
+      "source": "supabaseClient",
+      "target": "action_plans_table"
+    },
+    {
+      "relation": "contains type",
+      "confidence": "EXTRACTED",
+      "_src": "ActaVisita",
+      "_tgt": "ParticipanteActa",
+      "source": "ActaVisita",
+      "target": "ParticipanteActa"
+    },
+    {
+      "relation": "contains type",
+      "confidence": "EXTRACTED",
+      "_src": "ActaVisita",
+      "_tgt": "AcuerdoActa",
+      "source": "ActaVisita",
+      "target": "AcuerdoActa"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "EscuelaSLEP",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "EscuelaSLEP",
+      "target": "base_datos_escuelas_slep_table"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "Establishment",
+      "_tgt": "establishments_table",
+      "source": "Establishment",
+      "target": "establishments_table"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "Visit",
+      "_tgt": "visits_table",
+      "source": "Visit",
+      "target": "visits_table"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "Observation",
+      "_tgt": "observations_table",
+      "source": "Observation",
+      "target": "observations_table"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "MeetingMinute",
+      "_tgt": "meeting_minutes_table",
+      "source": "MeetingMinute",
+      "target": "meeting_minutes_table"
+    },
+    {
+      "relation": "represents data structure",
+      "confidence": "EXTRACTED",
+      "_src": "ActionPlan",
+      "_tgt": "action_plans_table",
+      "source": "ActionPlan",
+      "target": "action_plans_table"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "schema_sql",
+      "_tgt": "establishments_table",
+      "source": "establishments_table",
+      "target": "schema_sql"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "schema_sql",
+      "_tgt": "visits_table",
+      "source": "visits_table",
+      "target": "schema_sql"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "schema_sql",
+      "_tgt": "meeting_minutes_table",
+      "source": "meeting_minutes_table",
+      "target": "schema_sql"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "schema_sql",
+      "_tgt": "observations_table",
+      "source": "observations_table",
+      "target": "schema_sql"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "schema_sql",
+      "_tgt": "action_plans_table",
+      "source": "action_plans_table",
+      "target": "schema_sql"
+    },
+    {
+      "relation": "creates and defines",
+      "confidence": "EXTRACTED",
+      "_src": "base_datos_escuelas_slep_schema_sql",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "base_datos_escuelas_slep_table",
+      "target": "base_datos_escuelas_slep_schema_sql"
+    },
+    {
+      "relation": "populates with data",
+      "confidence": "EXTRACTED",
+      "_src": "base_datos_escuelas_slep_rows_sql",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "base_datos_escuelas_slep_table",
+      "target": "base_datos_escuelas_slep_rows_sql"
+    },
+    {
+      "relation": "documents data source",
+      "confidence": "EXTRACTED",
+      "_src": "CONTEXTO_DATABASEPAGE",
+      "_tgt": "base_datos_escuelas_slep_table",
+      "source": "base_datos_escuelas_slep_table",
+      "target": "CONTEXTO_DATABASEPAGE"
+    }
+  ]
+}

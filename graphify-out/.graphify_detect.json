@@ -1,0 +1,62 @@
+{
+  "files": {
+    "code": [
+      "C:\\proyectos\\PREVENCION\\eslint.config.js",
+      "C:\\proyectos\\PREVENCION\\postcss.config.js",
+      "C:\\proyectos\\PREVENCION\\tailwind.config.js",
+      "C:\\proyectos\\PREVENCION\\vite.config.ts",
+      "C:\\proyectos\\PREVENCION\\public\\BASE DE DATOS ESCUELAS SLEP_rows.sql",
+      "C:\\proyectos\\PREVENCION\\src\\App.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\env.d.ts",
+      "C:\\proyectos\\PREVENCION\\src\\main.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\app\\AppShell.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\app\\routes.ts",
+      "C:\\proyectos\\PREVENCION\\src\\app\\useHashRoute.ts",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaDetailModal.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaForm.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ActaTipoSelector.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\AcuerdosFieldArray.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\AutoResizeTextarea.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\EstablecimientoSelect.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\components\\actas\\ParticipantesFieldArray.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\data\\mockData.ts",
+      "C:\\proyectos\\PREVENCION\\src\\lib\\actasService.ts",
+      "C:\\proyectos\\PREVENCION\\src\\lib\\pdfActaService.ts",
+      "C:\\proyectos\\PREVENCION\\src\\lib\\storageActasService.ts",
+      "C:\\proyectos\\PREVENCION\\src\\lib\\supabase.ts",
+      "C:\\proyectos\\PREVENCION\\src\\pages\\ActaPage.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\pages\\DatabasePage.tsx",
+      "C:\\proyectos\\PREVENCION\\src\\types\\actas.ts",
+      "C:\\proyectos\\PREVENCION\\src\\types\\crm.ts",
+      "C:\\proyectos\\PREVENCION\\supabase\\actas_visita_migration.sql",
+      "C:\\proyectos\\PREVENCION\\supabase\\base_datos_escuelas_slep_schema.sql",
+      "C:\\proyectos\\PREVENCION\\supabase\\schema.sql",
+      "C:\\proyectos\\PREVENCION\\supabase\\seed_base_datos_escuelas_slep.sql"
+    ],
+    "document": [
+      "C:\\proyectos\\PREVENCION\\CONTEXTO_ACTAPAGE.md",
+      "C:\\proyectos\\PREVENCION\\CONTEXTO_DATABASEPAGE.md",
+      "C:\\proyectos\\PREVENCION\\CONTEXTO_GENERAL_PORTAL.md",
+      "C:\\proyectos\\PREVENCION\\index.html",
+      "C:\\proyectos\\PREVENCION\\README.md"
+    ],
+    "paper": [],
+    "image": [
+      "C:\\proyectos\\PREVENCION\\public\\favicon.svg",
+      "C:\\proyectos\\PREVENCION\\public\\icons.svg",
+      "C:\\proyectos\\PREVENCION\\public\\image1.webp",
+      "C:\\proyectos\\PREVENCION\\public\\SLEPCOLCHAGUA.webp",
+      "C:\\proyectos\\PREVENCION\\public\\SLEPCOLCHAGUALETRAS.webp",
+      "C:\\proyectos\\PREVENCION\\src\\assets\\hero.png",
+      "C:\\proyectos\\PREVENCION\\src\\assets\\react.svg",
+      "C:\\proyectos\\PREVENCION\\src\\assets\\vite.svg"
+    ],
+    "video": []
+  },
+  "total_files": 44,
+  "total_words": 36998,
+  "needs_graph": false,
+  "warning": "Corpus is ~36,998 words - fits in a single context window. You may not need a graph.",
+  "skipped_sensitive": [],
+  "graphifyignore_patterns": 0
+}

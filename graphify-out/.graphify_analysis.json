@@ -1,0 +1,319 @@
+{
+  "communities": {
+    "0": [
+      "actas_actadetailmodal_actadetailmodal",
+      "actas_actadetailmodal_actadetailmodalprops",
+      "actas_actadetailmodal_estadochip",
+      "actas_actadetailmodal_field",
+      "actas_actadetailmodal_sectiontitle",
+      "actas_actadetailmodal_tipo_labels",
+      "lib_actasservice_insertacta",
+      "lib_actasservice_updateactaasistencia",
+      "lib_actasservice_updateactaestado",
+      "lib_actasservice_updateactapdf",
+      "lib_pdfactaservice_addfield",
+      "lib_pdfactaservice_addsectiontitle",
+      "lib_pdfactaservice_checkpagebreak",
+      "lib_pdfactaservice_descargaractapdf",
+      "lib_pdfactaservice_generaractapdf",
+      "lib_pdfactaservice_loadimageasbase64",
+      "lib_storageactasservice_uploadactapdf",
+      "lib_storageactasservice_uploadasistenciafile",
+      "lib_supabase_issupabaseconfigured",
+      "pages_actapage_arrowlefticon",
+      "pages_actapage_buildactahash",
+      "pages_actapage_estadochipclass",
+      "pages_actapage_formatfecha",
+      "pages_actapage_getactaidfromhash",
+      "pages_actapage_headercard",
+      "pages_actapage_plusicon",
+      "pages_actapage_tipo_labels",
+      "pages_actapage_view",
+      "src_components_actas_actadetailmodal_tsx",
+      "src_lib_actasservice_ts",
+      "src_lib_pdfactaservice_ts",
+      "src_lib_storageactasservice_ts",
+      "src_lib_supabase_ts",
+      "src_pages_actapage_tsx",
+      "types_actas_actavisita",
+      "types_actas_actavisitarow"
+    ],
+    "1": [
+      "ActaPage",
+      "ActaVisita",
+      "ActionPlan",
+      "AcuerdoActa",
+      "AppShell",
+      "CONTEXTO_ACTAPAGE",
+      "CONTEXTO_DATABASEPAGE",
+      "CONTEXTO_GENERAL_PORTAL",
+      "DatabasePage",
+      "EscuelaSLEP",
+      "Establishment",
+      "MeetingMinute",
+      "Observation",
+      "ParticipanteActa",
+      "README",
+      "SLEPCOLCHAGUALETRAS_webp",
+      "SLEPCOLCHAGUA_webp",
+      "Visit",
+      "actasService",
+      "actas_storage_bucket",
+      "actas_visita_migration_sql",
+      "actas_visita_table",
+      "action_plans_table",
+      "base_datos_escuelas_slep_rows_sql",
+      "base_datos_escuelas_slep_schema_sql",
+      "base_datos_escuelas_slep_table",
+      "establishments_table",
+      "favicon_svg",
+      "meeting_minutes_table",
+      "observations_table",
+      "pdfActaService",
+      "schema_sql",
+      "storageActasService",
+      "supabaseClient",
+      "visits_table"
+    ],
+    "2": [
+      "actas_actaform_actaform",
+      "actas_actaform_actaformprops",
+      "actas_actaform_formerrors",
+      "actas_actaform_formstate",
+      "actas_actaform_sectiontitle",
+      "actas_actaform_tipo_labels",
+      "actas_actaform_todayiso",
+      "actas_acuerdosfieldarray_acuerdosfieldarray",
+      "actas_acuerdosfieldarray_acuerdosfieldarrayprops",
+      "actas_acuerdosfieldarray_emptyacuerdo",
+      "actas_acuerdosfieldarray_estados",
+      "actas_acuerdosfieldarray_plusicon",
+      "actas_acuerdosfieldarray_trashicon",
+      "actas_autoresizetextarea_autoresizetextarea",
+      "actas_autoresizetextarea_autoresizetextareaprops",
+      "actas_establecimientoselect_establecimientoselect",
+      "actas_establecimientoselect_establecimientoselectprops",
+      "actas_participantesfieldarray_emptyparticipante",
+      "actas_participantesfieldarray_participantesfieldarray",
+      "actas_participantesfieldarray_participantesfieldarrayprops",
+      "actas_participantesfieldarray_plusicon",
+      "actas_participantesfieldarray_trashicon",
+      "src_components_actas_actaform_tsx",
+      "src_components_actas_acuerdosfieldarray_tsx",
+      "src_components_actas_autoresizetextarea_tsx",
+      "src_components_actas_establecimientoselect_tsx",
+      "src_components_actas_participantesfieldarray_tsx",
+      "src_types_actas_ts",
+      "types_actas_acuerdoacta",
+      "types_actas_escuelaslep",
+      "types_actas_estadoacta",
+      "types_actas_estadoacuerdo",
+      "types_actas_participanteacta"
+    ],
+    "3": [
+      "data_mockdata_actionplans",
+      "data_mockdata_crmdata",
+      "data_mockdata_establishments",
+      "data_mockdata_indicators",
+      "data_mockdata_meetingminutes",
+      "data_mockdata_modules",
+      "data_mockdata_observations",
+      "data_mockdata_visits",
+      "src_data_mockdata_ts",
+      "src_types_crm_ts",
+      "types_crm_actionplan",
+      "types_crm_establishment",
+      "types_crm_indicator",
+      "types_crm_meetingminute",
+      "types_crm_minutestatus",
+      "types_crm_modulecard",
+      "types_crm_observation",
+      "types_crm_observationrisk",
+      "types_crm_observationstatus",
+      "types_crm_visit",
+      "types_crm_visitstatus"
+    ],
+    "4": [
+      "app_appshell_appshell",
+      "app_appshell_closeicon",
+      "app_appshell_databaseicon",
+      "app_appshell_menuicon",
+      "app_appshell_minutesicon",
+      "app_appshell_pagetag",
+      "app_appshell_pagetitle",
+      "app_routes_approute",
+      "app_routes_approuteid",
+      "app_routes_approutes",
+      "app_usehashroute_normalizeroute",
+      "app_usehashroute_usehashroute",
+      "pages_actapage_actapage",
+      "pages_databasepage_databasepage",
+      "src_app_app",
+      "src_app_appshell_tsx",
+      "src_app_routes_ts",
+      "src_app_tsx",
+      "src_app_usehashroute_ts",
+      "src_main_tsx"
+    ],
+    "5": [
+      "lib_actasservice_fetchactas",
+      "pages_databasepage_actatypelabels",
+      "pages_databasepage_closeicon",
+      "pages_databasepage_countacuerdosbyestado",
+      "pages_databasepage_detailsections",
+      "pages_databasepage_formatactadate",
+      "pages_databasepage_formatvalue",
+      "pages_databasepage_hasvalue",
+      "pages_databasepage_isactarelatedtoschool",
+      "pages_databasepage_loadstate",
+      "pages_databasepage_normalizecomparableidentifier",
+      "pages_databasepage_normalizecomparablevalue",
+      "pages_databasepage_primarycolumns",
+      "pages_databasepage_schooldetailmodal",
+      "pages_databasepage_schoolrecord",
+      "pages_databasepage_schoolvalue",
+      "pages_databasepage_searchicon",
+      "pages_databasepage_summarymetriccard",
+      "pages_databasepage_summarypill",
+      "src_pages_databasepage_tsx"
+    ],
+    "6": [
+      "acta_detail_modal",
+      "acta_form",
+      "acta_page",
+      "acta_tipo_selector",
+      "acta_types",
+      "actas_service",
+      "acuerdos_field_array",
+      "auto_resize_textarea",
+      "base_datos_escuelas_table",
+      "crm_types",
+      "db_schema",
+      "env_types",
+      "escuelas_slep_data",
+      "establecimiento_select",
+      "mock_data",
+      "participantes_field_array",
+      "pdf_acta_service",
+      "storage_actas_service",
+      "supabase_client"
+    ],
+    "7": [
+      "actas_actatiposelector_actatiposelector",
+      "actas_actatiposelector_actatiposelectorprops",
+      "actas_actatiposelector_checksquareicon",
+      "actas_actatiposelector_clipboardicon",
+      "actas_actatiposelector_eyeicon",
+      "actas_actatiposelector_tipooption",
+      "actas_actatiposelector_tipos",
+      "actas_actatiposelector_usersicon",
+      "src_components_actas_actatiposelector_tsx",
+      "types_actas_tipoacta"
+    ],
+    "8": [
+      "app_main",
+      "appshell",
+      "database_page",
+      "eslint_config",
+      "routes",
+      "useHashRoute"
+    ],
+    "9": [
+      "src_env_d_importmeta",
+      "src_env_d_importmetaenv",
+      "src_env_d_ts"
+    ],
+    "10": [
+      "postcss_config",
+      "tailwind_config",
+      "vite_config"
+    ],
+    "11": [
+      "eslint_config_js"
+    ],
+    "12": [
+      "postcss_config_js"
+    ],
+    "13": [
+      "tailwind_config_js"
+    ],
+    "14": [
+      "vite_config_ts"
+    ],
+    "15": [
+      "seed_base_datos_escuelas_slep_sql"
+    ],
+    "16": [
+      "icons_svg"
+    ],
+    "17": [
+      "hero_png"
+    ]
+  },
+  "cohesion": {},
+  "god_nodes": [
+    {
+      "id": "lib_pdfactaservice_generaractapdf",
+      "label": "generarActaPdf()",
+      "degree": 7
+    },
+    {
+      "id": "types_actas_actavisita",
+      "label": "ActaVisita",
+      "degree": 5
+    },
+    {
+      "id": "types_actas_actavisitarow",
+      "label": "ActaVisitaRow",
+      "degree": 5
+    },
+    {
+      "id": "types_actas_tipoacta",
+      "label": "TipoActa",
+      "degree": 4
+    },
+    {
+      "id": "app_appshell_appshell",
+      "label": "AppShell()",
+      "degree": 3
+    },
+    {
+      "id": "app_usehashroute_usehashroute",
+      "label": "useHashRoute()",
+      "degree": 3
+    },
+    {
+      "id": "actas_actadetailmodal_actadetailmodal",
+      "label": "ActaDetailModal()",
+      "degree": 3
+    },
+    {
+      "id": "actas_actaform_actaform",
+      "label": "ActaForm()",
+      "degree": 3
+    },
+    {
+      "id": "lib_actasservice_fetchactas",
+      "label": "fetchActas()",
+      "degree": 3
+    },
+    {
+      "id": "lib_actasservice_updateactapdf",
+      "label": "updateActaPdf()",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "AppShell()",
+      "target": "useHashRoute()",
+      "source_files": [
+        "src/app/AppShell.tsx",
+        "src/app/useHashRoute.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "cross-file semantic connection"
+    }
+  ]
+}
