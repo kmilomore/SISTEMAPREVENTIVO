@@ -33,7 +33,29 @@ function SendIcon() {
   )
 }
 
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 shrink-0 text-slate-300" aria-hidden="true">
+        <path d="M8 10l4-4 4 4M8 14l4 4 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  return dir === 'asc' ? (
+    <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 shrink-0 text-[#0033A0]" aria-hidden="true">
+      <path d="M8 14l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 shrink-0 text-[#0033A0]" aria-hidden="true">
+      <path d="M8 10l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+type SortKey = 'descripcion' | 'establecimiento_nombre' | 'responsable' | 'plazo' | 'estado'
+type SortDir = 'asc' | 'desc'
 
 const ESTADOS: EstadoCompromiso[] = ['Pendiente', 'En proceso', 'Cumplido', 'Vencido']
 
@@ -306,6 +328,8 @@ export function CompromisosPage() {
   const [filtroComuna, setFiltroComuna] = useState('')
   const [filtroEstado, setFiltroEstado] = useState<EstadoCompromiso | ''>('')
   const [selected, setSelected] = useState<Compromiso | null>(null)
+  const [sortKey, setSortKey] = useState<SortKey>('plazo')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
 
   useEffect(() => {
     let mounted = true
@@ -328,7 +352,7 @@ export function CompromisosPage() {
   )
 
   const filtered = useMemo(() => {
-    return compromisos.filter((c) => {
+    const result = compromisos.filter((c) => {
       const matchEscuela =
         !filtroEscuela ||
         c.establecimiento_nombre.toLowerCase().includes(filtroEscuela.toLowerCase())
@@ -336,7 +360,43 @@ export function CompromisosPage() {
       const matchEstado = !filtroEstado || c.estado === filtroEstado
       return matchEscuela && matchComuna && matchEstado
     })
-  }, [compromisos, filtroEscuela, filtroComuna, filtroEstado])
+
+    return [...result].sort((a, b) => {
+      let av: string
+      let bv: string
+      switch (sortKey) {
+        case 'descripcion':
+          av = a.descripcion; bv = b.descripcion; break
+        case 'establecimiento_nombre':
+          av = a.establecimiento_nombre; bv = b.establecimiento_nombre; break
+        case 'responsable':
+          av = a.responsable ?? ''; bv = b.responsable ?? ''; break
+        case 'plazo':
+          av = a.plazo ?? (sortDir === 'asc' ? '9999-99-99' : '0000-00-00')
+          bv = b.plazo ?? (sortDir === 'asc' ? '9999-99-99' : '0000-00-00')
+          break
+        case 'estado': {
+          const order: Record<string, number> = { Pendiente: 0, 'En proceso': 1, Cumplido: 2, Vencido: 3 }
+          const cmp = (order[a.estado] ?? 99) - (order[b.estado] ?? 99)
+          return sortDir === 'asc' ? cmp : -cmp
+        }
+        default: return 0
+      }
+      const cmp = av.localeCompare(bv, 'es', { sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [compromisos, filtroEscuela, filtroComuna, filtroEstado, sortKey, sortDir])
+
+  const handleSort = useCallback((key: SortKey) => {
+    setSortKey((prev) => {
+      if (prev === key) {
+        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+        return prev
+      }
+      setSortDir('asc')
+      return key
+    })
+  }, [])
 
   const handleUpdated = useCallback((updated: Compromiso) => {
     setCompromisos((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
@@ -465,21 +525,11 @@ export function CompromisosPage() {
           <table className="min-w-full text-left text-sm">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Compromiso
-                </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Establecimiento
-                </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Responsable
-                </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Plazo
-                </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Estado
-                </th>
+                <SortableTh label="Compromiso" colKey="descripcion" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortableTh label="Establecimiento" colKey="establecimiento_nombre" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortableTh label="Responsable" colKey="responsable" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortableTh label="Plazo" colKey="plazo" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+                <SortableTh label="Estado" colKey="estado" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Notas
                 </th>
@@ -596,6 +646,33 @@ function HeaderCard() {
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Compromisos</p>
       <h3 className="mt-2 text-3xl font-light text-slate-800">Gestor de compromisos</h3>
     </div>
+  )
+}
+
+function SortableTh({
+  label,
+  colKey,
+  sortKey,
+  sortDir,
+  onSort,
+}: {
+  label: string
+  colKey: SortKey
+  sortKey: SortKey
+  sortDir: SortDir
+  onSort: (key: SortKey) => void
+}) {
+  const active = sortKey === colKey
+  return (
+    <th
+      className="cursor-pointer select-none px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-700"
+      onClick={() => onSort(colKey)}
+    >
+      <span className="flex items-center gap-1">
+        {label}
+        <SortIcon active={active} dir={sortDir} />
+      </span>
+    </th>
   )
 }
 

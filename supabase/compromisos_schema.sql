@@ -54,7 +54,7 @@ create index if not exists compromisos_plazo_idx
   where plazo is not null;
 
 -- Trigger: actualiza updated_at en cada UPDATE
-create trigger compromisos_set_updated_at
+create or replace trigger compromisos_set_updated_at
   before update on public.compromisos
   for each row execute function public.set_updated_at();
 
@@ -72,33 +72,137 @@ create table if not exists public.comentarios_compromisos (
 create index if not exists comentarios_compromisos_compromiso_id_idx
   on public.comentarios_compromisos (compromiso_id);
 
+-- ── Trigger: acta nueva → compromisos automáticos ───────────────────────────
+--
+-- Cada vez que se inserta un acta en actas_visita, este trigger lee el array
+-- acuerdos (JSONB) y crea un registro en compromisos por cada elemento.
+-- No se dispara en UPDATE para no pisar cambios de estado ya hechos en el
+-- módulo de compromisos.
+
+create or replace function public.sync_acuerdos_to_compromisos()
+returns trigger
+language plpgsql
+as $$
+begin
+  insert into public.compromisos (
+    acta_id,
+    acta_folio,
+    establecimiento_id,
+    establecimiento_nombre,
+    establecimiento_comuna,
+    descripcion,
+    responsable,
+    plazo,
+    estado,
+    created_at,
+    updated_at
+  )
+  select
+    new.id,
+    new.folio,
+    new.establecimiento_id,
+    coalesce(new.establecimiento_nombre, ''),
+    coalesce(new.establecimiento_comuna, ''),
+    acuerdo->>'descripcion',
+    nullif(trim(acuerdo->>'responsable'), ''),
+    case
+      when acuerdo->>'plazo' ~ '^\d{4}-\d{2}-\d{2}$'
+      then (acuerdo->>'plazo')::date
+      when acuerdo->>'plazo' ~ '^\d{2}/\d{2}/\d{4}$'
+      then to_date(acuerdo->>'plazo', 'DD/MM/YYYY')
+      when acuerdo->>'plazo' ~ '^\d{2}-\d{2}-\d{4}$'
+      then to_date(acuerdo->>'plazo', 'DD-MM-YYYY')
+      else null
+    end,
+    case
+      when acuerdo->>'estado' in ('Pendiente', 'En proceso', 'Cumplido', 'Vencido')
+      then acuerdo->>'estado'
+      else 'Pendiente'
+    end,
+    new.created_at,
+    new.updated_at
+  from jsonb_array_elements(new.acuerdos) as acuerdo
+  where trim(acuerdo->>'descripcion') <> '';
+
+  return new;
+end;
+$$;
+
+create or replace trigger trg_actas_visita_sync_compromisos
+  after insert on public.actas_visita
+  for each row execute function public.sync_acuerdos_to_compromisos();
+
+-- ── Migración inicial: acuerdos de actas_visita → compromisos ────────────────
+--
+-- Lee el campo acuerdos (JSONB array) de cada acta y crea un registro en
+-- compromisos por cada elemento. Solo se ejecuta si la tabla compromisos
+-- está vacía, evitando duplicados en ejecuciones posteriores.
+--
+-- Estructura de cada elemento en acuerdos:
+--   { descripcion, responsable?, plazo?, estado }
+--   estado: 'Pendiente' | 'En proceso' | 'Cumplido'
+--
+-- El campo plazo en acuerdos puede venir en formato ISO (YYYY-MM-DD) o
+-- formato chileno (DD/MM/YYYY). Ambos se convierten a date. Cualquier otro
+-- texto libre queda NULL.
+
+do $$
+begin
+  if (select count(*) from public.compromisos) = 0 then
+
+    insert into public.compromisos (
+      acta_id,
+      acta_folio,
+      establecimiento_id,
+      establecimiento_nombre,
+      establecimiento_comuna,
+      descripcion,
+      responsable,
+      plazo,
+      estado,
+      created_at,
+      updated_at
+    )
+    select
+      a.id,
+      a.folio,
+      a.establecimiento_id,
+      coalesce(a.establecimiento_nombre, ''),
+      coalesce(a.establecimiento_comuna, ''),
+      acuerdo->>'descripcion',
+      nullif(trim(acuerdo->>'responsable'), ''),
+      case
+        when acuerdo->>'plazo' ~ '^\d{4}-\d{2}-\d{2}$'
+        then (acuerdo->>'plazo')::date
+        when acuerdo->>'plazo' ~ '^\d{2}/\d{2}/\d{4}$'
+        then to_date(acuerdo->>'plazo', 'DD/MM/YYYY')
+        when acuerdo->>'plazo' ~ '^\d{2}-\d{2}-\d{4}$'
+        then to_date(acuerdo->>'plazo', 'DD-MM-YYYY')
+        else null
+      end,
+      case
+        when acuerdo->>'estado' in ('Pendiente', 'En proceso', 'Cumplido', 'Vencido')
+        then acuerdo->>'estado'
+        else 'Pendiente'
+      end,
+      a.created_at,
+      a.updated_at
+    from public.actas_visita a
+    cross join lateral jsonb_array_elements(a.acuerdos) as acuerdo
+    where jsonb_array_length(a.acuerdos) > 0
+      and trim(acuerdo->>'descripcion') <> '';
+
+    raise notice 'Migración completada: % compromisos insertados.',
+      (select count(*) from public.compromisos);
+
+  else
+    raise notice 'Tabla compromisos ya contiene datos — migración omitida.';
+  end if;
+end;
+$$;
+
 -- ── Row Level Security ────────────────────────────────────────────────────────
+-- Deshabilitado hasta que se implemente autenticación.
 
-alter table public.compromisos              enable row level security;
-alter table public.comentarios_compromisos  enable row level security;
-
--- Lectura pública (anon) — ajustar según política de acceso real
-create policy "compromisos_select_public"
-  on public.compromisos
-  for select
-  using (true);
-
-create policy "comentarios_compromisos_select_public"
-  on public.comentarios_compromisos
-  for select
-  using (true);
-
--- Escritura solo para usuarios autenticados
-create policy "compromisos_write_authenticated"
-  on public.compromisos
-  for all
-  to authenticated
-  using (true)
-  with check (true);
-
-create policy "comentarios_compromisos_write_authenticated"
-  on public.comentarios_compromisos
-  for all
-  to authenticated
-  using (true)
-  with check (true);
+alter table public.compromisos              disable row level security;
+alter table public.comentarios_compromisos  disable row level security;

@@ -2,7 +2,8 @@
 
 Archivo: `src/pages/CompromisosPage.tsx`  
 Ruta: `#/compromisos`  
-Fuente de datos: Supabase · tabla `public.compromisos` · fallback automático a datos mock
+Fuente de datos: Supabase · tablas `public.compromisos` + `public.comentarios_compromisos`  
+Schema SQL: `supabase/compromisos_schema.sql`
 
 ---
 
@@ -16,7 +17,7 @@ Gestor de seguimiento de compromisos impuestos a los establecimientos educaciona
 - identificar visualmente compromisos vencidos por plazo superado;
 - conocer de un vistazo el resumen cuantitativo mediante chips KPI en el header.
 
-Un compromiso es una obligación formal derivada de un acuerdo registrado en un acta de visita. A diferencia de los acuerdos internos del acta (campo `acuerdos` en `actas_visita`), los compromisos en este módulo son entidades independientes con ciclo de vida propio, historial de comentarios y actualización de estado desacoplada del acta original.
+Un compromiso es una obligación formal derivada de un acuerdo registrado en un acta de visita. Los compromisos son entidades independientes con ciclo de vida propio: tienen su propio estado, su historial de comentarios normalizado en tabla separada, y pueden actualizarse sin tocar el acta de origen.
 
 ---
 
@@ -25,32 +26,53 @@ Un compromiso es una obligación formal derivada de un acuerdo registrado en un 
 | Atributo | Valor |
 |---|---|
 | Tabla principal | `public.compromisos` |
-| Clave primaria | `id` (uuid o texto) |
+| Tabla de comentarios | `public.comentarios_compromisos` |
+| Clave primaria | `id` (uuid) |
 | Orden de carga | Descendente por `created_at` |
-| Modo fallback | Si Supabase no está configurado O si la tabla no existe, se usan los datos mock de `src/data/mockData.ts` |
-| Indicador de modo | El componente recibe `isMock: boolean` del servicio y muestra un chip "Modo demo" si corresponde |
+| Sin Supabase configurado | Muestra banner de configuración — sin datos mock |
+
+Los compromisos **no se crean manualmente desde la app**. Se generan automáticamente desde los acuerdos del acta vía trigger en Supabase (ver sección 4).
 
 ---
 
-## 3. Estructura de la tabla `compromisos`
+## 3. Estructura de tablas
 
-### Campos
+### Tabla `public.compromisos`
 
 | Campo | Tipo | Descripción |
 |---|---|---|
-| `id` | text / uuid PK | Identificador único del compromiso |
-| `acta_id` | text (nullable) | UUID del acta de origen en `actas_visita` |
+| `id` | uuid PK | Identificador único del compromiso |
+| `acta_id` | uuid FK → `actas_visita.id` (nullable, set null on delete) | Acta de origen |
 | `acta_folio` | text (nullable) | Folio visible del acta de origen |
 | `establecimiento_id` | text | ID del establecimiento (N° SLEP) |
 | `establecimiento_nombre` | text | Nombre del establecimiento |
 | `establecimiento_comuna` | text | Comuna del establecimiento |
 | `descripcion` | text | Texto completo del compromiso |
-| `responsable` | text (nullable) | Persona o cargo responsable de cumplirlo |
-| `plazo` | text (nullable) | Fecha límite de cumplimiento (ISO 8601: `YYYY-MM-DD`) |
-| `estado` | text | `Pendiente` / `En proceso` / `Cumplido` / `Vencido` |
-| `comentarios` | jsonb | Array de `ComentarioCompromiso` (historial de seguimiento) |
-| `created_at` | text / timestamptz | Fecha de creación |
-| `updated_at` | text / timestamptz | Fecha de última actualización |
+| `responsable` | text (nullable) | Persona o cargo responsable |
+| `plazo` | date (nullable) | Fecha límite de cumplimiento |
+| `estado` | text | `Pendiente` / `En proceso` / `Cumplido` / `Vencido` (check constraint) |
+| `created_at` | timestamptz | Fecha de creación (default `now()`) |
+| `updated_at` | timestamptz | Fecha de última actualización (auto-actualizado por trigger) |
+
+### Tabla `public.comentarios_compromisos`
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `id` | uuid PK | Identificador único del comentario |
+| `compromiso_id` | uuid FK → `compromisos.id` (cascade delete) | Compromiso al que pertenece |
+| `texto` | text | Cuerpo del comentario |
+| `autor` | text | Nombre del autor (default `'Unidad de Prevención'`) |
+| `created_at` | timestamptz | Fecha de creación (default `now()`) |
+
+### Índices
+
+| Índice | Tabla | Campo |
+|---|---|---|
+| `compromisos_estado_idx` | `compromisos` | `estado` |
+| `compromisos_acta_id_idx` | `compromisos` | `acta_id` |
+| `compromisos_establecimiento_id_idx` | `compromisos` | `establecimiento_id` |
+| `compromisos_plazo_idx` | `compromisos` | `plazo` (where not null) |
+| `comentarios_compromisos_compromiso_id_idx` | `comentarios_compromisos` | `compromiso_id` |
 
 ### Tipos TypeScript — `src/types/compromisos.ts`
 
@@ -58,24 +80,25 @@ Un compromiso es una obligación formal derivada de un acuerdo registrado en un 
 export type EstadoCompromiso = 'Pendiente' | 'En proceso' | 'Cumplido' | 'Vencido'
 
 export interface ComentarioCompromiso {
-  id: string       // generado en cliente: `cc-{timestamp}-{random}`
-  texto: string    // cuerpo del comentario
-  autor: string    // nombre del autor (default: 'Unidad de Prevención')
-  fecha: string    // ISO 8601 YYYY-MM-DD
+  id: string
+  compromiso_id: string
+  texto: string
+  autor: string
+  created_at: string   // timestamptz desde Supabase
 }
 
 export interface Compromiso {
   id: string
-  acta_id?: string
-  acta_folio?: string
+  acta_id?: string | null
+  acta_folio?: string | null
   establecimiento_id: string
   establecimiento_nombre: string
   establecimiento_comuna: string
   descripcion: string
-  responsable?: string
-  plazo?: string
+  responsable?: string | null
+  plazo?: string | null
   estado: EstadoCompromiso
-  comentarios: ComentarioCompromiso[]
+  comentarios: ComentarioCompromiso[]  // mapeado desde comentarios_compromisos
   created_at: string
   updated_at: string
 }
@@ -83,7 +106,50 @@ export interface Compromiso {
 
 ---
 
-## 4. Estados del compromiso
+## 4. Ciclo de vida de un compromiso
+
+### Creación automática desde actas (trigger)
+
+Los compromisos **no se insertan desde la app**. Supabase los crea automáticamente mediante el trigger `trg_actas_visita_sync_compromisos`, que se dispara `AFTER INSERT` en `actas_visita`:
+
+```
+Usuario registra acta en ActaPage (con acuerdos)
+        │
+        ▼
+INSERT en public.actas_visita  ← insertActa() en actasService.ts
+        │
+        ▼  (trigger automático en Supabase)
+trg_actas_visita_sync_compromisos
+  → lee NEW.acuerdos (JSONB array)
+  → INSERT en public.compromisos — uno por cada acuerdo
+        │
+        ▼
+Compromiso aparece en #/compromisos al recargar
+```
+
+El trigger **no se activa en UPDATE**, para no pisar cambios de estado ya hechos en el módulo de compromisos.
+
+La función del trigger (`sync_acuerdos_to_compromisos`) extrae de cada elemento del JSONB:
+- `descripcion` → campo `descripcion`
+- `responsable` → campo `responsable` (null si vacío)
+- `plazo` → se castea a `date` solo si tiene formato `YYYY-MM-DD`, sino queda `null`
+- `estado` → se valida contra los valores permitidos; default `'Pendiente'`
+
+### Migración de acuerdos históricos
+
+El script incluye un bloque `DO $$` que se ejecuta **una sola vez** (cuando `compromisos` está vacía) y migra todos los acuerdos de actas ya existentes en `actas_visita`. Esto sincroniza el histórico sin crear duplicados.
+
+### Actualización de estado
+
+El usuario cambia el estado directamente en el modal de `CompromisosPage` → `updateCompromisoEstado()` → UPDATE en `compromisos`. El trigger `compromisos_set_updated_at` actualiza `updated_at` automáticamente.
+
+### Historial de comentarios
+
+Cada comentario es un INSERT en `comentarios_compromisos` con `compromiso_id` como FK. No se sobreescriben comentarios anteriores: la tabla crece append-only.
+
+---
+
+## 5. Estados del compromiso
 
 | Estado | Descripción | Color visual |
 |---|---|---|
@@ -92,49 +158,52 @@ export interface Compromiso {
 | `Cumplido` | Compromiso completado y verificado | Verde (`status-success`) |
 | `Vencido` | Plazo superado sin cumplimiento | Rojo (`status-error`) |
 
-### Detección automática de vencimiento (solo visual)
+### Detección visual de vencimiento
 
-El campo `plazo` se compara con la fecha actual en cliente. Si la fecha ya pasó y el estado **no** es `Cumplido`, el texto del plazo se muestra en rojo. Esto es una señal visual, no un cambio automático de estado: el estado sigue siendo el que tiene en base de datos.
+El campo `plazo` se compara con la fecha actual en cliente. Si ya pasó y el estado no es `Cumplido`, el texto del plazo se muestra en rojo. Es una señal visual — el estado en BD no cambia automáticamente.
 
 ```ts
-function isPlazoVencido(plazo?: string) {
+function isPlazoVencido(plazo?: string | null) {
   if (!plazo) return false
-  return new Date(plazo) < new Date()
+  return new Date(plazo + 'T23:59:59') < new Date()
 }
 ```
 
 ---
 
-## 5. Servicio de datos — `src/lib/compromisosService.ts`
+## 6. Servicio de datos — `src/lib/compromisosService.ts`
 
 ### Funciones exportadas
 
 | Función | Descripción |
 |---|---|
-| `fetchCompromisos()` | Carga todos los compromisos. Retorna `{ data, error, isMock }`. Si Supabase no está inicializado o falla, retorna datos mock con `isMock: true`. |
-| `updateCompromisoEstado(id, estado)` | Actualiza el campo `estado` y `updated_at` en Supabase. Si no hay Supabase, retorna sin error (el cambio persiste solo en estado local de React). |
-| `updateCompromisoComentarios(id, comentarios)` | Actualiza el array `comentarios` completo y `updated_at` en Supabase. Mismo comportamiento sin conexión. |
+| `fetchCompromisos()` | SELECT `*` en `compromisos` con nested select de `comentarios_compromisos`. Retorna `{ data, error }`. |
+| `updateCompromisoEstado(id, estado)` | UPDATE `estado` + `updated_at` en `compromisos`. |
+| `addComentario(compromiso_id, texto, autor)` | INSERT en `comentarios_compromisos`. Retorna `{ data: ComentarioCompromiso, error }`. |
 
-### Lógica de fallback
+### Sin Supabase
+
+Las tres funciones retornan `{ data: [], error: 'Supabase no inicializado.' }` o `{ data: null, error: ... }`. La página muestra un banner de configuración. No hay fallback a datos mock.
+
+### Query de carga (nested select)
 
 ```ts
-// 1. Sin Supabase configurado → mock inmediato
-if (!supabase) return { data: crmData.compromisos, error: null, isMock: true }
-
-// 2. Supabase configurado pero tabla no existe (error de Supabase) → mock como fallback
-if (error) return { data: crmData.compromisos, error: null, isMock: true }
-
-// 3. Supabase OK → datos reales
-return { data: data as Compromiso[], error: null, isMock: false }
+supabase
+  .from('compromisos')
+  .select(`
+    *,
+    comentarios_compromisos (
+      id, compromiso_id, texto, autor, created_at
+    )
+  `)
+  .order('created_at', { ascending: false })
 ```
 
-### Escritura sin Supabase
-
-Cuando `supabase` es `null`, las funciones de escritura retornan `{ error: null }` sin hacer nada. El componente aplica el cambio localmente en su estado React, por lo que la UI se actualiza pero no persiste entre sesiones.
+El resultado de `comentarios_compromisos` se mapea al campo `comentarios` del tipo `Compromiso`, ordenado cronológicamente por `created_at`.
 
 ---
 
-## 6. Estructura del componente `CompromisosPage`
+## 7. Estructura del componente `CompromisosPage`
 
 ### Estado local
 
@@ -142,7 +211,7 @@ Cuando `supabase` es `null`, las funciones de escritura retornan `{ error: null 
 |---|---|---|
 | `compromisos` | `Compromiso[]` | Lista completa cargada desde el servicio |
 | `loading` | `boolean` | Muestra skeletons durante la carga inicial |
-| `isMock` | `boolean` | Controla si se muestra el chip "Modo demo" |
+| `fetchError` | `string \| null` | Error de carga (Supabase no configurado o fallo de red) |
 | `filtroEscuela` | `string` | Texto libre para filtrar por nombre de establecimiento |
 | `filtroComuna` | `string` | Valor del select de comunas |
 | `filtroEstado` | `EstadoCompromiso \| ''` | Valor del select de estados |
@@ -152,9 +221,9 @@ Cuando `supabase` es `null`, las funciones de escritura retornan `{ error: null 
 
 | Variable | Derivado de | Propósito |
 |---|---|---|
-| `comunas` | `compromisos` | Lista única de comunas, ordenada alfabéticamente, para el select de filtro |
-| `filtered` | `compromisos + filtros` | Subconjunto de compromisos que pasa los tres filtros activos |
-| `counts` | `compromisos` | Conteos por estado para los chips KPI del header |
+| `comunas` | `compromisos` | Lista única de comunas para el select de filtro |
+| `filtered` | `compromisos + filtros` | Subconjunto que pasa los tres filtros activos |
+| `counts` | `compromisos` | Conteos por estado para los KPI chips |
 
 ### Flujo de carga
 
@@ -163,19 +232,17 @@ Montaje del componente
         │
         ▼
 fetchCompromisos()
-  ├── Supabase OK        → datos reales, isMock: false
-  └── Sin Supabase / error → datos mock, isMock: true
+  ├── Supabase OK + datos   → setCompromisos(data)
+  ├── Supabase OK + vacío   → setCompromisos([]) — tabla existe pero sin registros
+  └── Error / sin Supabase  → setFetchError(msg) → render banner configuración
         │
         ▼
-setCompromisos(data) + setIsMock(mock) + setLoading(false)
-        │
-        ▼
-Render: KPI chips + filtros + tabla
+setLoading(false) → render tabla o banner
 ```
 
 ---
 
-## 7. Filtros de la tabla
+## 8. Filtros de la tabla
 
 | Filtro | Tipo | Campo filtrado |
 |---|---|---|
@@ -183,40 +250,38 @@ Render: KPI chips + filtros + tabla
 | Filtro por comuna | Select dropdown | `establecimiento_comuna` (coincidencia exacta) |
 | Filtro por estado | Select dropdown | `estado` (coincidencia exacta) |
 
-Los tres filtros se aplican en paralelo (AND lógico). El botón "Limpiar filtros" aparece cuando al menos uno está activo y resetea los tres a la vez.
+Los tres filtros se aplican en paralelo (AND lógico). El botón "Limpiar filtros" aparece cuando al menos uno está activo.
 
 ---
 
-## 8. Modal de edición — `CompromisoModal`
+## 9. Modal de edición — `CompromisoModal`
 
-Se monta cuando `selected !== null`. El overlay (`backdrop-blur-sm`) cierra el modal al hacer clic fuera.
+Se monta cuando `selected !== null`. El overlay cierra el modal al hacer clic fuera.
 
 ### Secciones del modal
 
 | # | Sección | Contenido |
 |---|---|---|
-| 1 | Header | Descripción completa del compromiso + folio del acta de origen |
-| 2 | Metadata | Establecimiento, responsable, plazo (en rojo si está vencido) |
-| 3 | Cambio de estado | Botones de selección (Pendiente / En proceso / Cumplido / Vencido) |
-| 4 | Historial | Lista cronológica de comentarios con avatar, autor y fecha |
+| 1 | Header | Descripción completa + folio del acta de origen |
+| 2 | Metadata | Establecimiento, responsable, plazo (en rojo si vencido) |
+| 3 | Cambio de estado | Botones de selección con color por estado |
+| 4 | Historial | Lista cronológica de `comentarios_compromisos` con avatar, autor y fecha |
 | 5 | Nuevo comentario | Textarea + campo autor + botón Agregar |
 
 ### Flujo de cambio de estado
 
 ```
-Usuario selecciona nuevo estado (botón cambia de apariencia)
+Usuario selecciona nuevo estado
         │
 estadoChanged = true → aparece botón "Guardar cambio de estado"
         │
         ▼
-updateCompromisoEstado(id, nuevoEstado)   ← Supabase o no-op
+updateCompromisoEstado(id, nuevoEstado)
         │
         ▼
-onUpdated(compromiso actualizado)        ← propaga a CompromisosPage
-        │
-        ▼
-setCompromisos(prev.map(c => c.id === id ? updated : c))
-setSelected(updated)
+onUpdated(compromiso actualizado)
+  → setCompromisos(prev.map(...))
+  → setSelected(updated)
 ```
 
 ### Flujo de agregar comentario
@@ -225,40 +290,36 @@ setSelected(updated)
 Usuario escribe texto + nombre (opcional)
         │
         ▼
-Clic "Agregar"
+addComentario(compromiso.id, texto, autor)
+  → INSERT en comentarios_compromisos
+  → retorna ComentarioCompromiso con id y created_at de Supabase
         │
         ▼
-Construye ComentarioCompromiso {
-  id: `cc-{Date.now()}-{random}`,
-  texto, autor (default 'Unidad de Prevención'), fecha: today
-}
-        │
-        ▼
-nuevosComentarios = [...comentarios, nuevo]
-updateCompromisoComentarios(id, nuevosComentarios)   ← Supabase o no-op
-        │
-        ▼
-setComentarios(nuevosComentarios)
+setComentarios([...comentarios, data])
 onUpdated(compromiso con comentarios actualizados)
 ```
 
+El comentario recién insertado usa el `created_at` real de Supabase — no se genera un ID en cliente.
+
 ---
 
-## 9. KPI chips del header
+## 10. KPI chips del header
 
-Los chips se calculan en `useMemo` sobre el array completo `compromisos` (no sobre `filtered`), para mostrar siempre el panorama global independiente de los filtros activos.
+Se calculan sobre `compromisos` completo (no sobre `filtered`), para mostrar el panorama global independiente de los filtros.
 
 | Chip | Color | Valor |
 |---|---|---|
-| Total | Gris neutro | `compromisos.length` |
-| Pendientes | Ámbar | `compromisos.filter(c => c.estado === 'Pendiente').length` |
-| En proceso | Azul | `compromisos.filter(c => c.estado === 'En proceso').length` |
-| Cumplidos | Verde | `compromisos.filter(c => c.estado === 'Cumplido').length` |
-| Vencidos | Rojo | `compromisos.filter(c => c.estado === 'Vencido').length` |
+| Total | Gris | `compromisos.length` |
+| Pendientes | Ámbar | estado === `'Pendiente'` |
+| En proceso | Azul | estado === `'En proceso'` |
+| Cumplidos | Verde | estado === `'Cumplido'` |
+| Vencidos | Rojo | estado === `'Vencido'` |
+
+Los chips solo se muestran cuando `loading` es `false` y hay al menos un compromiso.
 
 ---
 
-## 10. Integración en el shell
+## 11. Integración en el shell
 
 ### routes.ts
 
@@ -282,146 +343,93 @@ pageTag.compromisos   = 'Seguimiento'
 <CommitmentsIcon />   // SVG — checklist con marca de verificación en cuadro
 
 // Render condicional:
-route === 'database'    ? <DatabasePage />
-  : route === 'acta'    ? <ActaPage />
-  : route === 'compromisos' ? <CompromisosPage />
-  : <MetricasPage />
-```
-
-### Icono `CommitmentsIcon`
-
-```tsx
-function CommitmentsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-      <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
-            stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
+route === 'compromisos' ? <CompromisosPage /> : ...
 ```
 
 ---
 
-## 11. Datos mock — `src/data/mockData.ts`
+## 12. Schema SQL — `supabase/compromisos_schema.sql`
 
-Los datos demo incluyen 5 compromisos que cubren los tres establecimientos mock, los cuatro estados posibles y distintos escenarios de plazo:
+El archivo contiene en orden:
 
-| ID | Establecimiento | Estado | Plazo | Notas |
-|---|---|---|---|---|
-| `com-01` | Escuela San Fernando Norte | En proceso | 2026-05-15 | 1 comentario |
-| `com-02` | Escuela San Fernando Norte | Pendiente | 2026-06-01 | Sin comentarios |
-| `com-03` | Liceo Técnico Placilla | Vencido | 2026-04-28 | 1 comentario |
-| `com-04` | Liceo Técnico Placilla | Pendiente | 2026-05-30 | Sin comentarios |
-| `com-05` | Escuela Rural Nancagua | Cumplido | 2026-04-19 | 1 comentario |
+| Bloque | Descripción |
+|---|---|
+| `set_updated_at()` | Función trigger reutilizable para `updated_at` |
+| `create table compromisos` | Tabla principal con check constraint en `estado` |
+| Índices | 4 índices en `compromisos` |
+| `compromisos_set_updated_at` | Trigger BEFORE UPDATE en `compromisos` |
+| `create table comentarios_compromisos` | Tabla de historial con FK cascade |
+| Índice | 1 índice en `comentarios_compromisos` |
+| `sync_acuerdos_to_compromisos()` | Función trigger que lee `acuerdos` JSONB y hace INSERT en `compromisos` |
+| `trg_actas_visita_sync_compromisos` | Trigger AFTER INSERT en `actas_visita` |
+| `DO $$` migración | Migra acuerdos históricos una sola vez si `compromisos` está vacía |
+
+**RLS deshabilitado** — activar cuando se implemente autenticación.
 
 ---
 
-## 12. Componentes internos del módulo
+## 13. Componentes internos del módulo
 
 | Componente / función | Propósito |
 |---|---|
-| `CompromisosPage` | Orquestador: carga, filtros, tabla, estado del modal |
-| `CompromisoModal` | Modal completo: metadata, cambio de estado, historial, nuevo comentario |
-| `KpiChip` | Chip de indicador reutilizable con colores por categoría |
-| `estadoChip(estado)` | Retorna la clase CSS de Tailwind para el chip de estado en la tabla |
-| `estadoBtnClass(estado, selected)` | Retorna la clase CSS del botón de selección de estado en el modal |
-| `isPlazoVencido(plazo)` | Compara la fecha de plazo con la fecha actual |
-| `formatFecha(dateStr)` | Formatea fecha ISO a `dd/mm/yyyy` en locale `es-CL` |
-| `generateId()` | Genera un ID único para comentarios nuevos en cliente |
-| `SearchIcon` | SVG — lupa para el input de búsqueda |
-| `CloseIcon` | SVG — X para cerrar el modal |
-| `SendIcon` | SVG — avión de papel para el botón "Agregar comentario" |
+| `CompromisosPage` | Orquestador: carga, filtros, tabla, estado del modal, banner de error |
+| `CompromisoModal` | Modal: metadata, cambio de estado, historial de comentarios, nuevo comentario |
+| `HeaderCard` | Header estático usado en el banner de error (sin Supabase) |
+| `KpiChip` | Chip de indicador con colores por categoría |
+| `estadoChip(estado)` | Clase CSS del chip de estado en la tabla |
+| `estadoBtnClass(estado, selected)` | Clase CSS del botón de selección en el modal |
+| `isPlazoVencido(plazo)` | Compara plazo con fecha actual (incluye fin del día) |
+| `formatFecha(dateStr)` | Formatea ISO date o timestamptz a `dd/mm/yyyy` en `es-CL` |
+| `SearchIcon` | SVG — lupa |
+| `CloseIcon` | SVG — X para cerrar modal |
+| `SendIcon` | SVG — avión de papel para botón "Agregar" |
 
 ---
 
-## 13. Hallazgos y limitaciones actuales
+## 14. Hallazgos y limitaciones actuales
 
-### 13.1 Tabla `compromisos` no existe aún en Supabase
+### 14.1 Sin paginación
 
-La tabla `public.compromisos` no ha sido creada en el esquema de Supabase. El servicio cae automáticamente en modo mock. Para activar persistencia real se requiere:
+La tabla carga todos los compromisos en memoria. Con volúmenes grandes (>300 registros) se recomienda agregar paginación o scroll infinito.
 
-1. Crear la tabla con el esquema descrito en la sección 3.
-2. Habilitar RLS y crear políticas de lectura/escritura para usuarios autenticados.
-3. Opcionalmente: crear un trigger que al insertar un acta genere automáticamente registros en `compromisos` desde el array `acuerdos`.
+### 14.2 Autor del comentario sin autenticación
 
-**SQL base sugerido:**
+El campo "Tu nombre" es un input libre. Una vez implementado el login debe autocompletarse con el usuario autenticado y deshabilitarse.
+
+### 14.3 Estado `Vencido` no se actualiza automáticamente en BD
+
+El cambio a `Vencido` es manual. El componente solo lo resalta visualmente. Para automatizarlo en Supabase se necesita una función edge o cron job:
+
 ```sql
-create table public.compromisos (
-  id              uuid primary key default gen_random_uuid(),
-  acta_id         uuid references public.actas_visita(id) on delete set null,
-  acta_folio      text,
-  establecimiento_id   text not null,
-  establecimiento_nombre text not null,
-  establecimiento_comuna text not null,
-  descripcion     text not null,
-  responsable     text,
-  plazo           date,
-  estado          text not null default 'Pendiente'
-                    check (estado in ('Pendiente','En proceso','Cumplido','Vencido')),
-  comentarios     jsonb not null default '[]',
-  created_at      timestamptz not null default now(),
-  updated_at      timestamptz not null default now()
-);
-
-alter table public.compromisos enable row level security;
-
-create policy "compromisos_select" on public.compromisos
-  for select using (true);
-
-create policy "compromisos_write" on public.compromisos
-  for all using (auth.role() = 'authenticated');
+update public.compromisos
+set estado = 'Vencido', updated_at = now()
+where plazo < current_date
+  and estado not in ('Cumplido', 'Vencido');
 ```
 
-### 13.2 Compromisos desvinculados de actas en tiempo real
+### 14.4 Trigger solo en INSERT, no en UPDATE de acuerdos
 
-Los compromisos del módulo son entidades independientes. Si se modifica el acuerdo dentro del acta original (en `ActaPage`), ese cambio **no se refleja automáticamente** en la tabla `compromisos`. Ambas entidades son paralelas y deben mantenerse en sincronía manualmente o mediante un trigger en Supabase.
-
-### 13.3 Sin paginación
-
-La tabla carga todos los compromisos de una sola vez. Con volúmenes grandes (>200 registros) puede afectar el rendimiento de carga y renderizado. Se recomienda agregar paginación o scroll infinito en ese punto.
-
-### 13.4 Autor del comentario sin autenticación
-
-El campo "Tu nombre" del formulario de comentarios es un input libre. No está ligado a ningún sistema de autenticación. Una vez implementado el login, este campo debería autocompletarse con el nombre del usuario autenticado y deshabilitarse.
-
-### 13.5 Estado `Vencido` no se actualiza automáticamente
-
-El estado `Vencido` en la base de datos requiere que alguien lo marque manualmente. La detección de vencimiento que hace el componente es solo visual (texto en rojo). Si se quiere que Supabase refleje el estado real, se necesita un cron job o función edge que actualice el estado al superar el plazo.
+Si se edita una acta existente y se agregan nuevos acuerdos, esos acuerdos **no generan compromisos nuevos** automáticamente. El trigger solo se dispara al insertar un acta nueva.
 
 ---
 
-## 14. Funcionalidades pendientes (próximos pasos)
+## 15. Funcionalidades pendientes (próximos pasos)
 
-### 14.1 Creación de compromisos desde el módulo
+### 15.1 Vinculación bidireccional con Actas
 
-Agregar botón "Nuevo compromiso" con formulario que permita crear un compromiso manualmente, sin necesidad de que provenga de un acta. Campos mínimos: descripción, establecimiento, responsable, plazo, estado inicial.
+Desde la fila del compromiso, botón "Ver acta" que navegue a `#/acta?actaId=<acta_id>`. El campo `acta_id` ya está poblado por el trigger.
 
-### 14.2 Generación automática desde actas
+### 15.2 Filtro por plazo
 
-Al registrar o cerrar un acta, generar automáticamente los compromisos en `public.compromisos` desde el array `acuerdos`. Esto puede implementarse con un trigger Supabase (PostgreSQL) o desde el cliente al llamar `insertActa()`.
+Selector de rango de fechas para mostrar solo compromisos que vencen en un período (ej: "esta semana", "este mes").
 
-```sql
--- Trigger sugerido: después de INSERT en actas_visita
--- iterar acuerdos y hacer INSERT INTO compromisos para cada uno
-```
+### 15.3 Cambio de estado masivo
 
-### 14.3 Vinculación bidireccional con Actas
+Selección múltiple de filas para cambiar el estado de varios compromisos en una sola operación.
 
-Desde la fila de un compromiso, mostrar un botón "Ver acta" que navegue a `#/acta?actaId=<acta_id>` y abra el modal del acta de origen. Requiere que `acta_id` esté poblado.
+### 15.4 Exportación CSV
 
-### 14.4 Filtro por plazo
-
-Agregar filtro de fecha (o rango) para mostrar solo compromisos con plazo en un período determinado (ej: "vence esta semana", "vence este mes").
-
-### 14.5 Cambio de estado masivo
-
-Selección múltiple de filas para cambiar el estado de varios compromisos a la vez. Útil en revisiones periódicas de seguimiento.
-
-### 14.6 Exportación CSV
-
-Botón "Exportar" que descargue el listado filtrado activo como archivo CSV con todos los campos del compromiso.
+Botón que descargue el listado filtrado activo:
 
 ```ts
 const csv = filtered.map(c =>
@@ -430,32 +438,35 @@ const csv = filtered.map(c =>
 ).join('\n')
 ```
 
-### 14.7 Notificaciones de vencimiento próximo
+### 15.5 Notificaciones de vencimiento próximo
 
-Agregar una alerta en el header del módulo cuando existan compromisos con plazo en los próximos 7 días y estado diferente de `Cumplido`. Lógica:
+Banner de alerta cuando existan compromisos con plazo en los próximos 7 días:
 
 ```ts
 const proximos = compromisos.filter(c => {
   if (c.estado === 'Cumplido' || !c.plazo) return false
-  const diasRestantes = (new Date(c.plazo).getTime() - Date.now()) / 86_400_000
-  return diasRestantes >= 0 && diasRestantes <= 7
+  const dias = (new Date(c.plazo).getTime() - Date.now()) / 86_400_000
+  return dias >= 0 && dias <= 7
 })
 ```
 
-### 14.8 Integración con Métricas
+### 15.6 Trigger en UPDATE de actas
 
-Que `MetricasPage` lea desde `public.compromisos` en lugar de derivar compromisos del campo `acuerdos` de `actas_visita`. Esto daría mayor precisión al KPI de compromisos pendientes y permitiría mostrar la evolución temporal del estado de los compromisos.
+Extender `sync_acuerdos_to_compromisos` para detectar acuerdos nuevos en un UPDATE de `actas_visita` y crearlos como compromisos sin duplicar los existentes.
+
+### 15.7 Integración con Métricas
+
+Que `MetricasPage` lea desde `public.compromisos` en lugar de derivar compromisos del JSONB de `actas_visita`, para mayor precisión y evolución temporal del estado.
 
 ---
 
-## 15. Dependencias del módulo
+## 16. Dependencias del módulo
 
 | Módulo | Origen | Uso |
 |---|---|---|
 | `react` | externo | `useState`, `useEffect`, `useCallback`, `useMemo` |
-| `types/compromisos` | interno | Tipos `Compromiso`, `ComentarioCompromiso`, `EstadoCompromiso` |
-| `lib/compromisosService` | interno | `fetchCompromisos`, `updateCompromisoEstado`, `updateCompromisoComentarios` |
-| `data/mockData` | interno | `crmData.compromisos` (fallback cuando Supabase no está disponible) |
-| `lib/supabase` | interno | Cliente Supabase (consumido dentro del servicio) |
+| `types/compromisos` | interno | `Compromiso`, `ComentarioCompromiso`, `EstadoCompromiso` |
+| `lib/compromisosService` | interno | `fetchCompromisos`, `updateCompromisoEstado`, `addComentario` |
+| `lib/supabase` | interno | cliente Supabase (consumido dentro del servicio) |
 
-No tiene dependencias externas de UI. Toda la presentación usa Tailwind CSS y clases utilitarias del design system del portal (`panel-card-strong`, `table-shell`, `status-chip`, `btn-primary`, `btn-secondary`, `skeleton`).
+Sin dependencias externas de UI. Toda la presentación usa Tailwind CSS y clases utilitarias del portal (`panel-card-strong`, `table-shell`, `status-chip`, `btn-primary`, `skeleton`).
