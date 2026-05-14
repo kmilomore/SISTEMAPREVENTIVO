@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { Button } from '../ui/Button'
+import { Card } from '../ui/Card'
+import { Input } from '../ui/Input'
+import { StatusBadge } from '../ui/StatusBadge'
 import type { TipoActa, ActaVisita, ParticipanteActa, AcuerdoActa, EscuelaSLEP } from '../../types/actas'
 import { EstablecimientoSelect } from './EstablecimientoSelect'
 import { ParticipantesFieldArray } from './ParticipantesFieldArray'
@@ -49,10 +53,8 @@ const TIPO_LABELS: Record<TipoActa, string> = {
 }
 
 const labelClass = 'block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1'
-const inputClass =
-  'h-9 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 shadow-sm transition focus:border-[#0057B8] focus:outline-none focus:ring-2 focus:ring-[#0057B8]/20 placeholder:text-slate-400'
-const inputErrorClass =
-  'h-9 w-full rounded-xl border border-red-400 bg-white px-3 text-sm text-slate-800 shadow-sm transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 placeholder:text-slate-400'
+const inputClass = 'text-sm shadow-sm'
+const inputErrorClass = 'border-red-400 focus:border-red-500 focus:ring-red-200'
 
 function SectionTitle({ n, title }: { n: string; title: string }) {
   return (
@@ -126,12 +128,12 @@ export function ActaForm({
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
       {/* Badge tipo */}
       <div className="flex items-center gap-3">
-        <span className="status-chip status-info">{TIPO_LABELS[tipo]}</span>
+        <StatusBadge tone="info">{TIPO_LABELS[tipo]}</StatusBadge>
         <span className="text-xs text-slate-400">Completa los campos obligatorios para guardar el acta.</span>
       </div>
 
       {/* ── 1. Información general ─────────────────────────────────────────── */}
-      <section className="panel-card-strong flex flex-col gap-5 p-5">
+      <Card tone="strong" className="flex flex-col gap-5 p-5">
         <SectionTitle n="1" title="Información general" />
 
         <div>
@@ -153,9 +155,9 @@ export function ActaForm({
             <label className={labelClass}>
               Fecha de visita <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               type="date"
-              className={errors.fecha_visita ? inputErrorClass : inputClass}
+              className={errors.fecha_visita ? `${inputClass} ${inputErrorClass}` : inputClass}
               value={form.fecha_visita}
               onChange={(e) => {
                 setForm((f) => ({ ...f, fecha_visita: e.target.value }))
@@ -171,9 +173,9 @@ export function ActaForm({
             <label className={labelClass}>
               Hora inicio <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               type="time"
-              className={errors.hora_inicio ? inputErrorClass : inputClass}
+              className={errors.hora_inicio ? `${inputClass} ${inputErrorClass}` : inputClass}
               value={form.hora_inicio}
               onChange={(e) => {
                 setForm((f) => ({ ...f, hora_inicio: e.target.value }))
@@ -189,9 +191,9 @@ export function ActaForm({
             <label className={labelClass}>
               Hora término <span className="text-red-500">*</span>
             </label>
-            <input
+            <Input
               type="time"
-              className={errors.hora_termino ? inputErrorClass : inputClass}
+              className={errors.hora_termino ? `${inputClass} ${inputErrorClass}` : inputClass}
               value={form.hora_termino}
               onChange={(e) => {
                 setForm((f) => ({ ...f, hora_termino: e.target.value }))
@@ -206,7 +208,7 @@ export function ActaForm({
 
         <div>
           <label className={labelClass}>Registrado por:</label>
-          <input
+          <Input
             type="text"
             className={inputClass}
             placeholder="Nombre Completo"
@@ -214,10 +216,10 @@ export function ActaForm({
             onChange={(e) => setForm((f) => ({ ...f, created_by_nombre: e.target.value }))}
           />
         </div>
-      </section>
+      </Card>
 
       {/* ── 2. Participantes ─────────────────────────────────────────────── */}
-      <section className="panel-card-strong flex flex-col gap-5 p-5">
+      <Card tone="strong" className="flex flex-col gap-5 p-5">
         <SectionTitle n="2" title="Participantes" />
         <ParticipantesFieldArray
           value={form.participantes}
@@ -229,10 +231,10 @@ export function ActaForm({
         {errors.participantes && (
           <p className="-mt-2 text-xs text-red-600">{errors.participantes}</p>
         )}
-      </section>
+      </Card>
 
       {/* ── 3. Desarrollo de la visita ────────────────────────────────────── */}
-      <section className="panel-card-strong flex flex-col gap-5 p-5">
+      <Card tone="strong" className="flex flex-col gap-5 p-5">
         <SectionTitle n="3" title="Desarrollo de la visita" />
 
         <AutoResizeTextarea
@@ -248,19 +250,19 @@ export function ActaForm({
           value={form.actividad_realizada}
           onChange={(e) => setForm((f) => ({ ...f, actividad_realizada: e.target.value }))}
         />
-      </section>
+      </Card>
 
       {/* ── 4. Acuerdos ──────────────────────────────────────────────────── */}
-      <section className="panel-card-strong flex flex-col gap-5 p-5">
+      <Card tone="strong" className="flex flex-col gap-5 p-5">
         <SectionTitle n="4" title="Acuerdos, medidas y compromisos" />
         <AcuerdosFieldArray
           value={form.acuerdos}
           onChange={(a) => setForm((f) => ({ ...f, acuerdos: a }))}
         />
-      </section>
+      </Card>
 
       {/* ── 5. Lista de asistencia ───────────────────────────────────────── */}
-      <section className="panel-card-strong flex flex-col gap-5 p-5">
+      <Card tone="strong" className="flex flex-col gap-5 p-5">
         <SectionTitle n="5" title="Lista de asistencia (opcional)" />
         <div>
           <label className={labelClass}>Archivo (PDF, imagen)</label>
@@ -291,14 +293,14 @@ export function ActaForm({
           </div>
           <p className="mt-1.5 text-xs text-slate-400">Se subirá junto con el acta. Formatos aceptados: PDF, JPG, PNG.</p>
         </div>
-      </section>
+      </Card>
 
       {/* ── Acciones ─────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-end gap-3">
-        <button type="button" className="btn-secondary" onClick={onCancel} disabled={submitting}>
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={submitting}>
           Cancelar
-        </button>
-        <button type="submit" className="btn-primary gap-2" disabled={submitting}>
+        </Button>
+        <Button type="submit" disabled={submitting}>
           {submitting ? (
             <>
               <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -310,7 +312,7 @@ export function ActaForm({
           ) : (
             submitLabel
           )}
-        </button>
+        </Button>
       </div>
     </form>
   )

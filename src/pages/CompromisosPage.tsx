@@ -1,4 +1,19 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+import { Input } from '../components/ui/Input'
+import { MetricCard } from '../components/ui/MetricCard'
+import { Modal, ModalBody, ModalCloseButton, ModalHeader } from '../components/ui/Modal'
+import { Select } from '../components/ui/Select'
+import { StatusBadge } from '../components/ui/StatusBadge'
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeaderCell,
+  DataTableRow,
+} from '../components/ui/Table'
 import type { Compromiso, ComentarioCompromiso, EstadoCompromiso } from '../types/compromisos'
 import {
   fetchCompromisos,
@@ -13,14 +28,6 @@ function SearchIcon() {
     <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-slate-400" aria-hidden="true">
       <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
       <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   )
 }
@@ -60,13 +67,13 @@ type SortDir = 'asc' | 'desc'
 const ESTADOS: EstadoCompromiso[] = ['Pendiente', 'En proceso', 'Cumplido', 'Vencido']
 
 function estadoChip(estado: EstadoCompromiso) {
-  const map: Record<EstadoCompromiso, string> = {
-    Pendiente: 'status-chip status-warning',
-    'En proceso': 'status-chip status-info',
-    Cumplido: 'status-chip status-success',
-    Vencido: 'status-chip status-error',
+  const map: Record<EstadoCompromiso, 'warning' | 'info' | 'success' | 'danger'> = {
+    Pendiente: 'warning',
+    'En proceso': 'info',
+    Cumplido: 'success',
+    Vencido: 'danger',
   }
-  return map[estado] ?? 'status-chip status-info'
+  return map[estado] ?? 'info'
 }
 
 function estadoBtnClass(estado: EstadoCompromiso, selected: boolean) {
@@ -148,16 +155,8 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
-      <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5">
+    <Modal onClose={onClose} align="end" panelClassName="max-h-[90vh] max-w-2xl rounded-t-3xl sm:rounded-3xl">
+      <ModalHeader>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0057B8]">
               Compromiso
@@ -171,17 +170,10 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
               {compromiso.descripcion}
             </h3>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="shrink-0 rounded-xl p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-            aria-label="Cerrar"
-          >
-            <CloseIcon />
-          </button>
-        </div>
+          <ModalCloseButton onClick={onClose} />
+        </ModalHeader>
 
-        <div className="flex-1 overflow-y-auto">
+        <ModalBody className="px-0 py-0">
           {/* Metadata */}
           <div className="grid grid-cols-2 gap-4 border-b border-slate-100 px-6 py-4 sm:grid-cols-3">
             <div>
@@ -214,33 +206,25 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
             </p>
             <div className="flex flex-wrap gap-2">
               {ESTADOS.map((e) => (
-                <button
+                <Button
                   key={e}
-                  type="button"
+                  variant="secondary"
+                  size="sm"
                   className={estadoBtnClass(e, estado === e)}
                   onClick={() => setEstado(e)}
                 >
                   {e}
-                </button>
+                </Button>
               ))}
             </div>
             {estadoChanged && (
               <div className="mt-4 flex items-center gap-3">
-                <button
-                  type="button"
-                  className="btn-primary text-xs"
-                  onClick={handleGuardarEstado}
-                  disabled={saving}
-                >
+                <Button size="sm" onClick={handleGuardarEstado} disabled={saving}>
                   {saving ? 'Guardando…' : 'Guardar cambio de estado'}
-                </button>
-                <button
-                  type="button"
-                  className="text-xs text-slate-400 hover:text-slate-600"
-                  onClick={() => setEstado(compromiso.estado)}
-                >
+                </Button>
+                <Button variant="ghost" size="sm" className="text-slate-400 hover:bg-transparent hover:text-slate-600" onClick={() => setEstado(compromiso.estado)}>
                   Cancelar
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -280,7 +264,7 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
             )}
 
             {/* Nuevo comentario */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <Card tone="soft">
               <p className="mb-3 text-xs font-semibold text-slate-500">Agregar seguimiento</p>
               <textarea
                 className="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:border-[#0033A0] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/10"
@@ -290,31 +274,25 @@ function CompromisoModal({ compromiso, onClose, onUpdated }: CompromisoModalProp
                 onChange={(e) => setNuevoTexto(e.target.value)}
               />
               <div className="mt-2 flex items-center gap-2">
-                <input
+                <Input
                   type="text"
-                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-[#0033A0] focus:outline-none focus:ring-2 focus:ring-[#0033A0]/10"
+                  className="flex-1 text-xs"
                   placeholder="Tu nombre (opcional)"
                   value={nuevoAutor}
                   onChange={(e) => setNuevoAutor(e.target.value)}
                 />
-                <button
-                  type="button"
-                  className="btn-primary gap-2 text-xs"
-                  onClick={handleAgregarComentario}
-                  disabled={!nuevoTexto.trim() || addingComment}
-                >
+                <Button size="sm" onClick={handleAgregarComentario} disabled={!nuevoTexto.trim() || addingComment}>
                   <SendIcon />
                   {addingComment ? 'Guardando…' : 'Agregar'}
-                </button>
+                </Button>
               </div>
               {comentarioError && (
                 <p className="mt-2 text-xs text-red-600">{comentarioError}</p>
               )}
-            </div>
+            </Card>
           </div>
-        </div>
-      </div>
-    </div>
+        </ModalBody>
+    </Modal>
   )
 }
 
@@ -415,7 +393,7 @@ export function CompromisosPage() {
     return (
       <div className="space-y-6">
         <HeaderCard />
-        <div className="panel-card-strong p-8 text-center">
+        <Card tone="strong" className="p-8 text-center">
           <p className="text-sm font-semibold text-slate-700">Supabase no configurado</p>
           <p className="mt-2 max-w-sm mx-auto text-xs text-slate-500">
             Configura las variables de entorno <code className="font-mono">VITE_SUPABASE_URL</code> y{' '}
@@ -426,7 +404,7 @@ export function CompromisosPage() {
             Ejecuta primero <code className="font-mono">supabase/compromisos_schema.sql</code> en el
             SQL Editor de Supabase para crear las tablas necesarias.
           </p>
-        </div>
+        </Card>
       </div>
     )
   }
@@ -434,7 +412,7 @@ export function CompromisosPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="panel-card-strong p-6 sm:p-7">
+      <Card tone="strong" className="p-6 sm:p-7">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">
             Compromisos
@@ -447,34 +425,30 @@ export function CompromisosPage() {
         </div>
 
         {!loading && compromisos.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-3">
-            <KpiChip label="Total" value={counts.total} color="slate" />
-            <KpiChip label="Pendientes" value={counts.pendiente} color="amber" />
-            <KpiChip label="En proceso" value={counts.enProceso} color="blue" />
-            <KpiChip label="Cumplidos" value={counts.cumplido} color="emerald" />
-            <KpiChip label="Vencidos" value={counts.vencido} color="red" />
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <MetricCard label="Total" value={counts.total} tone="neutral" className="p-4" />
+            <MetricCard label="Pendientes" value={counts.pendiente} tone="warning" className="p-4" />
+            <MetricCard label="En proceso" value={counts.enProceso} tone="primary" className="p-4" />
+            <MetricCard label="Cumplidos" value={counts.cumplido} tone="success" className="p-4" />
+            <MetricCard label="Vencidos" value={counts.vencido} tone="warning" className="p-4" />
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Filtros */}
-      <div className="panel-card-strong px-5 py-4">
+      <Card tone="strong" className="px-5 py-4">
         <div className="flex flex-wrap items-end gap-3">
-          <div className="relative min-w-[220px] flex-1">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
-              <SearchIcon />
-            </span>
-            <input
+          <Input
               type="text"
               placeholder="Buscar por establecimiento…"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-4 text-sm text-slate-800 placeholder-slate-400 focus:border-[#0033A0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0033A0]/10"
+              containerClassName="min-w-[220px] flex-1"
+              icon={<SearchIcon />}
               value={filtroEscuela}
               onChange={(e) => setFiltroEscuela(e.target.value)}
             />
-          </div>
 
-          <select
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:border-[#0033A0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0033A0]/10"
+          <Select
+            containerClassName="min-w-[220px]"
             value={filtroComuna}
             onChange={(e) => setFiltroComuna(e.target.value)}
           >
@@ -482,10 +456,9 @@ export function CompromisosPage() {
             {comunas.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
-          </select>
+          </Select>
 
-          <select
-            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 focus:border-[#0033A0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0033A0]/10"
+          <Select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value as EstadoCompromiso | '')}
           >
@@ -493,22 +466,23 @@ export function CompromisosPage() {
             {ESTADOS.map((e) => (
               <option key={e} value={e}>{e}</option>
             ))}
-          </select>
+          </Select>
 
           {(filtroEscuela || filtroComuna || filtroEstado) && (
-            <button
-              type="button"
-              className="text-xs text-slate-400 underline hover:text-slate-600"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-400 underline hover:bg-transparent hover:text-slate-600"
               onClick={() => { setFiltroEscuela(''); setFiltroComuna(''); setFiltroEstado('') }}
             >
               Limpiar filtros
-            </button>
+            </Button>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Tabla */}
-      <section className="table-shell">
+      <Card tone="surface" padding="none" className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
         <div className="flex flex-col gap-1 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Listado</p>
@@ -521,38 +495,37 @@ export function CompromisosPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50">
-              <tr>
+        <DataTable responsive="md">
+            <DataTableHead>
+              <DataTableRow>
                 <SortableTh label="Compromiso" colKey="descripcion" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortableTh label="Establecimiento" colKey="establecimiento_nombre" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortableTh label="Responsable" colKey="responsable" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortableTh label="Plazo" colKey="plazo" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
                 <SortableTh label="Estado" colKey="estado" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <DataTableHeaderCell className="text-center">
                   Notas
-                </th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
+                </DataTableHeaderCell>
+                <DataTableHeaderCell className="normal-case" />
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i}>
+                  <DataTableRow key={i}>
                     {Array.from({ length: 7 }).map((__, j) => (
-                      <td key={j} className="px-4 py-3">
+                      <DataTableCell key={j} className="py-3">
                         <div
                           className="skeleton h-4 rounded-md"
                           style={{ width: j === 0 ? '240px' : j === 1 ? '140px' : '80px' }}
                         />
-                      </td>
+                      </DataTableCell>
                     ))}
-                  </tr>
+                  </DataTableRow>
                 ))
               ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-5 py-14 text-center text-slate-400">
+                <DataTableRow>
+                  <DataTableCell colSpan={7} className="px-5 py-14 text-center text-slate-400">
                     <p className="text-sm font-medium">
                       {compromisos.length === 0
                         ? 'No hay compromisos registrados'
@@ -563,19 +536,20 @@ export function CompromisosPage() {
                         ? 'Los compromisos se generan desde las actas registradas.'
                         : 'Ajusta los filtros para ver resultados.'}
                     </p>
-                  </td>
-                </tr>
+                  </DataTableCell>
+                </DataTableRow>
               ) : (
                 filtered.map((comp) => {
                   const vencido = isPlazoVencido(comp.plazo) && comp.estado !== 'Cumplido'
 
                   return (
-                    <tr
+                    <DataTableRow
                       key={comp.id}
-                      className="group cursor-pointer transition-colors hover:bg-blue-50/30"
+                      interactive
+                      className="group hover:bg-blue-50/30"
                       onClick={() => setSelected(comp)}
                     >
-                      <td className="max-w-[280px] px-4 py-3">
+                      <DataTableCell className="max-w-[280px] py-3">
                         <p className="line-clamp-2 text-sm font-medium leading-snug text-slate-800">
                           {comp.descripcion}
                         </p>
@@ -584,23 +558,23 @@ export function CompromisosPage() {
                             {comp.acta_folio}
                           </p>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
+                      </DataTableCell>
+                      <DataTableCell className="py-3">
                         <p className="font-medium text-slate-800">{comp.establecimiento_nombre}</p>
                         <p className="text-xs text-slate-400">{comp.establecimiento_comuna}</p>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-slate-600">
+                      </DataTableCell>
+                      <DataTableCell className="py-3 text-sm text-slate-600">
                         {comp.responsable ?? '—'}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-sm">
+                      </DataTableCell>
+                      <DataTableCell className="whitespace-nowrap py-3 text-sm">
                         <span className={vencido ? 'font-semibold text-red-600' : 'text-slate-600'}>
                           {formatFecha(comp.plazo)}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={estadoChip(comp.estado)}>{comp.estado}</span>
-                      </td>
-                      <td className="px-4 py-3 text-center">
+                      </DataTableCell>
+                      <DataTableCell className="py-3">
+                        <StatusBadge tone={estadoChip(comp.estado)}>{comp.estado}</StatusBadge>
+                      </DataTableCell>
+                      <DataTableCell className="py-3 text-center">
                         {comp.comentarios.length > 0 ? (
                           <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#e8f0ff] px-1.5 text-[10px] font-semibold text-[#0033A0]">
                             {comp.comentarios.length}
@@ -608,24 +582,24 @@ export function CompromisosPage() {
                         ) : (
                           <span className="text-slate-300">—</span>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          type="button"
-                          className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#0033A0] opacity-0 transition hover:bg-[#e8f0ff] group-hover:opacity-100"
+                      </DataTableCell>
+                      <DataTableCell className="py-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100"
                           onClick={(e) => { e.stopPropagation(); setSelected(comp) }}
                         >
                           Editar
-                        </button>
-                      </td>
-                    </tr>
+                        </Button>
+                      </DataTableCell>
+                    </DataTableRow>
                   )
                 })
               )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </DataTableBody>
+        </DataTable>
+      </Card>
 
       {selected && (
         <CompromisoModal
@@ -642,10 +616,10 @@ export function CompromisosPage() {
 
 function HeaderCard() {
   return (
-    <div className="panel-card-strong p-6 sm:p-7">
+    <Card tone="strong" className="p-6 sm:p-7">
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Compromisos</p>
       <h3 className="mt-2 text-3xl font-light text-slate-800">Gestor de compromisos</h3>
-    </div>
+    </Card>
   )
 }
 
@@ -664,32 +638,14 @@ function SortableTh({
 }) {
   const active = sortKey === colKey
   return (
-    <th
-      className="cursor-pointer select-none px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-slate-700"
+    <DataTableHeaderCell
+      className="cursor-pointer select-none hover:text-slate-700"
       onClick={() => onSort(colKey)}
     >
       <span className="flex items-center gap-1">
         {label}
         <SortIcon active={active} dir={sortDir} />
       </span>
-    </th>
-  )
-}
-
-type KpiColor = 'slate' | 'amber' | 'blue' | 'emerald' | 'red'
-
-function KpiChip({ label, value, color }: { label: string; value: number; color: KpiColor }) {
-  const cls: Record<KpiColor, string> = {
-    slate: 'border-slate-200 bg-slate-50 text-slate-700',
-    amber: 'border-amber-200 bg-amber-50 text-amber-700',
-    blue: 'border-blue-200 bg-blue-50 text-blue-700',
-    emerald: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    red: 'border-red-200 bg-red-50 text-red-700',
-  }
-  return (
-    <div className={`flex items-center gap-2 rounded-2xl border px-3 py-1.5 text-xs font-medium ${cls[color]}`}>
-      <span className="text-base font-bold leading-none">{value}</span>
-      <span className="opacity-75">{label}</span>
-    </div>
+    </DataTableHeaderCell>
   )
 }

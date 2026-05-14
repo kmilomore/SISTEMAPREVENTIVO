@@ -3,6 +3,11 @@ import type { TipoActa, ActaVisita, ActaVisitaRow } from '../types/actas'
 import { ActaTipoSelector } from '../components/actas/ActaTipoSelector'
 import { ActaForm } from '../components/actas/ActaForm'
 import { ActaDetailModal } from '../components/actas/ActaDetailModal'
+import { Alert } from '../components/ui/Alert'
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+import { StatusBadge } from '../components/ui/StatusBadge'
+import { DataTable, DataTableBody, DataTableCell, DataTableHead, DataTableHeaderCell, DataTableRow } from '../components/ui/Table'
 import { fetchActas, insertActa, updateActaPdf, updateActaEstado, updateActaAsistencia } from '../lib/actasService'
 import { generarActaPdf } from '../lib/pdfActaService'
 import { uploadActaPdf, uploadAsistenciaFile } from '../lib/storageActasService'
@@ -36,12 +41,12 @@ const TIPO_LABELS: Record<string, string> = {
 }
 
 function estadoChipClass(estado: string) {
-  const map: Record<string, string> = {
-    Registrada: 'status-chip status-info',
-    'Registrada sin PDF': 'status-chip status-warning',
-    Cerrada: 'status-chip status-success',
+  const map: Record<string, 'info' | 'warning' | 'success'> = {
+    Registrada: 'info',
+    'Registrada sin PDF': 'warning',
+    Cerrada: 'success',
   }
-  return map[estado] ?? 'status-chip status-info'
+  return map[estado] ?? 'info'
 }
 
 function formatFecha(dateStr?: string) {
@@ -221,9 +226,9 @@ export function ActaPage() {
     return (
       <div className="space-y-6">
         <HeaderCard />
-        <div className="panel-card-strong p-6 sm:p-8">
+        <Card tone="strong" className="p-6 sm:p-8">
           <ActaTipoSelector onSelect={handleTipoSelect} onCancel={handleCancel} />
-        </div>
+        </Card>
       </div>
     )
   }
@@ -232,12 +237,12 @@ export function ActaPage() {
   if (view === 'form' && tipoSeleccionado) {
     return (
       <div className="space-y-6">
-        <div className="panel-card-strong p-5 sm:p-6">
+        <Card tone="strong" className="p-5 sm:p-6">
           <div className="flex items-center gap-3">
-            <button type="button" className="btn-secondary gap-2 text-xs" onClick={handleCancel}>
+            <Button type="button" variant="secondary" size="sm" onClick={handleCancel}>
               <ArrowLeftIcon />
               Volver
-            </button>
+            </Button>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Actas</p>
               <h3 className="text-xl font-light text-slate-800">
@@ -245,16 +250,12 @@ export function ActaPage() {
               </h3>
             </div>
           </div>
-        </div>
+        </Card>
 
         {submitMsg && (
-          <div
-            className={`rounded-2xl px-5 py-4 text-sm ${
-              submitMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800'
-            }`}
-          >
+          <Alert tone={submitMsg.type === 'success' ? 'success' : 'danger'}>
             {submitMsg.text}
-          </div>
+          </Alert>
         )}
 
         <ActaForm
@@ -273,23 +274,15 @@ export function ActaPage() {
       <HeaderCard onNueva={() => setView('tipo-selector')} />
 
       {submitMsg && (
-        <div
-          className={`rounded-2xl px-5 py-4 text-sm ${
-            submitMsg.type === 'success' ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800'
-          }`}
-        >
+        <Alert tone={submitMsg.type === 'success' ? 'success' : 'danger'}>
           {submitMsg.text}
-          <button
-            type="button"
-            className="ml-3 text-xs underline opacity-70 hover:opacity-100"
-            onClick={() => setSubmitMsg(null)}
-          >
+          <Button type="button" variant="ghost" size="sm" className="ml-3 text-xs underline opacity-70 hover:bg-transparent hover:opacity-100" onClick={() => setSubmitMsg(null)}>
             Cerrar
-          </button>
-        </div>
+          </Button>
+        </Alert>
       )}
 
-      <section className="table-shell">
+      <Card tone="surface" padding="none" className="overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Listado</p>
@@ -300,83 +293,77 @@ export function ActaPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Folio</th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Fecha</th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Tipo</th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Establecimiento</th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Horario</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Partic.</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Acuerdos</th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Estado</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
+        <DataTable responsive="md">
+            <DataTableHead>
+              <DataTableRow>
+                <DataTableHeaderCell>Folio</DataTableHeaderCell>
+                <DataTableHeaderCell>Fecha</DataTableHeaderCell>
+                <DataTableHeaderCell>Tipo</DataTableHeaderCell>
+                <DataTableHeaderCell>Establecimiento</DataTableHeaderCell>
+                <DataTableHeaderCell>Horario</DataTableHeaderCell>
+                <DataTableHeaderCell className="text-center">Partic.</DataTableHeaderCell>
+                <DataTableHeaderCell className="text-center">Acuerdos</DataTableHeaderCell>
+                <DataTableHeaderCell>Estado</DataTableHeaderCell>
+                <DataTableHeaderCell className="normal-case" />
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i}>
+                  <DataTableRow key={i}>
                     {Array.from({ length: 8 }).map((__, j) => (
-                      <td key={j} className="px-4 py-3">
+                      <DataTableCell key={j} className="py-3">
                         <div className="skeleton h-4 rounded-md" style={{ width: j === 2 ? '180px' : '80px' }} />
-                      </td>
+                      </DataTableCell>
                     ))}
-                  </tr>
+                  </DataTableRow>
                 ))
               ) : loadError ? (
-                <tr>
-                    <td colSpan={9} className="px-5 py-12 text-center text-sm text-red-600">
+                <DataTableRow>
+                    <DataTableCell colSpan={9} className="px-5 py-12 text-center text-sm text-red-600">
                     Error al cargar actas: {loadError}
-                  </td>
-                </tr>
+                  </DataTableCell>
+                </DataTableRow>
               ) : actas.length === 0 ? (
-                <tr>
-                    <td colSpan={9} className="px-5 py-14 text-center text-slate-400">
+                <DataTableRow>
+                    <DataTableCell colSpan={9} className="px-5 py-14 text-center text-slate-400">
                     <p className="text-sm font-medium">No hay actas registradas</p>
                     <p className="mt-1 text-xs">Usa &ldquo;Nueva acta&rdquo; para comenzar el registro.</p>
-                  </td>
-                </tr>
+                  </DataTableCell>
+                </DataTableRow>
               ) : (
                 actas.map((acta) => (
-                  <tr key={acta.id} className="group transition-colors hover:bg-blue-50/30">
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-[#0033A0]">{acta.folio}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-slate-700">{formatFecha(acta.fecha_visita)}</td>
-                    <td className="px-4 py-3">
-                      <span className="status-chip status-info text-xs">{TIPO_LABELS[acta.tipo_acta] ?? acta.tipo_acta}</span>
-                    </td>
-                    <td className="px-4 py-3">
+                  <DataTableRow key={acta.id} className="group transition-colors hover:bg-blue-50/30">
+                    <DataTableCell className="whitespace-nowrap font-mono text-xs font-semibold text-[#0033A0]">{acta.folio}</DataTableCell>
+                    <DataTableCell className="whitespace-nowrap text-slate-700">{formatFecha(acta.fecha_visita)}</DataTableCell>
+                    <DataTableCell>
+                      <StatusBadge tone="info" className="text-xs">{TIPO_LABELS[acta.tipo_acta] ?? acta.tipo_acta}</StatusBadge>
+                    </DataTableCell>
+                    <DataTableCell>
                       <p className="font-medium leading-tight text-slate-800">{acta.establecimiento_nombre ?? '—'}</p>
                       {acta.establecimiento_comuna && (
                         <p className="text-xs text-slate-400">{acta.establecimiento_comuna}</p>
                       )}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-500">
+                    </DataTableCell>
+                    <DataTableCell className="whitespace-nowrap text-xs text-slate-500">
                       {acta.hora_inicio} – {acta.hora_termino}
-                    </td>
-                    <td className="px-4 py-3 text-center text-slate-600">{acta.participantes.length}</td>
-                    <td className="px-4 py-3 text-center text-slate-600">{acta.acuerdos.length}</td>
-                    <td className="px-4 py-3">
-                      <span className={estadoChipClass(acta.estado ?? 'Registrada')}>{acta.estado ?? 'Registrada'}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-[#0033A0] opacity-0 transition hover:bg-[#e8f0ff] group-hover:opacity-100"
-                        onClick={() => openActaDetail(acta)}
-                      >
+                    </DataTableCell>
+                    <DataTableCell className="text-center text-slate-600">{acta.participantes.length}</DataTableCell>
+                    <DataTableCell className="text-center text-slate-600">{acta.acuerdos.length}</DataTableCell>
+                    <DataTableCell>
+                      <StatusBadge tone={estadoChipClass(acta.estado ?? 'Registrada')}>{acta.estado ?? 'Registrada'}</StatusBadge>
+                    </DataTableCell>
+                    <DataTableCell>
+                      <Button type="button" variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100" onClick={() => openActaDetail(acta)}>
                         Ver
-                      </button>
-                    </td>
-                  </tr>
+                      </Button>
+                    </DataTableCell>
+                  </DataTableRow>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </DataTableBody>
+        </DataTable>
+      </Card>
 
       {detailActa && (
         <ActaDetailModal
@@ -397,7 +384,7 @@ export function ActaPage() {
 
 function HeaderCard({ onNueva }: { onNueva?: () => void }) {
   return (
-    <div className="panel-card-strong p-6 sm:p-7">
+    <Card tone="strong" className="p-6 sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Actas</p>
@@ -407,12 +394,12 @@ function HeaderCard({ onNueva }: { onNueva?: () => void }) {
           </p>
         </div>
         {onNueva && (
-          <button type="button" className="btn-primary gap-2" onClick={onNueva}>
+          <Button type="button" onClick={onNueva}>
             <PlusIcon />
             Nueva acta
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

@@ -1,4 +1,10 @@
 import { useEffect, useState, useMemo } from 'react'
+import { Alert } from '../components/ui/Alert'
+import { Card } from '../components/ui/Card'
+import { MetricCard } from '../components/ui/MetricCard'
+import { Select } from '../components/ui/Select'
+import { StatusBadge } from '../components/ui/StatusBadge'
+import { DataTable, DataTableBody, DataTableCell, DataTableHead, DataTableHeaderCell, DataTableRow } from '../components/ui/Table'
 import { supabase } from '../lib/supabase'
 import { fetchActas } from '../lib/actasService'
 import type { ActaVisitaRow } from '../types/actas'
@@ -67,31 +73,6 @@ function IconPendientes() {
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
-function KpiCard({
-  label,
-  value,
-  sub,
-  icon,
-  accent,
-}: {
-  label: string
-  value: string | number
-  sub?: string
-  icon: React.ReactNode
-  accent: string
-}) {
-  return (
-    <div className="panel-card-strong flex flex-col gap-3 px-5 py-5">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-        <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${accent}`}>{icon}</span>
-      </div>
-      <p className="text-3xl font-bold text-slate-800">{value}</p>
-      {sub && <p className="text-xs text-slate-500">{sub}</p>}
-    </div>
-  )
-}
-
 function ProgressBar({ value }: { value: number }) {
   const clamped = Math.min(100, Math.max(0, value))
   const color =
@@ -104,17 +85,7 @@ function ProgressBar({ value }: { value: number }) {
 }
 
 function estadoChip(estado: string) {
-  if (estado === 'Pendiente')
-    return (
-      <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-amber-200">
-        Pendiente
-      </span>
-    )
-  return (
-    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-200">
-      En proceso
-    </span>
-  )
+  return estado === 'Pendiente' ? 'warning' : 'info'
 }
 
 function formatFecha(dateStr?: string) {
@@ -238,13 +209,13 @@ export function MetricasPage() {
 
   if (!supabase) {
     return (
-      <div className="panel-card-strong flex flex-col items-center gap-4 px-8 py-16 text-center">
+      <Card tone="strong" className="flex flex-col items-center gap-4 px-8 py-16 text-center">
         <p className="text-sm font-semibold text-slate-700">Supabase no configurado</p>
         <p className="max-w-sm text-xs text-slate-500">
           Configura <code>VITE_SUPABASE_URL</code> y <code>VITE_SUPABASE_ANON_KEY</code> en tu archivo{' '}
           <code>.env.local</code> para ver las métricas reales.
         </p>
-      </div>
+      </Card>
     )
   }
 
@@ -258,9 +229,9 @@ export function MetricasPage() {
 
   if (fetchError) {
     return (
-      <div className="panel-card-strong px-6 py-8 text-sm text-red-600">
+      <Alert tone="danger" className="px-6 py-8">
         Error al cargar datos: {fetchError}
-      </div>
+      </Alert>
     )
   }
 
@@ -271,38 +242,38 @@ export function MetricasPage() {
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
+        <MetricCard
           label="Compromisos asignados"
           value={totalCompromisos}
           sub={`${compromisosPendientes.length} pendientes o en proceso`}
           icon={<IconCompromisos />}
-          accent="bg-[#e8f0ff] text-[#0033A0]"
+          tone="primary"
         />
-        <KpiCard
+        <MetricCard
           label="Escuelas visitadas"
           value={escuelasVisitadas}
           sub={totalEscuelas > 0 ? `de ${totalEscuelas} en el territorio` : `${actas.length} actas registradas`}
           icon={<IconEscuelas />}
-          accent="bg-emerald-50 text-emerald-700"
+          tone="success"
         />
-        <KpiCard
+        <MetricCard
           label="Cobertura global"
           value={totalEscuelas > 0 ? `${coberturaGlobal}%` : '—'}
           sub={totalEscuelas > 0 ? `${escuelasVisitadas} de ${totalEscuelas} establecimientos` : 'Sin datos de directorio'}
           icon={<IconCobertura />}
-          accent="bg-violet-50 text-violet-700"
+          tone="violet"
         />
-        <KpiCard
+        <MetricCard
           label="Compromisos pendientes"
           value={compromisosPendientes.filter((c) => c.estado === 'Pendiente').length}
           sub={`${compromisosPendientes.filter((c) => c.estado === 'En proceso').length} en proceso`}
           icon={<IconPendientes />}
-          accent="bg-amber-50 text-amber-700"
+          tone="warning"
         />
       </div>
 
       {/* Cobertura por comuna */}
-      <div className="panel-card-strong px-5 py-5">
+      <Card tone="strong" className="px-5 py-5">
         <h3 className="text-sm font-semibold text-slate-800">Cobertura de visitas por comuna</h3>
         <p className="mt-0.5 text-xs text-slate-500">
           Establecimientos visitados sobre el total de cada comuna
@@ -313,7 +284,7 @@ export function MetricasPage() {
         ) : (
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {communeStats.map((s) => (
-              <div key={s.commune} className="flex flex-col gap-2 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <Card key={s.commune} tone="soft" padding="sm" className="flex flex-col gap-2 rounded-xl border-slate-100">
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate text-sm font-medium text-slate-800">{s.commune}</p>
                   <span className="shrink-0 text-xs font-semibold text-slate-500">
@@ -327,14 +298,14 @@ export function MetricasPage() {
                   {' · '}
                   {s.totalVisitas} acta{s.totalVisitas !== 1 ? 's' : ''}
                 </p>
-              </div>
+              </Card>
             ))}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Compromisos pendientes por establecimiento */}
-      <div className="panel-card-strong px-5 py-5">
+      <Card tone="strong" className="px-5 py-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-sm font-semibold text-slate-800">Compromisos pendientes por establecimiento</h3>
@@ -343,10 +314,9 @@ export function MetricasPage() {
             </p>
           </div>
           {comunas.length > 1 && (
-            <select
+            <Select
               value={comunaFiltro}
               onChange={(e) => setComunaFiltro(e.target.value)}
-              className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#0057B8]/20"
             >
               <option value="">Todas las comunas</option>
               {comunas.map((c) => (
@@ -354,7 +324,7 @@ export function MetricasPage() {
                   {c}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </div>
 
@@ -363,51 +333,49 @@ export function MetricasPage() {
             {actas.length === 0 ? 'Sin actas registradas' : 'Sin compromisos pendientes'}
           </p>
         ) : (
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead>
-                <tr className="border-b border-slate-100">
-                  <th className="pb-2 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <DataTable responsive="md" containerClassName="mt-4">
+              <DataTableHead className="border-b border-slate-100 bg-transparent">
+                <DataTableRow>
+                  <DataTableHeaderCell className="pb-2 pr-4 pl-0">
                     Establecimiento
-                  </th>
-                  <th className="pb-2 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  </DataTableHeaderCell>
+                  <DataTableHeaderCell className="pb-2 pr-4 pl-0">
                     Acuerdo
-                  </th>
-                  <th className="pb-2 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  </DataTableHeaderCell>
+                  <DataTableHeaderCell className="pb-2 pr-4 pl-0">
                     Responsable
-                  </th>
-                  <th className="pb-2 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  </DataTableHeaderCell>
+                  <DataTableHeaderCell className="pb-2 pr-4 pl-0">
                     Plazo
-                  </th>
-                  <th className="pb-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  </DataTableHeaderCell>
+                  <DataTableHeaderCell className="pb-2 pl-0">
                     Estado
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
+                  </DataTableHeaderCell>
+                </DataTableRow>
+              </DataTableHead>
+              <DataTableBody className="divide-slate-50 bg-transparent">
                 {compromisosFiltrados.map((c) => (
-                  <tr key={c.key} className="group">
-                    <td className="py-3 pr-4">
+                  <DataTableRow key={c.key} className="group">
+                    <DataTableCell className="py-3 pr-4 pl-0">
                       <p className="font-medium text-slate-800 group-hover:text-[#0033A0]">
                         {c.establecimiento}
                       </p>
                       <p className="text-xs text-slate-400">
                         {c.actaFolio} · {formatFecha(c.fechaVisita)}
                       </p>
-                    </td>
-                    <td className="max-w-[260px] py-3 pr-4">
+                    </DataTableCell>
+                    <DataTableCell className="max-w-[260px] py-3 pr-4 pl-0">
                       <p className="line-clamp-2 text-slate-700">{c.descripcion}</p>
-                    </td>
-                    <td className="py-3 pr-4 text-slate-600">{c.responsable}</td>
-                    <td className="py-3 pr-4 text-slate-600">{c.plazo || '—'}</td>
-                    <td className="py-3">{estadoChip(c.estado)}</td>
-                  </tr>
+                    </DataTableCell>
+                    <DataTableCell className="py-3 pr-4 pl-0 text-slate-600">{c.responsable}</DataTableCell>
+                    <DataTableCell className="py-3 pr-4 pl-0 text-slate-600">{c.plazo || '—'}</DataTableCell>
+                    <DataTableCell className="py-3 pl-0"><StatusBadge tone={estadoChip(c.estado)}>{c.estado}</StatusBadge></DataTableCell>
+                  </DataTableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </DataTableBody>
+          </DataTable>
         )}
-      </div>
+      </Card>
     </div>
   )
 }

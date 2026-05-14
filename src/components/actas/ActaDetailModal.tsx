@@ -3,6 +3,10 @@ import { descargarActaPdf, generarActaPdf } from '../../lib/pdfActaService'
 import { uploadActaPdf, uploadAsistenciaFile } from '../../lib/storageActasService'
 import { updateActaPdf, updateActaAsistencia } from '../../lib/actasService'
 import { useState, useRef } from 'react'
+import { Button } from '../ui/Button'
+import { Modal, ModalBody, ModalCloseButton, ModalFooter, ModalHeader } from '../ui/Modal'
+import { StatusBadge } from '../ui/StatusBadge'
+import { DataTable, DataTableBody, DataTableCell, DataTableHead, DataTableHeaderCell, DataTableRow } from '../ui/Table'
 
 interface ActaDetailModalProps {
   acta: ActaVisitaRow
@@ -40,12 +44,12 @@ function SectionTitle({ title }: { title: string }) {
 }
 
 function estadoChip(estado: string) {
-  const map: Record<string, string> = {
-    Registrada: 'status-chip status-info',
-    'Registrada sin PDF': 'status-chip status-warning',
-    Cerrada: 'status-chip status-success',
+  const map: Record<string, 'info' | 'warning' | 'success'> = {
+    Registrada: 'info',
+    'Registrada sin PDF': 'warning',
+    Cerrada: 'success',
   }
-  return map[estado] ?? 'status-chip status-info'
+  return map[estado] ?? 'info'
 }
 
 export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalProps) {
@@ -104,16 +108,11 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
     : ''
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 px-4 py-8 backdrop-blur-sm"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 rounded-t-3xl border-b border-slate-100 bg-slate-50 px-6 py-5">
+    <Modal onClose={onClose} panelClassName="max-w-3xl">
+        <ModalHeader className="rounded-t-3xl bg-slate-50">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className={estadoChip(acta.estado ?? 'Registrada')}>{acta.estado}</span>
+              <StatusBadge tone={estadoChip(acta.estado ?? 'Registrada')}>{acta.estado}</StatusBadge>
               {acta.folio && (
                 <span className="rounded-full bg-[#0033A0] px-3 py-0.5 font-mono text-xs font-bold text-white">
                   {acta.folio}
@@ -125,21 +124,11 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
             </h2>
             <p className="mt-0.5 text-xs text-slate-400">ID: {acta.id}</p>
           </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            className="flex h-8 w-8 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition"
-            onClick={onClose}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+          <ModalCloseButton onClick={onClose} />
+        </ModalHeader>
 
         {/* Body */}
-        <div className="flex flex-col gap-6 px-6 py-6">
+        <ModalBody className="flex flex-col gap-6">
           {/* 1. Establecimiento */}
           <section className="flex flex-col gap-4">
             <SectionTitle title="Establecimiento" />
@@ -170,26 +159,26 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
               <p className="text-sm text-slate-400">Sin participantes registrados.</p>
             ) : (
               <div className="overflow-x-auto rounded-xl border border-slate-100">
-                <table className="w-full min-w-[480px] text-sm">
-                  <thead>
-                    <tr className="bg-slate-50 text-left">
-                      <th className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">#</th>
-                      <th className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Nombre</th>
-                      <th className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Rol / Estamento</th>
-                      <th className="px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Contacto</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
+                <DataTable responsive="md">
+                  <DataTableHead>
+                    <DataTableRow className="text-left">
+                      <DataTableHeaderCell>#</DataTableHeaderCell>
+                      <DataTableHeaderCell>Nombre</DataTableHeaderCell>
+                      <DataTableHeaderCell>Rol / Estamento</DataTableHeaderCell>
+                      <DataTableHeaderCell>Contacto</DataTableHeaderCell>
+                    </DataTableRow>
+                  </DataTableHead>
+                  <DataTableBody className="divide-slate-50">
                     {acta.participantes.map((p, i) => (
-                      <tr key={i} className="hover:bg-slate-50/50">
-                        <td className="px-4 py-2 text-xs text-slate-400">{i + 1}</td>
-                        <td className="px-4 py-2 font-medium text-slate-800">{p.nombre || '—'}</td>
-                        <td className="px-4 py-2 text-slate-600">{p.rol_estamento || '—'}</td>
-                        <td className="px-4 py-2 text-slate-500">{p.contacto || '—'}</td>
-                      </tr>
+                      <DataTableRow key={i} className="hover:bg-slate-50/50">
+                        <DataTableCell className="py-2 text-xs text-slate-400">{i + 1}</DataTableCell>
+                        <DataTableCell className="py-2 font-medium text-slate-800">{p.nombre || '—'}</DataTableCell>
+                        <DataTableCell className="py-2 text-slate-600">{p.rol_estamento || '—'}</DataTableCell>
+                        <DataTableCell className="py-2 text-slate-500">{p.contacto || '—'}</DataTableCell>
+                      </DataTableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </DataTableBody>
+                </DataTable>
               </div>
             )}
           </section>
@@ -228,9 +217,9 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
                     href={acta.asistencia_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary gap-1.5 text-xs"
+                    className="inline-flex"
                   >
-                    Ver archivo
+                    <Button variant="secondary" size="sm">Ver archivo</Button>
                   </a>
                   <label className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-200 transition">
                     Reemplazar
@@ -293,10 +282,10 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
             ) : (
               <div className="flex flex-col gap-2">
                 {acta.acuerdos.map((a, i) => {
-                  const estadoChipClass: Record<string, string> = {
-                    Pendiente: 'status-chip status-warning',
-                    'En proceso': 'status-chip status-info',
-                    Cumplido: 'status-chip status-success',
+                  const estadoChipClass: Record<string, 'warning' | 'info' | 'success'> = {
+                    Pendiente: 'warning',
+                    'En proceso': 'info',
+                    Cumplido: 'success',
                   }
                   return (
                     <div key={i} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
@@ -307,9 +296,9 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
                           </span>
                           <p className="text-sm text-slate-800">{a.descripcion}</p>
                         </div>
-                        <span className={estadoChipClass[a.estado] ?? 'status-chip status-info'}>
+                        <StatusBadge tone={estadoChipClass[a.estado] ?? 'info'}>
                           {a.estado}
-                        </span>
+                        </StatusBadge>
                       </div>
                       {(a.responsable || a.plazo) && (
                         <div className="mt-2 flex gap-4 pl-8 text-xs text-slate-500">
@@ -323,31 +312,28 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
               </div>
             )}
           </section>
-        </div>
+        </ModalBody>
 
         {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-3xl border-t border-slate-100 px-6 py-4">
+        <ModalFooter className="rounded-b-3xl">
           <div className="flex flex-col gap-1">
             {acta.pdf_url ? (
               <a
                 href={acta.pdf_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary gap-2 text-xs"
+                className="inline-flex"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                </svg>
-                Abrir PDF
+                <Button variant="secondary" size="sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  Abrir PDF
+                </Button>
               </a>
             ) : (
-              <button
-                type="button"
-                className="btn-secondary gap-2 text-xs"
-                onClick={handleGenerarPdf}
-                disabled={pdfLoading}
-              >
+              <Button type="button" variant="secondary" size="sm" onClick={handleGenerarPdf} disabled={pdfLoading}>
                 {pdfLoading ? (
                   <>
                     <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -365,16 +351,15 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
                     {acta.estado === 'Registrada sin PDF' ? 'Reintentar PDF' : 'Generar PDF'}
                   </>
                 )}
-              </button>
+              </Button>
             )}
             {pdfError && <p className="text-xs text-red-600">{pdfError}</p>}
           </div>
 
-          <button type="button" className="btn-primary" onClick={onClose}>
+          <Button type="button" onClick={onClose}>
             Cerrar
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </ModalFooter>
+    </Modal>
   )
 }
