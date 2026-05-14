@@ -2,14 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'gob-cl';
+  src:
+    url('@gobdigital-cl/gob.cl/src/fonts/gob-cl.woff2') format('woff2'),
+    url('@gobdigital-cl/gob.cl/src/fonts/gob-cl.woff') format('woff'),
+    url('@gobdigital-cl/gob.cl/src/fonts/gob-cl.ttf') format('truetype'),
+    url('@gobdigital-cl/gob.cl/src/fonts/gob-cl.svg#gob-cl') format('svg');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   color: #1f2937;
   background: #f4f7fb;
-  font-family: var(--font-family-sans-serif);
+  font-family: 'Roboto', var(--font-family-sans-serif);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --font-family-primary: 'Roboto', var(--font-family-sans-serif);
+  --font-family-accent: 'Roboto Slab', Georgia, serif;
+  --font-family-icons: 'gob-cl';
   --color-primary: var(--primary, #006fb3);
   --color-primary-soft: #00578d;
   --color-primary-muted: #eaf3f9;
@@ -33,6 +48,7 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--color-text);
+  font-family: var(--font-family-primary);
   background:
     radial-gradient(circle at top left, rgba(0, 111, 179, 0.09), transparent 28%),
     linear-gradient(180deg, #f8fbfd 0%, #f4f7fb 100%);
@@ -63,13 +79,16 @@ body::before {
   input,
   select,
   textarea {
-    font-family: inherit;
+    font-family: var(--font-family-primary);
   }
 
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-accent);
     @apply font-semibold tracking-tight text-slate-800;
   }
 
