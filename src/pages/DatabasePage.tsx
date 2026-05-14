@@ -1,5 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { Button } from '../components/ui/Button'
+import { Card } from '../components/ui/Card'
+import { Input } from '../components/ui/Input'
+import { StatusBadge } from '../components/ui/StatusBadge'
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeaderCell,
+  DataTableRow,
+} from '../components/ui/Table'
 import { fetchActas } from '../lib/actasService'
 import { supabase } from '../lib/supabase'
 import type { ActaVisitaRow } from '../types/actas'
@@ -198,25 +210,23 @@ export function DatabasePage() {
 
   return (
     <>
-      <section className="panel-card-strong overflow-hidden">
+      <Card tone="strong" padding="none" className="overflow-hidden">
         <div className="border-b border-slate-200 px-4 py-3 sm:px-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <h3 className="text-base font-semibold text-slate-800">Escuelas registradas</h3>
-              <span className="status-chip status-info whitespace-nowrap">{filteredSchools.length} registros</span>
+              <StatusBadge tone="info" className="whitespace-nowrap">{filteredSchools.length} registros</StatusBadge>
             </div>
 
-            <label className="relative block">
+            <label className="block">
               <span className="sr-only">Buscar escuela</span>
-              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                <SearchIcon />
-              </span>
-              <input
+              <Input
                 type="search"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Nombre, RBD, comuna o director..."
-                className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-4 text-sm text-slate-700 placeholder:text-slate-400 sm:w-[320px]"
+                icon={<SearchIcon />}
+                containerClassName="sm:w-[320px]"
               />
             </label>
           </div>
@@ -232,61 +242,57 @@ export function DatabasePage() {
           </div>
         ) : status === 'error' ? (
           <div className="px-6 py-10 sm:px-7">
-            <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-700">
+            <Card tone="danger" className="text-red-700">
               <p className="text-lg font-semibold">No fue posible cargar la base de datos de escuelas.</p>
               <p className="mt-2 text-sm">{errorMessage || 'Revisa la conexion con Supabase y los permisos de lectura de la tabla.'}</p>
-            </div>
+            </Card>
           </div>
         ) : status === 'empty' ? (
           <div className="px-6 py-12 text-center sm:px-7">
-            <div className="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-slate-50 p-8">
+            <Card tone="soft" className="mx-auto max-w-lg p-8">
               <p className="text-lg font-semibold text-slate-800">No hay escuelas registradas en la tabla.</p>
               <p className="mt-2 text-sm text-slate-500">Cuando existan registros en Supabase, apareceran automaticamente en esta vista.</p>
-            </div>
+            </Card>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs text-slate-500">
+          <DataTable responsive="md">
+            <DataTableHead>
+              <DataTableRow>
+                {primaryColumns.map((column) => (
+                  <DataTableHeaderCell key={column}>{column}</DataTableHeaderCell>
+                ))}
+              </DataTableRow>
+            </DataTableHead>
+            <DataTableBody>
+              {filteredSchools.length === 0 ? (
                 <tr>
-                  {primaryColumns.map((column) => (
-                    <th key={column} className="px-4 py-2.5 font-semibold uppercase tracking-wide">
-                      {column}
-                    </th>
-                  ))}
+                  <DataTableCell colSpan={primaryColumns.length} className="py-8 text-center text-slate-400">
+                    No se encontraron resultados.
+                  </DataTableCell>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white text-sm text-slate-700">
-                {filteredSchools.length === 0 ? (
-                  <tr>
-                    <td colSpan={primaryColumns.length} className="px-4 py-8 text-center text-slate-400">
-                      No se encontraron resultados.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredSchools.map((school) => (
-                    <tr
-                      key={String(school['N°'])}
-                      className="cursor-pointer transition hover:bg-[#f8fbff]"
-                      onClick={() => setSelectedSchool(school)}
-                    >
-                      <td className="px-4 py-2 font-semibold text-slate-800">{formatValue(school['N°'])}</td>
-                      <td className="px-4 py-2 text-slate-500">{formatValue(school['RBD'])}</td>
-                      <td className="px-4 py-2 font-medium text-slate-800">{formatValue(school['NOMBRE ESTABLECIMIENTO'])}</td>
-                      <td className="px-4 py-2 text-slate-600">{formatValue(school['COMUNA'])}</td>
-                      <td className="px-4 py-2">
-                        <span className="status-chip status-info">{formatValue(school['TIPO'])}</span>
-                      </td>
-                      <td className="px-4 py-2 text-slate-600">{formatValue(school['DIRECTOR/A'])}</td>
-                      <td className="px-4 py-2 text-slate-500">{formatValue(school['CORREO ELECTRÓNICO'])}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+              ) : (
+                filteredSchools.map((school) => (
+                  <DataTableRow
+                    key={String(school['N°'])}
+                    interactive
+                    onClick={() => setSelectedSchool(school)}
+                  >
+                    <DataTableCell className="font-semibold text-slate-800">{formatValue(school['N°'])}</DataTableCell>
+                    <DataTableCell className="text-slate-500">{formatValue(school['RBD'])}</DataTableCell>
+                    <DataTableCell className="font-medium text-slate-800">{formatValue(school['NOMBRE ESTABLECIMIENTO'])}</DataTableCell>
+                    <DataTableCell className="text-slate-600">{formatValue(school['COMUNA'])}</DataTableCell>
+                    <DataTableCell>
+                      <StatusBadge tone="info">{formatValue(school['TIPO'])}</StatusBadge>
+                    </DataTableCell>
+                    <DataTableCell className="text-slate-600">{formatValue(school['DIRECTOR/A'])}</DataTableCell>
+                    <DataTableCell className="text-slate-500">{formatValue(school['CORREO ELECTRÓNICO'])}</DataTableCell>
+                  </DataTableRow>
+                ))
+              )}
+            </DataTableBody>
+          </DataTable>
         )}
-      </section>
+      </Card>
 
       {selectedSchool ? (
         <SchoolDetailModal
@@ -330,7 +336,7 @@ function SchoolDetailModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 px-4 py-6 sm:items-center">
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[28px] bg-white shadow-2xl">
+      <Card as="div" tone="strong" padding="none" className="relative z-10 max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[28px] bg-white shadow-2xl">
         <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#0057B8]">Ficha de establecimiento</p>
@@ -340,9 +346,9 @@ function SchoolDetailModal({
             </p>
           </div>
 
-          <button type="button" onClick={onClose} className="rounded-2xl border border-slate-200 px-3 py-2 text-slate-600 transition hover:bg-slate-50">
+          <Button variant="secondary" size="sm" onClick={onClose} className="rounded-2xl border-slate-200 text-slate-600 hover:bg-slate-50">
             <CloseIcon />
-          </button>
+          </Button>
         </div>
 
         <div className="max-h-[calc(90vh-80px)] overflow-y-auto px-5 py-4">
@@ -354,7 +360,7 @@ function SchoolDetailModal({
           </div>
 
           <div className="mt-4 space-y-3">
-            <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <Card tone="soft">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Trazabilidad de actas</h5>
@@ -362,16 +368,16 @@ function SchoolDetailModal({
                     Resumen de visitas y compromisos asociados a este establecimiento.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-xl border border-[#c8dafd] bg-white px-3 py-2 text-xs font-semibold text-[#0057B8] transition hover:bg-[#f4f8ff]"
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => {
                     onClose()
                     window.location.hash = '/acta'
                   }}
                 >
                   Ir al gestor de actas
-                </button>
+                </Button>
               </div>
 
               <div className="mt-3 grid gap-2 md:grid-cols-3">
@@ -390,26 +396,29 @@ function SchoolDetailModal({
               </div>
 
               {actasError ? (
-                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                <Card tone="warning" padding="sm" className="mt-3 rounded-xl text-sm text-amber-800">
                   No fue posible cargar las actas relacionadas: {actasError}
-                </div>
+                </Card>
               ) : relatedActas.length === 0 ? (
-                <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-4 text-sm text-slate-500">
+                <Card tone="neutral" className="mt-3 rounded-xl text-sm text-slate-500">
                   Este establecimiento aun no tiene actas registradas.
-                </div>
+                </Card>
               ) : (
                 <div className="mt-3 space-y-2">
                   {relatedActas.map((acta) => (
-                    <article
+                    <Card
                       key={acta.id}
-                      className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 md:flex-row md:items-center md:justify-between"
+                      as="article"
+                      tone="surface"
+                      padding="sm"
+                      className="flex flex-col gap-3 rounded-xl md:flex-row md:items-center md:justify-between"
                     >
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-sm font-semibold text-slate-800">{acta.folio}</span>
-                          <span className="status-chip status-info text-xs">
+                          <StatusBadge tone="info" className="text-xs">
                             {actaTypeLabels[acta.tipo_acta] ?? acta.tipo_acta}
-                          </span>
+                          </StatusBadge>
                         </div>
                         <p className="mt-1 text-sm text-slate-500">
                           {formatActaDate(acta.fecha_visita)} · {acta.hora_inicio} - {acta.hora_termino}
@@ -419,21 +428,21 @@ function SchoolDetailModal({
                         </p>
                       </div>
 
-                      <button
-                        type="button"
-                        className="inline-flex items-center justify-center rounded-xl bg-[#0033A0] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#002a84]"
+                      <Button
+                        variant="primary"
+                        size="sm"
                         onClick={() => {
                           onClose()
                           window.location.hash = `/acta?actaId=${encodeURIComponent(acta.id)}`
                         }}
                       >
                         Abrir acta
-                      </button>
-                    </article>
+                      </Button>
+                    </Card>
                   ))}
                 </div>
               )}
-            </section>
+            </Card>
 
             {detailSections.map((section) => {
               const rows = section.fields.filter((field) => hasValue(school[field]))
@@ -443,32 +452,32 @@ function SchoolDetailModal({
               }
 
               return (
-                <section key={section.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <Card key={section.title} tone="soft">
                   <h5 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{section.title}</h5>
                   <div className="mt-2 grid gap-2 md:grid-cols-2">
                     {rows.map((field) => (
-                      <article key={field} className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                      <Card key={field} as="article" tone="surface" padding="sm" className="rounded-xl">
                         <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{field}</p>
                         <p className="mt-0.5 break-words text-sm text-slate-700">{formatValue(school[field])}</p>
-                      </article>
+                      </Card>
                     ))}
                   </div>
-                </section>
+                </Card>
               )
             })}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }
 
 function SummaryPill({ label, value }: { label: string; value: string }) {
   return (
-    <article className="rounded-xl border border-[#c8dafd] bg-[#f4f8ff] px-3 py-2">
+    <Card as="article" tone="tint" padding="sm" className="rounded-xl">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-[#0057B8]">{label}</p>
       <p className="mt-0.5 text-sm font-semibold text-slate-800">{value}</p>
-    </article>
+    </Card>
   )
 }
 
@@ -481,18 +490,25 @@ function SummaryMetricCard({
   value: string
   tone?: 'default' | 'info' | 'warning' | 'success'
 }) {
-  const toneClassName = {
-    default: 'border-slate-200 bg-white text-slate-800',
-    info: 'border-[#c8dafd] bg-[#f4f8ff] text-[#0033A0]',
-    warning: 'border-amber-200 bg-amber-50 text-amber-800',
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  const toneName = {
+    default: 'surface',
+    info: 'tint',
+    warning: 'warning',
+    success: 'soft',
+  }[tone] as 'surface' | 'tint' | 'warning' | 'soft'
+
+  const valueClassName = {
+    default: 'text-slate-800',
+    info: 'text-[#0033A0]',
+    warning: 'text-amber-800',
+    success: 'text-emerald-800',
   }[tone]
 
   return (
-    <article className={`rounded-xl border px-3 py-3 ${toneClassName}`}>
+    <Card as="article" tone={toneName} padding="sm" className="rounded-xl">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-1 text-lg font-semibold">{value}</p>
-    </article>
+      <p className={`mt-1 text-lg font-semibold ${valueClassName}`}>{value}</p>
+    </Card>
   )
 }
 
