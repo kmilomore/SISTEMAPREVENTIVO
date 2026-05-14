@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@gobdigital-cl/gob.cl": "^3.0.10",
     "@supabase/supabase-js": "^2.104.1",
     "jspdf": "^4.2.1",
     "react": "^19.2.5",

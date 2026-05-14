@@ -132,8 +132,37 @@ El trigger **no se activa en UPDATE**, para no pisar cambios de estado ya hechos
 La función del trigger (`sync_acuerdos_to_compromisos`) extrae de cada elemento del JSONB:
 - `descripcion` → campo `descripcion`
 - `responsable` → campo `responsable` (null si vacío)
-- `plazo` → se castea a `date` solo si tiene formato `YYYY-MM-DD`, sino queda `null`
+- `plazo` → se castea a `date` con detección de tres formatos (ver sección 4.1); null si no reconocido
 - `estado` → se valida contra los valores permitidos; default `'Pendiente'`
+
+### 4.1 Formatos de fecha soportados para `plazo`
+
+Los acuerdos en `actas_visita.acuerdos` pueden traer el plazo en tres formatos distintos. El CASE statement en el trigger y en el bloque de migración los detecta por regex:
+
+| Regex | Formato | Conversión |
+|---|---|---|
+| `^\d{4}-\d{2}-\d{2}$` | ISO `YYYY-MM-DD` | cast directo a `date` |
+| `^\d{2}/\d{2}/\d{4}$` | Chileno con barras `DD/MM/YYYY` | `to_date(..., 'DD/MM/YYYY')` |
+| `^\d{2}-\d{2}-\d{4}$` | Chileno con guiones `DD-MM-YYYY` | `to_date(..., 'DD-MM-YYYY')` |
+
+Cualquier otro valor (texto libre, vacío) queda como `null`.
+
+> **Historial del bug**: la migración inicial solo manejaba `YYYY-MM-DD`. Los datos reales del SLEP usan `DD/MM/YYYY` y `DD-MM-YYYY`, por lo que todos los `plazo` migraron como `null`. Fix aplicado en dos pasos:
+> 1. Actualización del schema (trigger + bloque `DO $$`) para manejar los tres formatos.
+> 2. Query de corrección ejecutada una sola vez en el SQL Editor de Supabase para backfill de registros existentes:
+> ```sql
+> update public.compromisos c
+> set plazo = case
+>   when acuerdo->>'plazo' ~ '^\d{4}-\d{2}-\d{2}$' then (acuerdo->>'plazo')::date
+>   when acuerdo->>'plazo' ~ '^\d{2}/\d{2}/\d{4}$' then to_date(acuerdo->>'plazo', 'DD/MM/YYYY')
+>   when acuerdo->>'plazo' ~ '^\d{2}-\d{2}-\d{4}$' then to_date(acuerdo->>'plazo', 'DD-MM-YYYY')
+>   else null end,
+>   updated_at = now()
+> from public.actas_visita a, jsonb_array_elements(a.acuerdos) as acuerdo
+> where c.acta_id = a.id and c.plazo is null
+>   and trim(acuerdo->>'descripcion') = c.descripcion
+>   and nullif(trim(acuerdo->>'plazo'), '') is not null;
+> ```
 
 ### Migración de acuerdos históricos
 
@@ -216,13 +245,15 @@ El resultado de `comentarios_compromisos` se mapea al campo `comentarios` del ti
 | `filtroComuna` | `string` | Valor del select de comunas |
 | `filtroEstado` | `EstadoCompromiso \| ''` | Valor del select de estados |
 | `selected` | `Compromiso \| null` | Compromiso activo en el modal |
+| `sortKey` | `SortKey` | Columna activa de ordenamiento (default: `'plazo'`) |
+| `sortDir` | `SortDir` | Dirección del sort: `'asc'` o `'desc'` (default: `'asc'`) |
 
 ### Datos derivados (useMemo)
 
 | Variable | Derivado de | Propósito |
 |---|---|---|
 | `comunas` | `compromisos` | Lista única de comunas para el select de filtro |
-| `filtered` | `compromisos + filtros` | Subconjunto que pasa los tres filtros activos |
+| `filtered` | `compromisos + filtros + sort` | Subconjunto filtrado y ordenado por la columna activa |
 | `counts` | `compromisos` | Conteos por estado para los KPI chips |
 
 ### Flujo de carga
@@ -242,7 +273,9 @@ setLoading(false) → render tabla o banner
 
 ---
 
-## 8. Filtros de la tabla
+## 8. Filtros y ordenamiento
+
+### Filtros
 
 | Filtro | Tipo | Campo filtrado |
 |---|---|---|
@@ -251,6 +284,26 @@ setLoading(false) → render tabla o banner
 | Filtro por estado | Select dropdown | `estado` (coincidencia exacta) |
 
 Los tres filtros se aplican en paralelo (AND lógico). El botón "Limpiar filtros" aparece cuando al menos uno está activo.
+
+### Ordenamiento por columnas
+
+Todas las columnas de la tabla son clickeables para ordenar. La lógica está en el `useMemo` de `filtered` — primero filtra, luego ordena el resultado.
+
+| Columna | `SortKey` | Criterio de orden |
+|---|---|---|
+| Compromiso | `'descripcion'` | `localeCompare` con locale `es` |
+| Establecimiento | `'establecimiento_nombre'` | `localeCompare` con locale `es` |
+| Responsable | `'responsable'` | `localeCompare`; null tratado como `''` |
+| Plazo | `'plazo'` | Comparación de string ISO; null va siempre al final (sin importar dirección) |
+| Estado | `'estado'` | Orden lógico: Pendiente(0) → En proceso(1) → Cumplido(2) → Vencido(3) |
+
+**Comportamiento:** primer click en una columna → `asc`; segundo click → `desc`. Click en columna distinta → resetea a `asc`. La columna activa muestra flecha azul (↑/↓); las inactivas muestran ⇅ gris.
+
+**Tipos:**
+```ts
+type SortKey = 'descripcion' | 'establecimiento_nombre' | 'responsable' | 'plazo' | 'estado'
+type SortDir = 'asc' | 'desc'
+```
 
 ---
 
@@ -360,11 +413,12 @@ El archivo contiene en orden:
 | `compromisos_set_updated_at` | Trigger BEFORE UPDATE en `compromisos` |
 | `create table comentarios_compromisos` | Tabla de historial con FK cascade |
 | Índice | 1 índice en `comentarios_compromisos` |
-| `sync_acuerdos_to_compromisos()` | Función trigger que lee `acuerdos` JSONB y hace INSERT en `compromisos` |
+| `sync_acuerdos_to_compromisos()` | Función trigger que lee `acuerdos` JSONB y hace INSERT en `compromisos` con detección de 3 formatos de fecha |
 | `trg_actas_visita_sync_compromisos` | Trigger AFTER INSERT en `actas_visita` |
-| `DO $$` migración | Migra acuerdos históricos una sola vez si `compromisos` está vacía |
+| `DO $$` migración | Migra acuerdos históricos una sola vez si `compromisos` está vacía; misma lógica de 3 formatos de fecha |
 
-**RLS deshabilitado** — activar cuando se implemente autenticación.
+**RLS deshabilitado en `compromisos` y `comentarios_compromisos`** — activar cuando se implemente autenticación.  
+**`actas_visita` tiene RLS activo** — no afecta el SQL Editor (corre como postgres) pero sí afecta las llamadas desde el cliente JS con anon key.
 
 ---
 
@@ -372,10 +426,12 @@ El archivo contiene en orden:
 
 | Componente / función | Propósito |
 |---|---|
-| `CompromisosPage` | Orquestador: carga, filtros, tabla, estado del modal, banner de error |
+| `CompromisosPage` | Orquestador: carga, filtros, ordenamiento, tabla, estado del modal, banner de error |
 | `CompromisoModal` | Modal: metadata, cambio de estado, historial de comentarios, nuevo comentario |
 | `HeaderCard` | Header estático usado en el banner de error (sin Supabase) |
 | `KpiChip` | Chip de indicador con colores por categoría |
+| `SortableTh` | `<th>` clicable que llama `onSort(colKey)` y renderiza `SortIcon` |
+| `SortIcon` | SVG de flecha: ⇅ gris (inactivo) / ↑↓ azul (activo según `sortDir`) |
 | `estadoChip(estado)` | Clase CSS del chip de estado en la tabla |
 | `estadoBtnClass(estado, selected)` | Clase CSS del botón de selección en el modal |
 | `isPlazoVencido(plazo)` | Compara plazo con fecha actual (incluye fin del día) |
@@ -387,6 +443,15 @@ El archivo contiene en orden:
 ---
 
 ## 14. Hallazgos y limitaciones actuales
+
+### 14.0 Bug resuelto: `plazo` mostraba `—` en todos los registros
+
+**Causa**: la migración inicial (`DO $$`) corrió antes de que se agregara soporte para los formatos de fecha chilenos. El CASE statement solo cubría `YYYY-MM-DD`, por lo que todos los registros con plazo en `DD/MM/YYYY` o `DD-MM-YYYY` se insertaron con `plazo = null`.
+
+**Fix aplicado**:
+- Schema actualizado con tres formatos en el trigger y en el bloque de migración.
+- Query de backfill ejecutado una sola vez en el SQL Editor (ver sección 4.1).
+- La tabla `actas_visita` tiene RLS activo, pero el SQL Editor de Supabase ejecuta como rol `postgres` (superusuario) y lo bypasea automáticamente.
 
 ### 14.1 Sin paginación
 

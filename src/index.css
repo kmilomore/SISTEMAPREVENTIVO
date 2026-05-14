@@ -4,23 +4,24 @@
 
 :root {
   color: #1f2937;
-  background: #f5f7fa;
-  font-family: 'Segoe UI', 'Segoe UI Variable', Bahnschrift, sans-serif;
+  background: #f4f7fb;
+  font-family: var(--font-family-sans-serif);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --color-primary: #0033a0;
-  --color-primary-soft: #0057b8;
-  --color-primary-muted: #e8f0ff;
-  --color-accent: #d52b1e;
+  --color-primary: var(--primary, #006fb3);
+  --color-primary-soft: #00578d;
+  --color-primary-muted: #eaf3f9;
+  --color-accent: var(--secondary, #fe6565);
   --color-surface: #ffffff;
-  --color-surface-alt: #f8fafc;
-  --color-border: #e5e7eb;
+  --color-surface-alt: #f8fbfd;
+  --color-border: #d7e1ea;
   --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --color-text-muted: #5f6b7a;
+  --shadow-sm: 0 8px 24px rgba(10, 19, 45, 0.08);
+  --shadow-md: 0 18px 40px rgba(10, 19, 45, 0.12);
+  --shell-max-width: 1440px;
 }
 
 html {
@@ -33,14 +34,23 @@ body {
   margin: 0;
   color: var(--color-text);
   background:
-    radial-gradient(circle at top left, rgba(0, 51, 160, 0.06), transparent 28%),
-    linear-gradient(180deg, #f8fafc 0%, #f5f7fa 100%);
+    radial-gradient(circle at top left, rgba(0, 111, 179, 0.09), transparent 28%),
+    linear-gradient(180deg, #f8fbfd 0%, #f4f7fb 100%);
 }
 
 #root {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, #1d8cc9 65%, var(--color-accent) 100%);
+  z-index: 60;
 }
 
 @layer base {
@@ -78,16 +88,57 @@ body {
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    outline: 3px solid rgba(0, 87, 184, 0.28);
+    outline: 3px solid rgba(0, 111, 179, 0.28);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: rgba(0, 87, 184, 0.16);
+    background: rgba(0, 111, 179, 0.16);
   }
 }
 
 @layer components {
+  .gob-app-shell {
+    min-height: 100vh;
+    color: var(--color-text);
+  }
+
+  .gob-main-frame {
+    width: min(100%, var(--shell-max-width));
+    margin: 0 auto;
+  }
+
+  .gob-sidebar {
+    background: linear-gradient(180deg, #0a132d 0%, #123a62 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .gob-sidebar-badge {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .gob-sidebar-item {
+    border: 1px solid transparent;
+  }
+
+  .gob-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .gob-sidebar-item.is-active {
+    background: #ffffff;
+    border-color: rgba(0, 111, 179, 0.18);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .gob-topbar {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(0, 111, 179, 0.14);
+    backdrop-filter: blur(18px);
+  }
+
   .panel-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -97,7 +148,7 @@ body {
 
   .panel-card-strong {
     background: var(--color-surface);
-    border: 1px solid rgba(0, 51, 160, 0.1);
+    border: 1px solid rgba(0, 111, 179, 0.14);
     box-shadow: var(--shadow-md);
     @apply rounded-3xl;
   }
@@ -115,12 +166,12 @@ body {
   .btn-secondary {
     background: white;
     color: var(--color-primary);
-    border: 1px solid rgba(0, 51, 160, 0.16);
+    border: 1px solid rgba(0, 111, 179, 0.18);
     @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition;
   }
 
   .btn-secondary:hover {
-    background: #f8fbff;
+    background: #f4f9fc;
   }
 
   .status-chip {
@@ -128,29 +179,29 @@ body {
   }
 
   .status-info {
-    background: rgba(0, 87, 184, 0.1);
-    color: #0b4ba8;
+    background: rgba(0, 111, 179, 0.12);
+    color: #00578d;
   }
 
   .status-success {
-    background: rgba(5, 150, 105, 0.12);
-    color: #047857;
+    background: rgba(45, 113, 124, 0.14);
+    color: #225962;
   }
 
   .status-warning {
-    background: rgba(217, 119, 6, 0.12);
-    color: #b45309;
+    background: rgba(242, 199, 40, 0.18);
+    color: #8b6b00;
   }
 
   .status-danger {
-    background: rgba(213, 43, 30, 0.12);
-    color: #b42318;
+    background: rgba(254, 101, 101, 0.14);
+    color: #bf3f3f;
   }
 
   .skeleton {
     position: relative;
     overflow: hidden;
-    background: #edf2f7;
+    background: #e8eff5;
   }
 
   .skeleton::after {
