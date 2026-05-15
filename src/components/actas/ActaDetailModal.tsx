@@ -108,7 +108,7 @@ export function ActaDetailModal({ acta, onClose, onUpdated }: ActaDetailModalPro
     : ''
 
   return (
-    <Modal onClose={onClose} panelClassName="max-w-3xl">
+    <Modal onClose={onClose} panelClassName="max-h-[calc(100vh-3rem)] max-w-3xl sm:max-h-[calc(100vh-2rem)]">
         <ModalHeader className="rounded-t-3xl bg-slate-50">
           <div>
             <div className="flex flex-wrap items-center gap-2">

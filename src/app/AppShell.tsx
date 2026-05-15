@@ -17,7 +17,6 @@ import { appRoutes } from './routes'
 import { useHashRoute } from './useHashRoute'
 
 const brandLogo = '/SLEPCOLCHAGUA.webp'
-const allowedEmails = ['eduardo.soto@slepcolchagua.cl', 'camilo.serra@slepcolchagua.cl'] as const
 
 const pageTitle = {
   database: 'Base de datos operacional',
@@ -101,7 +100,6 @@ export function AppShell() {
   }, [userDisplayName])
 
   const isAuthenticated = Boolean(userEmail)
-  const isAuthorizedUser = allowedEmails.includes(userEmail.trim().toLowerCase() as (typeof allowedEmails)[number])
 
   async function handleGoogleLogin() {
     setAuthError('')
@@ -131,10 +129,6 @@ export function AppShell() {
 
   if (!isAuthenticated) {
     return <LoginPage mode="login" authError={authError} onLogin={handleGoogleLogin} />
-  }
-
-  if (!isAuthorizedUser) {
-    return <LoginPage mode="unauthorized" email={userEmail} onSignOut={handleSignOut} />
   }
 
   return (
@@ -192,14 +186,14 @@ export function AppShell() {
                       key={appRoute.id}
                       type="button"
                       onClick={() => {
-                        if (!isAuthenticated || !isAuthorizedUser) {
+                        if (!isAuthenticated) {
                           return
                         }
 
                         setIsMobileMenuOpen(false)
                         navigate(appRoute.id)
                       }}
-                      disabled={!isAuthenticated || !isAuthorizedUser}
+                      disabled={!isAuthenticated}
                       className={`gob-sidebar-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${
                         isActive ? 'is-active shadow' : 'text-blue-50'
                       }`}
@@ -222,14 +216,9 @@ export function AppShell() {
 
 
             <div className="gob-sidebar-badge mt-auto rounded-3xl p-4 text-sm text-blue-50/92">
-              {isAuthenticated && isAuthorizedUser ? (
+              {isAuthenticated ? (
                 <>
                   <p className="font-semibold text-white">Sesion activa</p>
-                  <p className="mt-2 break-all text-blue-100/80">{userEmail}</p>
-                </>
-              ) : isAuthenticated ? (
-                <>
-                  <p className="font-semibold text-white">Cuenta sin acceso</p>
                   <p className="mt-2 break-all text-blue-100/80">{userEmail}</p>
                 </>
               ) : (

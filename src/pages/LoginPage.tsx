@@ -1,35 +1,27 @@
 const brandLogo = '/SLEPCOLCHAGUA.webp'
 
-type LoginPageMode = 'loading' | 'setup' | 'login' | 'unauthorized'
+type LoginPageMode = 'loading' | 'setup' | 'login'
 
 type LoginPageProps = {
   mode: LoginPageMode
   authError?: string
-  email?: string
   onLogin?: () => Promise<void>
-  onSignOut?: () => Promise<void>
 }
 
-const allowedUsers = ['eduardo.soto@slepcolchagua.cl', 'camilo.serra@slepcolchagua.cl']
-
-export function LoginPage({ mode, authError = '', email = '', onLogin, onSignOut }: LoginPageProps) {
+export function LoginPage({ mode, authError = '', onLogin }: LoginPageProps) {
   const title =
     mode === 'loading'
       ? 'Validando sesion institucional'
       : mode === 'setup'
         ? 'Configura la conexion con Supabase'
-        : mode === 'unauthorized'
-          ? 'Tu cuenta no tiene acceso al portal'
-          : 'Accede al portal con tu cuenta Google'
+        : 'Accede al portal con tu cuenta Google'
 
   const description =
     mode === 'loading'
       ? 'Estamos verificando la sesion actual y la autorizacion del portal.'
       : mode === 'setup'
         ? 'Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY para habilitar autenticacion y acceso a los modulos.'
-        : mode === 'unauthorized'
-          ? 'La cuenta autenticada no pertenece a la whitelist inicial del portal. Solicita incorporacion si corresponde.'
-          : 'El acceso al portal de Prevencion se realiza con Google Workspace y solo usuarios autorizados pueden continuar.'
+        : 'El acceso al portal de Prevencion se realiza con Google Workspace. La autorizacion final se valida en Supabase mediante RLS.'
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(0,111,179,0.16),_transparent_36%),linear-gradient(180deg,_#f4f8fb_0%,_#eef4f8_45%,_#f9fbfd_100%)] px-4 py-6 sm:px-6 lg:px-8">
@@ -73,21 +65,6 @@ export function LoginPage({ mode, authError = '', email = '', onLogin, onSignOut
                 </button>
               ) : null}
 
-              {mode === 'unauthorized' ? (
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
-                    Cuenta autenticada: <span className="font-semibold">{email}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => void onSignOut?.()}
-                    className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-                  >
-                    Cerrar sesion
-                  </button>
-                </div>
-              ) : null}
-
               {mode === 'loading' ? (
                 <div className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
                   <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[#006fb3]" />
@@ -108,9 +85,9 @@ export function LoginPage({ mode, authError = '', email = '', onLogin, onSignOut
 
             <div className="mt-8 grid gap-4">
               <InfoCard
-                title="Usuarios iniciales"
-                description="Whitelist precargada para el arranque del portal."
-                items={allowedUsers}
+                title="Autorizacion centralizada"
+                description="El frontend autentica con Google y Supabase decide el acceso real a datos mediante RLS y politicas del proyecto."
+                items={['Supabase Auth', 'Row Level Security', 'OAuth Google']}
               />
               <InfoCard
                 title="Modulos protegidos"
