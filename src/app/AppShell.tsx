@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { ActaPage } from '../pages/ActaPage'
 import { CompromisosPage } from '../pages/CompromisosPage'
 import { DatabasePage } from '../pages/DatabasePage'
 import { MetricasPage } from '../pages/MetricasPage'
+import {
+  getSession,
+  isSupabaseConfigured,
+  onAuthStateChange,
+  signInWithGoogle,
+  signOut,
+  supabase,
+} from '../lib/supabase'
 import { appRoutes } from './routes'
 import { useHashRoute } from './useHashRoute'
 
 const brandLogo = '/SLEPCOLCHAGUA.webp'
+const allowedEmails = ['eduardo.soto@slepcolchagua.cl', 'camilo.serra@slepcolchagua.cl'] as const
 
 const pageTitle = {
   database: 'Base de datos operacional',
@@ -26,6 +35,90 @@ const pageTag = {
 export function AppShell() {
   const { route, navigate } = useHashRoute()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isAuthLoading, setIsAuthLoading] = useState(Boolean(supabase))
+  const [authError, setAuthError] = useState('')
+  const [userEmail, setUserEmail] = useState('')
+  const [userDisplayName, setUserDisplayName] = useState('')
+  const [userAvatarUrl, setUserAvatarUrl] = useState('')
+
+  function hydrateUser(session: Awaited<ReturnType<typeof getSession>>) {
+    const email = session?.user.email ?? ''
+    const metadata = session?.user.user_metadata ?? {}
+    const fullName =
+      metadata.full_name ?? metadata.name ?? metadata.user_name ?? metadata.email ?? email
+    const avatarUrl = metadata.avatar_url ?? metadata.picture ?? ''
+
+    setUserEmail(email)
+    setUserDisplayName(typeof fullName === 'string' ? fullName : email)
+    setUserAvatarUrl(typeof avatarUrl === 'string' ? avatarUrl : '')
+  }
+
+  useEffect(() => {
+    if (!supabase) {
+      return
+    }
+
+    let isMounted = true
+
+    void getSession().then((session) => {
+      if (!isMounted) {
+        return
+      }
+
+      hydrateUser(session)
+      setIsAuthLoading(false)
+    })
+
+    const unsubscribe = onAuthStateChange((session) => {
+      if (!isMounted) {
+        return
+      }
+
+      hydrateUser(session)
+      setIsAuthLoading(false)
+    })
+
+    return () => {
+      isMounted = false
+      unsubscribe()
+    }
+  }, [])
+
+  const userInitials = useMemo(() => {
+    if (!userDisplayName) {
+      return 'UP'
+    }
+
+    const initials = userDisplayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((segment) => segment[0]?.toUpperCase() ?? '')
+      .join('')
+
+    return initials || 'UP'
+  }, [userDisplayName])
+
+  const isAuthenticated = Boolean(userEmail)
+  const isAuthorizedUser = allowedEmails.includes(userEmail.trim().toLowerCase() as (typeof allowedEmails)[number])
+
+  async function handleGoogleLogin() {
+    setAuthError('')
+    const { error } = await signInWithGoogle()
+
+    if (error) {
+      setAuthError(error)
+    }
+  }
+
+  async function handleSignOut() {
+    setAuthError('')
+    const { error } = await signOut()
+
+    if (error) {
+      setAuthError(error)
+    }
+  }
 
   return (
     <div className="gob-app-shell">
@@ -82,9 +175,14 @@ export function AppShell() {
                       key={appRoute.id}
                       type="button"
                       onClick={() => {
+                        if (!isAuthenticated || !isAuthorizedUser) {
+                          return
+                        }
+
                         setIsMobileMenuOpen(false)
                         navigate(appRoute.id)
                       }}
+                      disabled={!isAuthenticated || !isAuthorizedUser}
                       className={`gob-sidebar-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${
                         isActive ? 'is-active shadow' : 'text-blue-50'
                       }`}
@@ -107,10 +205,24 @@ export function AppShell() {
 
 
             <div className="gob-sidebar-badge mt-auto rounded-3xl p-4 text-sm text-blue-50/92">
-              <p className="font-semibold text-white">Unidad de Prevencion</p>
-              <p className="mt-2 text-blue-100/80">
-                Gestion del riesgo para el monitoreo de establecimientos, actas y compromisos del territorio.
-              </p>
+              {isAuthenticated && isAuthorizedUser ? (
+                <>
+                  <p className="font-semibold text-white">Sesion activa</p>
+                  <p className="mt-2 break-all text-blue-100/80">{userEmail}</p>
+                </>
+              ) : isAuthenticated ? (
+                <>
+                  <p className="font-semibold text-white">Cuenta sin acceso</p>
+                  <p className="mt-2 break-all text-blue-100/80">{userEmail}</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold text-white">Acceso protegido</p>
+                  <p className="mt-2 text-blue-100/80">
+                    El portal requiere autenticacion con Google para consultar escuelas, actas y compromisos.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </aside>
@@ -138,20 +250,56 @@ export function AppShell() {
                 </div>
 
                 <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-3 rounded-2xl border border-[#d7e1ea] bg-[#f8fbfd] px-3 py-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#006fb3] text-sm font-semibold text-white">
-                      UP
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800">Perfil institucional</p>
-                      <p className="text-xs text-slate-500">Unidad de Prevencion</p>
-                    </div>
-                  </div>
+                  {isAuthenticated ? (
+                    <>
+                      <div className="flex items-center gap-3 rounded-2xl border border-[#d7e1ea] bg-[#f8fbfd] px-3 py-2">
+                        {userAvatarUrl ? (
+                          <img
+                            src={userAvatarUrl}
+                            alt={userDisplayName}
+                            className="h-10 w-10 rounded-full border border-[#d7e1ea] object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#006fb3] text-sm font-semibold text-white">
+                            {userInitials}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800">{userDisplayName}</p>
+                          <p className="text-xs text-slate-500">{userEmail}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => void handleSignOut()}
+                        className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+                      >
+                        Cerrar sesion
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void handleGoogleLogin()}
+                      className="inline-flex items-center justify-center rounded-2xl bg-[#006fb3] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#005b93]"
+                    >
+                      Ingresar con Google
+                    </button>
+                  )}
                 </div>
               </div>
             </header>
 
-            {route === 'database' ? (
+            {!isSupabaseConfigured ? (
+              <SetupRequiredPanel />
+            ) : isAuthLoading ? (
+              <LoadingPanel />
+            ) : !isAuthenticated ? (
+              <LoginRequiredPanel authError={authError} onLogin={handleGoogleLogin} />
+            ) : !isAuthorizedUser ? (
+              <UnauthorizedPanel email={userEmail} onSignOut={handleSignOut} />
+            ) : route === 'database' ? (
               <DatabasePage />
             ) : route === 'acta' ? (
               <ActaPage />
@@ -164,6 +312,86 @@ export function AppShell() {
         </main>
       </div>
     </div>
+  )
+}
+
+function LoadingPanel() {
+  return (
+    <section className="panel-card-strong rounded-[28px] px-6 py-12 text-center sm:px-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Autenticacion</p>
+      <h3 className="mt-3 text-2xl font-semibold text-slate-800">Verificando sesion institucional</h3>
+      <p className="mt-3 text-sm text-slate-500">
+        Espera un momento mientras se valida la sesion de Supabase.
+      </p>
+    </section>
+  )
+}
+
+function SetupRequiredPanel() {
+  return (
+    <section className="panel-card-strong rounded-[28px] px-6 py-12 text-center sm:px-10">
+      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Supabase</p>
+      <h3 className="mt-3 text-2xl font-semibold text-slate-800">Configuracion incompleta</h3>
+      <p className="mt-3 text-sm text-slate-500">
+        Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY para habilitar el acceso autenticado al portal.
+      </p>
+    </section>
+  )
+}
+
+function LoginRequiredPanel({
+  authError,
+  onLogin,
+}: {
+  authError: string
+  onLogin: () => Promise<void>
+}) {
+  return (
+    <section className="panel-card-strong rounded-[28px] px-6 py-12 sm:px-10">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Acceso seguro</p>
+        <h3 className="mt-3 text-3xl font-semibold text-slate-800">Ingresa con tu cuenta Google institucional</h3>
+        <p className="mt-4 text-sm leading-7 text-slate-500">
+          Las tablas ahora quedan protegidas con Row Level Security para usuarios autenticados. Si el proveedor Google no esta habilitado en Supabase, el inicio de sesion devolvera error hasta completar la configuracion del proveedor.
+        </p>
+        <button
+          type="button"
+          onClick={() => void onLogin()}
+          className="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#006fb3] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#005b93]"
+        >
+          Continuar con Google
+        </button>
+        {authError ? <p className="mt-4 text-sm text-red-600">{authError}</p> : null}
+      </div>
+    </section>
+  )
+}
+
+function UnauthorizedPanel({
+  email,
+  onSignOut,
+}: {
+  email: string
+  onSignOut: () => Promise<void>
+}) {
+  return (
+    <section className="panel-card-strong rounded-[28px] px-6 py-12 sm:px-10">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Acceso restringido</p>
+        <h3 className="mt-3 text-3xl font-semibold text-slate-800">Tu cuenta no esta autorizada</h3>
+        <p className="mt-4 break-all text-sm leading-7 text-slate-500">{email}</p>
+        <p className="mt-2 text-sm leading-7 text-slate-500">
+          Solo pueden ingresar inicialmente eduardo.soto@slepcolchagua.cl y camilo.serra@slepcolchagua.cl.
+        </p>
+        <button
+          type="button"
+          onClick={() => void onSignOut()}
+          className="mt-6 inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
+        >
+          Cerrar sesion
+        </button>
+      </div>
+    </section>
   )
 }
 

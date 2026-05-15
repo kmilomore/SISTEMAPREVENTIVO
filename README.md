@@ -26,6 +26,20 @@ El frontend usa solo credenciales publicas:
 
 La service role no debe exponerse en React. Si necesitas procesos privilegiados, usalos en Edge Functions o un backend propio.
 
+## Autenticacion Google y RLS
+
+El portal ahora asume acceso autenticado. Antes de usarlo en produccion:
+
+1. Ejecuta `supabase/base_datos_escuelas_slep_schema.sql`.
+2. Ejecuta `supabase/actas_visita_migration.sql`.
+3. Ejecuta `supabase/compromisos_schema.sql`.
+4. Ejecuta `supabase/auth_google_rls_setup.sql` para crear `public.usuarios`, sincronizar perfiles con `auth.users` y cerrar el acceso `anon` con RLS.
+5. En Supabase Dashboard, entra a `Authentication > Providers > Google`, habilita Google y configura el Client ID `612384585191-eri41d43h579pb77hcggfp2pa9sphph4.apps.googleusercontent.com`.
+6. Completa tambien el Client Secret de Google en Supabase. Sin ese secreto el login OAuth no funcionara.
+7. En Google Cloud Console, registra como redirect URI `https://osbkiydklibdpmqjpovq.supabase.co/auth/v1/callback`.
+
+La tabla `public.usuarios` queda ligada a `auth.users` mediante un trigger `SECURITY DEFINER` y expone solo el perfil del usuario autenticado.
+
 ## Estructura inicial
 
 - `src/App.tsx`: entrada minima de la aplicacion.

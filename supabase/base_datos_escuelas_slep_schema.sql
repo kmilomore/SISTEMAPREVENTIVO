@@ -28,3 +28,12 @@ create table if not exists public."BASE DE DATOS ESCUELAS SLEP" (
   "LONGITUD" text,
   "ALTITUD" text
 );
+
+alter table public."BASE DE DATOS ESCUELAS SLEP" enable row level security;
+
+drop policy if exists "lectura escuelas autenticadas" on public."BASE DE DATOS ESCUELAS SLEP";
+create policy "lectura escuelas autenticadas"
+  on public."BASE DE DATOS ESCUELAS SLEP"
+  for select
+  to authenticated
+  using (auth.uid() is not null);

@@ -202,7 +202,42 @@ end;
 $$;
 
 -- ── Row Level Security ────────────────────────────────────────────────────────
--- Deshabilitado hasta que se implemente autenticación.
 
-alter table public.compromisos              disable row level security;
-alter table public.comentarios_compromisos  disable row level security;
+alter table public.compromisos enable row level security;
+alter table public.comentarios_compromisos enable row level security;
+
+drop policy if exists "lectura compromisos autenticados" on public.compromisos;
+create policy "lectura compromisos autenticados"
+  on public.compromisos
+  for select
+  to authenticated
+  using (auth.uid() is not null);
+
+drop policy if exists "actualizacion compromisos autenticados" on public.compromisos;
+create policy "actualizacion compromisos autenticados"
+  on public.compromisos
+  for update
+  to authenticated
+  using (auth.uid() is not null)
+  with check (auth.uid() is not null);
+
+drop policy if exists "insercion compromisos autenticados" on public.compromisos;
+create policy "insercion compromisos autenticados"
+  on public.compromisos
+  for insert
+  to authenticated
+  with check (auth.uid() is not null);
+
+drop policy if exists "lectura comentarios autenticados" on public.comentarios_compromisos;
+create policy "lectura comentarios autenticados"
+  on public.comentarios_compromisos
+  for select
+  to authenticated
+  using (auth.uid() is not null);
+
+drop policy if exists "insercion comentarios autenticados" on public.comentarios_compromisos;
+create policy "insercion comentarios autenticados"
+  on public.comentarios_compromisos
+  for insert
+  to authenticated
+  with check (auth.uid() is not null);

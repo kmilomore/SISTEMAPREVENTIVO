@@ -20,7 +20,7 @@ Directorio operacional de todos los establecimientos educacionales del SLEP Colc
 | Tabla | `public."BASE DE DATOS ESCUELAS SLEP"` |
 | Clave primaria | `N°` (bigint) |
 | Total de columnas | 28 |
-| Autenticación | RLS habilitado · política `SELECT` para rol `anon` y `authenticated` |
+| Autenticación | RLS habilitado · lectura solo para usuarios `authenticated` |
 | Orden de carga | Ascendente por `N°` |
 
 ### Variables de entorno requeridas
@@ -29,6 +29,15 @@ Directorio operacional de todos los establecimientos educacionales del SLEP Colc
 VITE_SUPABASE_URL=https://osbkiydklibdpmqjpovq.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon key>
 ```
+
+### Configuración adicional de autenticación
+
+- Proveedor OAuth esperado: `Google`
+- Client ID solicitado: `612384585191-eri41d43h579pb77hcggfp2pa9sphph4.apps.googleusercontent.com`
+- Redirect URI en Google Cloud: `https://osbkiydklibdpmqjpovq.supabase.co/auth/v1/callback`
+- Tabla de perfiles: `public.usuarios`
+
+> Importante: Supabase exige **Client Secret** además del Client ID para activar Google. Ese secreto no está en este repositorio y debe cargarse manualmente en el panel de Supabase.
 
 ---
 
@@ -119,12 +128,17 @@ Montaje del componente
         │
         ▼
 ¿supabase inicializado?
-   NO → estado: error ("No fue posible inicializar...")
-   SÍ
+        NO → estado: error ("No fue posible inicializar...")
+        SÍ
+                  │
+                  ▼
+¿sesion autenticada?
+        NO → AppShell muestra acceso Google y no monta DatabasePage
+        SÍ
         │
         ▼
 Carga paralela de:
-  - supabase.from("BASE DE DATOS ESCUELAS SLEP").select("*")
+        - supabase.from("BASE DE DATOS ESCUELAS SLEP").select("*")
   - fetchActas() desde public.actas_visita
         │
    error API → estado: error (muestra errorMessage)

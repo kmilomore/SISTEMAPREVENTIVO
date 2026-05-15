@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.actas_visita (
   pdf_path text,
   pdf_url text,
   estado text NOT NULL DEFAULT 'Registrada',
-  created_by uuid NULL,
+  created_by uuid NULL DEFAULT auth.uid(),
   created_by_nombre text NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
@@ -78,30 +78,33 @@ CREATE TRIGGER trg_actas_visita_updated_at
 -- RLS
 ALTER TABLE public.actas_visita ENABLE ROW LEVEL SECURITY;
 
--- Lectura pública (igual que la tabla de escuelas, sin auth por ahora)
+-- Lectura solo para usuarios autenticados
 DROP POLICY IF EXISTS "lectura publica actas" ON public.actas_visita;
-CREATE POLICY "lectura publica actas"
+DROP POLICY IF EXISTS "lectura actas autenticadas" ON public.actas_visita;
+CREATE POLICY "lectura actas autenticadas"
   ON public.actas_visita
   FOR SELECT
-  TO anon, authenticated
-  USING (true);
+  TO authenticated
+  USING (auth.uid() is not null);
 
--- Inserción pública (sin auth por ahora)
+-- Inserción solo para usuarios autenticados
 DROP POLICY IF EXISTS "insercion publica actas" ON public.actas_visita;
-CREATE POLICY "insercion publica actas"
+DROP POLICY IF EXISTS "insercion actas autenticadas" ON public.actas_visita;
+CREATE POLICY "insercion actas autenticadas"
   ON public.actas_visita
   FOR INSERT
-  TO anon, authenticated
-  WITH CHECK (true);
+  TO authenticated
+  WITH CHECK (auth.uid() is not null);
 
--- Actualización pública (para actualizar pdf_path / pdf_url)
+-- Actualización solo para usuarios autenticados
 DROP POLICY IF EXISTS "actualizacion publica actas" ON public.actas_visita;
-CREATE POLICY "actualizacion publica actas"
+DROP POLICY IF EXISTS "actualizacion actas autenticadas" ON public.actas_visita;
+CREATE POLICY "actualizacion actas autenticadas"
   ON public.actas_visita
   FOR UPDATE
-  TO anon, authenticated
-  USING (true)
-  WITH CHECK (true);
+  TO authenticated
+  USING (auth.uid() is not null)
+  WITH CHECK (auth.uid() is not null);
 
 -- Bucket actas-visita
 INSERT INTO storage.buckets (id, name, public)
@@ -112,11 +115,11 @@ ON CONFLICT (id) DO NOTHING;
 DROP POLICY IF EXISTS "actas visita upload" ON storage.objects;
 CREATE POLICY "actas visita upload"
   ON storage.objects FOR INSERT
-  TO anon, authenticated
-  WITH CHECK (bucket_id = 'actas-visita');
+  TO authenticated
+  WITH CHECK (bucket_id = 'actas-visita' and auth.uid() is not null);
 
 DROP POLICY IF EXISTS "actas visita read" ON storage.objects;
 CREATE POLICY "actas visita read"
   ON storage.objects FOR SELECT
-  TO anon, authenticated
-  USING (bucket_id = 'actas-visita');
+  TO authenticated
+  USING (bucket_id = 'actas-visita' and auth.uid() is not null);
