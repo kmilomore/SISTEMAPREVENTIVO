@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ActaPage } from '../pages/ActaPage'
 import { CompromisosPage } from '../pages/CompromisosPage'
 import { DatabasePage } from '../pages/DatabasePage'
+import { LoginPage } from '../pages/LoginPage'
 import { MetricasPage } from '../pages/MetricasPage'
 import {
   getSession,
@@ -118,6 +119,22 @@ export function AppShell() {
     if (error) {
       setAuthError(error)
     }
+  }
+
+  if (!isSupabaseConfigured) {
+    return <LoginPage mode="setup" />
+  }
+
+  if (isAuthLoading) {
+    return <LoginPage mode="loading" />
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage mode="login" authError={authError} onLogin={handleGoogleLogin} />
+  }
+
+  if (!isAuthorizedUser) {
+    return <LoginPage mode="unauthorized" email={userEmail} onSignOut={handleSignOut} />
   }
 
   return (
@@ -291,15 +308,7 @@ export function AppShell() {
               </div>
             </header>
 
-            {!isSupabaseConfigured ? (
-              <SetupRequiredPanel />
-            ) : isAuthLoading ? (
-              <LoadingPanel />
-            ) : !isAuthenticated ? (
-              <LoginRequiredPanel authError={authError} onLogin={handleGoogleLogin} />
-            ) : !isAuthorizedUser ? (
-              <UnauthorizedPanel email={userEmail} onSignOut={handleSignOut} />
-            ) : route === 'database' ? (
+            {route === 'database' ? (
               <DatabasePage />
             ) : route === 'acta' ? (
               <ActaPage />
@@ -312,86 +321,6 @@ export function AppShell() {
         </main>
       </div>
     </div>
-  )
-}
-
-function LoadingPanel() {
-  return (
-    <section className="panel-card-strong rounded-[28px] px-6 py-12 text-center sm:px-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Autenticacion</p>
-      <h3 className="mt-3 text-2xl font-semibold text-slate-800">Verificando sesion institucional</h3>
-      <p className="mt-3 text-sm text-slate-500">
-        Espera un momento mientras se valida la sesion de Supabase.
-      </p>
-    </section>
-  )
-}
-
-function SetupRequiredPanel() {
-  return (
-    <section className="panel-card-strong rounded-[28px] px-6 py-12 text-center sm:px-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Supabase</p>
-      <h3 className="mt-3 text-2xl font-semibold text-slate-800">Configuracion incompleta</h3>
-      <p className="mt-3 text-sm text-slate-500">
-        Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY para habilitar el acceso autenticado al portal.
-      </p>
-    </section>
-  )
-}
-
-function LoginRequiredPanel({
-  authError,
-  onLogin,
-}: {
-  authError: string
-  onLogin: () => Promise<void>
-}) {
-  return (
-    <section className="panel-card-strong rounded-[28px] px-6 py-12 sm:px-10">
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Acceso seguro</p>
-        <h3 className="mt-3 text-3xl font-semibold text-slate-800">Ingresa con tu cuenta Google institucional</h3>
-        <p className="mt-4 text-sm leading-7 text-slate-500">
-          Las tablas ahora quedan protegidas con Row Level Security para usuarios autenticados. Si el proveedor Google no esta habilitado en Supabase, el inicio de sesion devolvera error hasta completar la configuracion del proveedor.
-        </p>
-        <button
-          type="button"
-          onClick={() => void onLogin()}
-          className="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#006fb3] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#005b93]"
-        >
-          Continuar con Google
-        </button>
-        {authError ? <p className="mt-4 text-sm text-red-600">{authError}</p> : null}
-      </div>
-    </section>
-  )
-}
-
-function UnauthorizedPanel({
-  email,
-  onSignOut,
-}: {
-  email: string
-  onSignOut: () => Promise<void>
-}) {
-  return (
-    <section className="panel-card-strong rounded-[28px] px-6 py-12 sm:px-10">
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#006fb3]">Acceso restringido</p>
-        <h3 className="mt-3 text-3xl font-semibold text-slate-800">Tu cuenta no esta autorizada</h3>
-        <p className="mt-4 break-all text-sm leading-7 text-slate-500">{email}</p>
-        <p className="mt-2 text-sm leading-7 text-slate-500">
-          Solo pueden ingresar inicialmente eduardo.soto@slepcolchagua.cl y camilo.serra@slepcolchagua.cl.
-        </p>
-        <button
-          type="button"
-          onClick={() => void onSignOut()}
-          className="mt-6 inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
-        >
-          Cerrar sesion
-        </button>
-      </div>
-    </section>
   )
 }
 

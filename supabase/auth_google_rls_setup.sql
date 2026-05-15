@@ -13,17 +13,39 @@
 -- public.usuarios se alimenta desde auth.users.
 -- Un usuario aparecerá aquí solo después de existir en auth.users,
 -- normalmente tras completar su primer inicio de sesión con Google.
+--
+-- La whitelist inicial queda en public.usuarios_autorizados.
+-- Esa tabla sí puede poblarse antes del primer login.
 
 create extension if not exists pgcrypto;
+
+create table if not exists public.usuarios_autorizados (
+  email text primary key,
+  nombre_referencia text,
+  rol text not null default 'admin' check (rol in ('admin', 'usuario')),
+  activo boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+insert into public.usuarios_autorizados (email, nombre_referencia, rol, activo)
+values
+  ('eduardo.soto@slepcolchagua.cl', 'Eduardo Soto', 'admin', true),
+  ('camilo.serra@slepcolchagua.cl', 'Camilo Serra', 'admin', true)
+on conflict (email) do update
+set nombre_referencia = excluded.nombre_referencia,
+    rol = excluded.rol,
+    activo = excluded.activo;
 
 create or replace function public.es_correo_autorizado(correo text)
 returns boolean
 language sql
-immutable
+stable
 as $$
-  select lower(coalesce(correo, '')) in (
-    'eduardo.soto@slepcolchagua.cl',
-    'camilo.serra@slepcolchagua.cl'
+  select exists (
+    select 1
+    from public.usuarios_autorizados ua
+    where lower(ua.email) = lower(coalesce(correo, ''))
+      and ua.activo = true
   );
 $$;
 
