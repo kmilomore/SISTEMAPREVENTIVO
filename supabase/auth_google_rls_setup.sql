@@ -40,6 +40,8 @@ create or replace function public.es_correo_autorizado(correo text)
 returns boolean
 language sql
 stable
+security definer
+set search_path = public
 as $$
   select exists (
     select 1
@@ -53,6 +55,8 @@ create or replace function public.usuario_actual_autorizado()
 returns boolean
 language sql
 stable
+security definer
+set search_path = public
 as $$
   select public.es_correo_autorizado(auth.jwt() ->> 'email');
 $$;
@@ -219,7 +223,10 @@ create policy "insercion actas autenticadas"
   on public.actas_visita
   for insert
   to authenticated
-  with check (public.usuario_actual_autorizado());
+  with check (
+    public.usuario_actual_autorizado()
+    and coalesce(created_by, auth.uid()) = auth.uid()
+  );
 
 create policy "actualizacion actas autenticadas"
   on public.actas_visita

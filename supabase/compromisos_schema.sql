@@ -82,6 +82,8 @@ create index if not exists comentarios_compromisos_compromiso_id_idx
 create or replace function public.sync_acuerdos_to_compromisos()
 returns trigger
 language plpgsql
+security definer
+set search_path = public
 as $$
 begin
   insert into public.compromisos (

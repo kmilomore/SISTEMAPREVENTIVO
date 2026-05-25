@@ -20,7 +20,7 @@ Directorio operacional de todos los establecimientos educacionales del SLEP Colc
 | Tabla | `public."BASE DE DATOS ESCUELAS SLEP"` |
 | Clave primaria | `N°` (bigint) |
 | Total de columnas | 28 |
-| Autenticación | RLS habilitado · lectura solo para usuarios `authenticated` |
+| Autenticación | Supabase Auth + RLS · el frontend autentica y el backend decide el acceso real |
 | Orden de carga | Ascendente por `N°` |
 
 ### Variables de entorno requeridas
@@ -133,7 +133,7 @@ Montaje del componente
                   │
                   ▼
 ¿sesion autenticada?
-        NO → AppShell muestra acceso Google y no monta DatabasePage
+        NO → AppShell muestra `LoginPage` y no monta DatabasePage
         SÍ
         │
         ▼
@@ -182,6 +182,8 @@ SchoolDetailModal (overlay)
 | `error` | Banner rojo con mensaje de error |
 | `empty` | Aviso: "No hay escuelas registradas en la tabla" |
 | `ready` | Tabla con todos los registros filtrables |
+
+> Si RLS filtra filas en backend, la página también puede entrar en `empty` aunque existan registros físicos en la tabla. En ese caso el origen del problema está en la policy de Supabase y no en el render del componente.
 
 ---
 

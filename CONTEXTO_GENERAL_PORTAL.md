@@ -28,9 +28,11 @@ El portal busca resolver cuatro necesidades principales:
 
 - Shell principal del portal con navegacion lateral (4 modulos activos).
 - Navegacion simple por hash para separar paginas por modulo.
+- Pagina de login dedicada para configuracion, validacion de sesion y acceso con Google.
 - Pagina de base de datos para guiar la carga inicial del dataset SQL.
 - Deteccion automatica del archivo SQL fuente publicado en `public/`.
 - Cliente Supabase listo para activarse con variables de entorno publicas.
+- Autenticacion Google via Supabase Auth y autorizacion centralizada por RLS.
 - Modulo de actas funcional con persistencia en Supabase, generacion de PDF y subida de archivos de asistencia.
 - Modulo de metricas con KPIs calculados desde actas: cobertura de establecimientos visitados, compromisos por estado, cobertura por comuna.
 - Modulo de compromisos con tabla filtrable, cambio de estado y historial de seguimiento por comentarios.
@@ -46,7 +48,7 @@ El portal busca resolver cuatro necesidades principales:
 - Formularios CRUD de visitas y observaciones.
 - Normalizacion automatica desde la tabla cruda hacia tablas operacionales.
 - Exportacion documental de compromisos a CSV o PDF.
-- Gestion de usuarios, perfiles o permisos por rol.
+- Gestion administrativa de usuarios, perfiles o permisos por rol desde la UI.
 - Paginacion en tablas con grandes volumenes de datos.
 
 ## 4. Stack tecnologico
@@ -79,6 +81,7 @@ La aplicacion sigue una arquitectura simple y modular.
 
 - `src/pages/DatabasePage.tsx`: modulo de carga inicial de datos y directorio SLEP.
 - `src/pages/ActaPage.tsx`: gestor completo de actas con PDF, asistencia y detalle.
+- `src/pages/LoginPage.tsx`: acceso institucional y estados previos al montaje del portal.
 - `src/pages/MetricasPage.tsx`: panel de KPIs calculados desde actas y directorio SLEP.
 - `src/pages/CompromisosPage.tsx`: gestor de compromisos con filtros, cambio de estado e historial de comentarios.
 
@@ -93,6 +96,12 @@ La aplicacion sigue una arquitectura simple y modular.
 ## 6. Navegacion actual
 
 La aplicacion expone cuatro rutas funcionales. La navegacion es hash-based (sin router externo). Las rutas validas se derivan dinamicamente desde `appRoutes` en `src/app/routes.ts`, por lo que agregar una ruta nueva no requiere modificar el hook `useHashRoute`.
+
+Antes de renderizar la shell autenticada, `AppShell` resuelve tres estados previos usando `LoginPage`:
+
+- `setup`: faltan variables `VITE_SUPABASE_URL` y/o `VITE_SUPABASE_ANON_KEY`;
+- `loading`: se esta verificando la sesion actual;
+- `login`: el usuario debe autenticarse con Google.
 
 ### 1. Base de Datos
 
@@ -166,23 +175,22 @@ El modulo de base de datos es la primera pantalla operativa del portal y cumple 
 
 ## 8. Modulo de actas
 
-El modulo de actas ya existe como base visual y de arquitectura, pero todavia no como flujo transaccional completo.
+El modulo de actas ya opera como flujo transaccional sobre Supabase.
 
-### Lo que muestra hoy
+### Lo que hace hoy
 
-- tabla demo de actas;
-- codigo del acta;
-- fecha de sesion;
-- tema;
-- estado.
+- lista actas reales ordenadas por fecha;
+- registra nuevas actas por tipo;
+- genera PDF y lo almacena en Supabase Storage;
+- permite ver detalle completo con modal responsive y scroll interno;
+- permite cargar o reemplazar la lista de asistencia.
 
 ### Roadmap del modulo
 
-- formulario de acta;
-- asistentes y acuerdos;
-- responsables y fechas de cierre;
-- relacion con establecimiento y visita;
-- exportacion documental futura.
+- edicion de actas existentes;
+- cierre formal de actas;
+- filtros avanzados de listado;
+- exportacion documental adicional.
 
 ## 9. Modelo de datos funcional del CRM
 
@@ -296,7 +304,7 @@ Incluye:
 
 ## 10. Supabase y persistencia
 
-La integracion con Supabase esta preparada pero aun no consumida desde la UI.
+La integracion con Supabase ya esta consumida desde la UI para autenticacion, lectura y persistencia de los modulos principales.
 
 ### Variables de entorno requeridas
 
@@ -305,9 +313,9 @@ La integracion con Supabase esta preparada pero aun no consumida desde la UI.
 
 ### Comportamiento actual
 
-- si ambas variables existen, la app crea el cliente de Supabase;
-- si no existen, la app sigue funcionando en modo demo;
-- la UI refleja ese estado en el modulo de base de datos.
+- si ambas variables existen, la app crea el cliente de Supabase y habilita el flujo de acceso institucional;
+- si no existen, `LoginPage` muestra el modo de configuracion inicial;
+- la autorizacion real de datos se decide en backend mediante RLS y no por una whitelist hardcodeada en frontend.
 
 ### Esquemas SQL disponibles
 
@@ -407,8 +415,8 @@ Las principales brechas del portal hoy son:
 1. La tabla `public.compromisos` no existe aun en Supabase; el modulo opera en modo mock.
 2. Los compromisos del modulo de compromisos y los acuerdos internos de las actas son entidades paralelas sin sincronizacion automatica.
 3. No existe aun un pipeline de normalizacion desde la tabla cruda de establecimientos.
-4. No hay autenticacion funcional en pantalla.
-5. No hay control de permisos por perfil.
+4. No existe aun gestion administrativa de permisos o perfiles desde la UI; hoy el acceso se controla con Auth + RLS en Supabase.
+5. No existe aun un panel interno para administrar usuarios autorizados.
 6. No hay testing automatizado de flujos de negocio.
 7. Sin paginacion en tablas; carga completa de registros en memoria.
 
@@ -419,7 +427,7 @@ Orden sugerido para evolucion del portal:
 1. Crear tabla `public.compromisos` en Supabase con el esquema definido en `CONTEXTO_COMPROMISOSPAGE.md` (seccion 13.1).
 2. Generar compromisos automaticamente desde acuerdos al registrar un acta nueva (trigger Supabase o logica en `insertActa`).
 3. Normalizar establecimientos desde la tabla cruda a `public.establishments`.
-4. Incorporar autenticacion y ligar el autor de comentarios al usuario autenticado.
+4. Extender la autenticacion actual para ligar autores, auditoria y perfiles a la sesion autenticada.
 5. Incorporar modulo de visitas y observaciones.
 6. Conectar observaciones con planes de accion.
 7. Agregar paginacion en listados de actas y compromisos.
@@ -437,6 +445,7 @@ Orden sugerido para evolucion del portal:
 
 - `src/pages/DatabasePage.tsx`: directorio de establecimientos y carga inicial SQL.
 - `src/pages/ActaPage.tsx`: gestor de actas con PDF, asistencia y detalle.
+- `src/pages/LoginPage.tsx`: acceso institucional, configuracion inicial y estado de carga de autenticacion.
 - `src/pages/MetricasPage.tsx`: panel de KPIs e indicadores operativos.
 - `src/pages/CompromisosPage.tsx`: gestor de compromisos con filtros, estados e historial.
 
@@ -474,5 +483,6 @@ El portal cuenta con cuatro modulos funcionales y una arquitectura consolidada p
 - El modulo de **Metricas** calcula KPIs en tiempo real desde los datos reales.
 - El modulo de **Compromisos** opera en modo demo hasta que se cree la tabla en Supabase, pero la UI esta completamente construida.
 - El **directorio de establecimientos** esta listo para cargarse desde el SQL fuente.
+- El acceso institucional ya cuenta con pantalla dedicada de login y autorizacion centralizada en Supabase.
 
-El siguiente salto de valor esta en crear la tabla `public.compromisos` en Supabase, conectar la generacion automatica de compromisos desde actas, e incorporar autenticacion para ligar cada accion a un usuario real.
+El siguiente salto de valor esta en consolidar la administracion de usuarios autorizados, conectar la generacion automatica de compromisos desde actas y profundizar la trazabilidad por sesion autenticada.

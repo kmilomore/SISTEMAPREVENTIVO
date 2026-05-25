@@ -169,6 +169,12 @@ Se abre al hacer clic en "Ver" en la fila de la tabla. La URL se actualiza con `
 | Generar/Reintentar PDF | `pdf_url` ausente | Genera el PDF, lo sube y descarga |
 | Cerrar | Siempre | Cierra el modal y limpia el hash |
 
+### Comportamiento responsive del modal
+
+- el panel limita su altura al viewport para evitar desbordes en pantallas bajas;
+- cuando el contenido excede la altura disponible, el scroll ocurre dentro del modal;
+- esto mantiene accesibles las secciones finales y las acciones del footer en notebook y móvil.
+
 ### Lista de asistencia en el modal
 
 - Si `asistencia_url` existe: muestra botón "Ver archivo" + opción "Reemplazar"
@@ -189,6 +195,14 @@ La página sincroniza el modal de detalle con la URL usando el fragmento de hash
 
 Esto permite compartir el link directo a un acta y que el modal se abra al cargar la página.
 
+## 9.1 Lectura y seguridad
+
+La lectura de actas depende de Supabase y de las políticas RLS activas sobre `public.actas_visita`.
+
+- el frontend ya no mantiene una whitelist hardcodeada de correos;
+- el acceso al portal se inicia desde la pagina institucional de login;
+- la autorizacion efectiva para ver o modificar actas se resuelve en backend.
+
 ---
 
 ## 10. Servicios y librerías utilizadas
@@ -204,6 +218,7 @@ Esto permite compartir el link directo a un acta y que el modal se abra al carga
 | `lib/pdfActaService.ts` | `descargarActaPdf` | Descarga el PDF en el navegador |
 | `lib/storageActasService.ts` | `uploadActaPdf` | Sube el PDF al bucket `actas-visita` |
 | `lib/storageActasService.ts` | `uploadAsistenciaFile` | Sube el archivo de asistencia al mismo bucket |
+| `pages/LoginPage.tsx` | `LoginPage` | Punto de entrada visual del portal antes de acceder a los modulos autenticados |
 
 ---
 
