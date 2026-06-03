@@ -49,17 +49,41 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
 
   const redirectTo = `${window.location.origin}${window.location.pathname}${window.location.search}`
 
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo,
+      skipBrowserRedirect: true,
       queryParams: {
         prompt: 'select_account',
       },
     },
   })
 
-  return { error: error?.message ?? null }
+  if (error) {
+    return { error: error.message ?? null }
+  }
+
+  const authUrl = data?.url
+  if (!authUrl) {
+    return { error: 'No se pudo iniciar el flujo de autenticacion OAuth.' }
+  }
+
+  const isEmbeddedContext = window.self !== window.top
+  if (isEmbeddedContext) {
+    const popup = window.open(authUrl, '_blank', 'noopener,noreferrer')
+    if (!popup) {
+      return {
+        error:
+          'El navegador bloqueo la ventana de autenticacion. Habilita popups para este sitio e intenta nuevamente.',
+      }
+    }
+    return { error: null }
+  }
+
+  window.location.assign(authUrl)
+
+  return { error: null }
 }
 
 export async function signOut(): Promise<{ error: string | null }> {
