@@ -1,5 +1,14 @@
 import { jsPDF } from 'jspdf'
-import type { ActaVisita } from '../types/actas'
+import type { ActaVisita, OrganizacionReunion } from '../types/actas'
+
+const TIPO_REUNION_LABELS: Record<string, string> = {
+  establecimiento: 'Establecimiento escolar',
+  organismo_publico: 'Organismo público',
+  empresa_privada: 'Empresa privada',
+  ong: 'ONG / Fundación',
+  equipo_interno: 'Equipo interno SLEP',
+  otro: 'Otro',
+}
 
 // TODO: INSERTAR AQUÍ FORMATO INSTITUCIONAL DEL ACTA EN PDF
 // El template actual es un placeholder funcional. Reemplazar con el diseño
@@ -83,7 +92,7 @@ export async function generarActaPdf(acta: ActaVisita & { id: string }): Promise
   doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(0, 51, 160)
-  doc.text('ACTA DE VISITA — ASESORÍA', 40, 31)
+  doc.text(acta.tipo_acta === 'reunion' ? 'ACTA DE REUNIÓN' : 'ACTA DE VISITA — ASESORÍA', 40, 31)
 
   // Folio (caja destacada, esquina superior derecha)
   const folio = acta.folio ?? 'SIN FOLIO'
@@ -105,17 +114,48 @@ export async function generarActaPdf(acta: ActaVisita & { id: string }): Promise
 
   let y = 47
 
-  // ── IDENTIFICACIÓN DEL ESTABLECIMIENTO ───────────────────────────────────
-  y = addSectionTitle(doc, '1. Identificación del establecimiento', y)
+  // ── SECCIÓN 1: ESTABLECIMIENTO u ORGANIZACIÓN ────────────────────────────
+  if (acta.tipo_acta === 'reunion') {
+    y = addSectionTitle(doc, '1. Organización / contraparte', y)
 
-  const nombreEnd = addField(doc, 'Nombre', acta.establecimiento_nombre ?? '', 14, y, 115)
-  const rbdEnd = addField(doc, 'RBD', acta.establecimiento_rbd ?? '', 140, y, 55)
-  y = Math.max(nombreEnd, rbdEnd) + 2
+    const org: OrganizacionReunion | undefined = acta.organizacion as OrganizacionReunion | undefined
+    const tipoLabel = org ? (TIPO_REUNION_LABELS[org.tipo] ?? org.tipo) : '—'
+    const orgNombre =
+      org?.nombre ?? acta.establecimiento_nombre ?? '—'
+    const contacto = [org?.contacto_nombre, org?.contacto_cargo].filter(Boolean).join(' · ') || '—'
 
-  const comunaEnd = addField(doc, 'Comuna', acta.establecimiento_comuna ?? '', 14, y, 55)
-  const tipoEnd = addField(doc, 'Tipo de acta', 'Asesoría', 80, y, 55)
-  const estadoEnd = addField(doc, 'Estado', acta.estado ?? 'Registrada', 140, y, 55)
-  y = Math.max(comunaEnd, tipoEnd, estadoEnd) + 4
+    const n1End = addField(doc, 'Tipo de contraparte', tipoLabel, 14, y, 85)
+    const n2End = addField(doc, 'Nombre', orgNombre, 100, y, 95)
+    y = Math.max(n1End, n2End) + 2
+
+    if (acta.tipo_acta === 'reunion' && acta.establecimiento_rbd) {
+      const rbdEnd = addField(doc, 'RBD', acta.establecimiento_rbd, 14, y, 55)
+      const comEnd = addField(doc, 'Comuna', acta.establecimiento_comuna ?? '', 80, y, 55)
+      y = Math.max(rbdEnd, comEnd) + 2
+    } else if (org?.direccion) {
+      y = addField(doc, 'Dirección', org.direccion, 14, y, 180) + 2
+    }
+
+    if (org && (org.contacto_nombre || org.contacto_email || org.contacto_telefono)) {
+      const cEnd = addField(doc, 'Contacto', contacto, 14, y, 85)
+      const eEnd = addField(doc, 'Correo', org.contacto_email ?? '—', 100, y, 95)
+      y = Math.max(cEnd, eEnd) + 2
+    }
+
+    const estadoREnd = addField(doc, 'Estado', acta.estado ?? 'Registrada', 14, y, 55)
+    y = estadoREnd + 4
+  } else {
+    y = addSectionTitle(doc, '1. Identificación del establecimiento', y)
+
+    const nombreEnd = addField(doc, 'Nombre', acta.establecimiento_nombre ?? '', 14, y, 115)
+    const rbdEnd = addField(doc, 'RBD', acta.establecimiento_rbd ?? '', 140, y, 55)
+    y = Math.max(nombreEnd, rbdEnd) + 2
+
+    const comunaEnd = addField(doc, 'Comuna', acta.establecimiento_comuna ?? '', 14, y, 55)
+    const tipoEnd = addField(doc, 'Tipo de acta', 'Asesoría', 80, y, 55)
+    const estadoEnd = addField(doc, 'Estado', acta.estado ?? 'Registrada', 140, y, 55)
+    y = Math.max(comunaEnd, tipoEnd, estadoEnd) + 4
+  }
 
   // ── FECHA Y HORA ──────────────────────────────────────────────────────────
   y = checkPageBreak(doc, y)
@@ -175,12 +215,12 @@ export async function generarActaPdf(acta: ActaVisita & { id: string }): Promise
 
   // ── DESARROLLO DE LA VISITA ───────────────────────────────────────────────
   y = checkPageBreak(doc, y, 30)
-  y = addSectionTitle(doc, '4. Desarrollo de la visita', y)
+  y = addSectionTitle(doc, acta.tipo_acta === 'reunion' ? '4. Desarrollo de la reunión' : '4. Desarrollo de la visita', y)
 
   doc.setFontSize(7.5)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(80, 80, 80)
-  doc.text('TEMAS ANTERIORES TRATADOS', 14, y)
+  doc.text(acta.tipo_acta === 'reunion' ? 'TEMAS ANTERIORES / SEGUIMIENTO' : 'TEMAS ANTERIORES TRATADOS', 14, y)
   y += 4
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
@@ -197,7 +237,7 @@ export async function generarActaPdf(acta: ActaVisita & { id: string }): Promise
   doc.setFontSize(7.5)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(80, 80, 80)
-  doc.text('ACTIVIDAD REALIZADA', 14, y)
+  doc.text(acta.tipo_acta === 'reunion' ? 'ORDEN DEL DÍA / ACTIVIDAD REALIZADA' : 'ACTIVIDAD REALIZADA', 14, y)
   y += 4
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)

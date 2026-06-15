@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { TipoActa, ActaVisita, ActaVisitaRow } from '../types/actas'
 import { ActaTipoSelector } from '../components/actas/ActaTipoSelector'
 import { ActaForm } from '../components/actas/ActaForm'
+import { ReunionForm } from '../components/actas/ReunionForm'
 import { ActaDetailModal } from '../components/actas/ActaDetailModal'
 import { Alert } from '../components/ui/Alert'
 import { Button } from '../components/ui/Button'
@@ -258,12 +259,20 @@ export function ActaPage() {
           </Alert>
         )}
 
-        <ActaForm
-          tipo={tipoSeleccionado}
-          onSubmit={handleFormSubmit}
-          onCancel={handleCancel}
-          submitting={submitting}
-        />
+        {tipoSeleccionado === 'reunion' ? (
+          <ReunionForm
+            onSubmit={handleFormSubmit}
+            onCancel={handleCancel}
+            submitting={submitting}
+          />
+        ) : (
+          <ActaForm
+            tipo={tipoSeleccionado}
+            onSubmit={handleFormSubmit}
+            onCancel={handleCancel}
+            submitting={submitting}
+          />
+        )}
       </div>
     )
   }

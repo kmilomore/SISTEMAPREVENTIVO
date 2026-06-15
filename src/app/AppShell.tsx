@@ -5,6 +5,7 @@ import { CompromisosPage } from '../pages/CompromisosPage'
 import { DatabasePage } from '../pages/DatabasePage'
 import { LoginPage } from '../pages/LoginPage'
 import { MetricasPage } from '../pages/MetricasPage'
+import { ReunionesPage } from '../pages/ReunionesPage'
 import {
   getSession,
   isSupabaseConfigured,
@@ -23,6 +24,7 @@ const pageTitle = {
   acta: 'Gestor de actas',
   metricas: 'Métricas e indicadores',
   compromisos: 'Gestor de compromisos',
+  reuniones: 'Actas de reunión',
 } as const
 
 const pageTag = {
@@ -30,6 +32,7 @@ const pageTag = {
   acta: 'Gestión documental',
   metricas: 'Control de gestión',
   compromisos: 'Seguimiento',
+  reuniones: 'Gestión documental',
 } as const
 
 export function AppShell() {
@@ -181,6 +184,27 @@ export function AppShell() {
                 {appRoutes.map((appRoute) => {
                   const isActive = appRoute.id === route
 
+                  if (appRoute.isSubItem) {
+                    return (
+                      <button
+                        key={appRoute.id}
+                        type="button"
+                        onClick={() => {
+                          if (!isAuthenticated) return
+                          setIsMobileMenuOpen(false)
+                          navigate(appRoute.id)
+                        }}
+                        disabled={!isAuthenticated}
+                        className={`flex w-full items-center gap-2 rounded-xl py-2 pl-[52px] pr-3 text-left transition ${
+                          isActive ? 'bg-white/10 font-semibold text-white' : 'text-blue-100/70 hover:text-blue-50'
+                        }`}
+                      >
+                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${isActive ? 'bg-white' : 'bg-blue-100/50'}`} />
+                        <span className="text-xs font-medium">{appRoute.label}</span>
+                      </button>
+                    )
+                  }
+
                   return (
                     <button
                       key={appRoute.id}
@@ -301,6 +325,8 @@ export function AppShell() {
               <DatabasePage />
             ) : route === 'acta' ? (
               <ActaPage />
+            ) : route === 'reuniones' ? (
+              <ReunionesPage />
             ) : route === 'compromisos' ? (
               <CompromisosPage />
             ) : (

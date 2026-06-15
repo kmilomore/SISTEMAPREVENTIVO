@@ -1,9 +1,10 @@
-export type AppRouteId = 'database' | 'acta' | 'metricas' | 'compromisos'
+export type AppRouteId = 'database' | 'acta' | 'metricas' | 'compromisos' | 'reuniones'
 
 export type AppRoute = {
   id: AppRouteId
   label: string
   description: string
+  isSubItem?: boolean
 }
 
 export const appRoutes: AppRoute[] = [
@@ -16,6 +17,12 @@ export const appRoutes: AppRoute[] = [
     id: 'acta',
     label: 'Acta',
     description: 'Registro y seguimiento de actas, acuerdos y compromisos por establecimiento.',
+  },
+  {
+    id: 'reuniones',
+    label: 'Reuniones',
+    description: 'Registro y seguimiento de actas de reunión con organizaciones y equipos.',
+    isSubItem: true,
   },
   {
     id: 'metricas',

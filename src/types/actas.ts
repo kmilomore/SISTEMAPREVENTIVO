@@ -1,5 +1,13 @@
 export type TipoActa = 'asesoria' | 'observacion' | 'reunion' | 'solicitud'
 
+export type TipoReunion =
+  | 'establecimiento'
+  | 'organismo_publico'
+  | 'empresa_privada'
+  | 'ong'
+  | 'equipo_interno'
+  | 'otro'
+
 export type EstadoActa = 'Registrada' | 'Registrada sin PDF' | 'Cerrada'
 
 export type EstadoAcuerdo = 'Pendiente' | 'En proceso' | 'Cumplido'
@@ -17,10 +25,38 @@ export interface AcuerdoActa {
   estado: EstadoAcuerdo
 }
 
+export interface OrganizacionReunion {
+  tipo: TipoReunion
+  tipo_otro?: string
+  nombre?: string
+  direccion?: string
+  contacto_nombre?: string
+  contacto_cargo?: string
+  contacto_email?: string
+  contacto_telefono?: string
+}
+
+export interface Organizacion {
+  id: string
+  tipo: TipoReunion
+  tipo_otro?: string
+  nombre: string
+  direccion?: string
+  contacto_nombre?: string
+  contacto_cargo?: string
+  contacto_email?: string
+  contacto_telefono?: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface ActaVisita {
   id?: string
   folio?: string
   tipo_acta: TipoActa
+  tipo_reunion?: TipoReunion
+  organizacion?: OrganizacionReunion
+  organizacion_id?: string
   establecimiento_id: string
   establecimiento_nombre?: string
   establecimiento_rbd?: string

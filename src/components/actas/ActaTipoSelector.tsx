@@ -53,8 +53,8 @@ const TIPOS: TipoOption[] = [
   {
     id: 'reunion',
     label: 'Reunión',
-    description: 'Reunión de coordinación, comité o consejo escolar.',
-    available: false,
+    description: 'Reunión con establecimientos, organismos externos o equipos de trabajo.',
+    available: true,
     icon: <UsersIcon />,
   },
   {

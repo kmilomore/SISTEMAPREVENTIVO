@@ -80,6 +80,20 @@ export async function updateActaEstado(
   return { error: null }
 }
 
+export async function fetchReuniones(): Promise<{ data: ActaVisitaRow[]; error: string | null }> {
+  if (!supabase) return { data: [], error: 'Supabase no inicializado.' }
+
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('tipo_acta', 'reunion')
+    .order('fecha_visita', { ascending: false })
+    .order('created_at', { ascending: false })
+
+  if (error) return { data: [], error: error.message }
+  return { data: (data ?? []) as ActaVisitaRow[], error: null }
+}
+
 export async function updateActaAsistencia(
   id: string,
   asistencia_path: string,
